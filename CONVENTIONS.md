@@ -175,23 +175,45 @@ export const bookmarkQueries = {
   - 예: `types/bookmark.ts`가 `bookmarkInputSchema` + `type BookmarkInput = z.infer<...>`를 함께 export.
 - 참고: Zod 스키마는 폼 전용이 아니라 **데이터 모양 명세**다. API 응답 검증 등에도 같은 스키마를 쓴다.
 
-## 10. JSDoc (ESLint `jsdoc`로 강제, 현재 warn)
+## 10. 주석 — JSDoc · 인라인 (JSDoc은 ESLint `jsdoc`로 강제, 현재 warn)
 
-**함수·컴포넌트에는 항상 JSDoc**으로 역할·인자·반환을 간략히 적는다.
+원칙: **주석은 "왜"를 적고 "무엇"은 코드에 맡긴다.** 코드보다 주석이 많아지면 과한 것 —
+이름·타입·구조로 대체한다.
+
+### JSDoc (공개 export 함수·컴포넌트·훅에 필수)
+
+**역할을 핵심만 한 줄**로 적는다. 인자·반환 타입은 시그니처가, prop 설명은 인터페이스가 이미 말해준다.
 
 ```ts
-/**
- * 트렌드를 공고 수 내림차순으로 정렬한다. (원본 불변)
- *
- * @param trends 정렬할 트렌드 배열
- * @returns count 기준 내림차순 새 배열
- */
+/** 트렌드를 공고 수 내림차순으로 정렬한다. (원본 불변) */
 export function sortTrendsByCount(trends: TechTrend[]): TechTrend[] { ... }
+
+/** 회원가입 1단계 — 이메일 인증. 코드 전송 후 6자리 입력 시 '다음' 활성화. */
+export function SignupStep1({ onNext }: SignupStep1Props) { ... }
 ```
 
 - **타입은 JSDoc에 적지 않는다** (`@param {string}` ✕). 타입은 TypeScript가 담당.
-- 컴포넌트는 역할 + 주요 prop + 반환(무엇을 렌더하는지)을 적는다.
+- **`@param`/`@returns`는 기본 생략.** prop 설명은 인터페이스 각 필드의 `/** */`에 두고,
+  인자·반환 타입은 시그니처에 이미 있다 → 중복이라 오히려 노이즈.
+  (ESLint도 태그 존재는 강제하지 않음: `require-param`/`require-returns` = off. 단, **쓰면** 설명 필수.)
+- 인터페이스 prop 주석도 **비직관적인 것만**. 자명한 prop(`children`·`title` 등)은 생략.
+- 정말 짚어야 할 비직관적 인자에 한해 예외적으로 `@param` 한 줄.
 - 현재 `warn` 레벨(공개 export 대상). 릴리스 전 `error`로 승격 권장.
+
+### 인라인 주석 (`//`) — 합의 규칙
+
+**비직관적인 것만** 짧게 남긴다:
+
+- 결정의 근거·트레이드오프 (예: `간편로그인은 진입 지점(1단계)에서만 노출`)
+- 매직값의 의미 (예: `const CODE_TTL = 300 // 5:00`)
+- 성능 이유 (react-perf: `모듈 스코프에 한 번만 생성해 재사용`)
+- 디자인 값 출처 (Figma node·렌더 hex 매핑)
+- `TODO:` — 미래 독자가 이해할 문구로 (대화·리뷰용 임시 라벨 `TODO(F4)` 금지)
+
+적지 않는 것:
+
+- 코드가 그대로 하는 일의 서술 (`secondsLeft를 1 줄인다` ✕)
+- 코드로 자명한 레이아웃/값 나열 (`gap 24 / 항목간 20` ✕ — className에 이미 있음)
 
 ## 11. 테스트 위치
 
