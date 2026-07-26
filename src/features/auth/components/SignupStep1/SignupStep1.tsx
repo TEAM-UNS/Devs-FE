@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
@@ -43,6 +43,7 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
     defaultValues: DEFAULT_VALUES,
   })
 
+  const emailId = useId()
   const [codeSent, setCodeSent] = useState(false)
   const { secondsLeft, start: startCountdown } = useCountdown()
 
@@ -61,25 +62,32 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-12">
       <div className="flex flex-col gap-5">
-        <div className="flex items-end gap-3">
-          <Input
-            label="이메일"
-            type="email"
-            autoComplete="email"
-            placeholder="이메일을 입력해주세요"
-            className="flex-1"
-            state={errors.email ? 'error' : 'default'}
-            message={errors.email?.message}
-            {...register('email')}
-          />
-          <Button
-            type="button"
-            variant="primary"
-            disabled={!emailValid}
-            onClick={handleSendCode}
-          >
-            이메일 인증
-          </Button>
+        {/* 레이블을 행 위로 빼 필드와 버튼(둘 다 h-12)을 같은 높이로 정렬 */}
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor={emailId} className="text-body-md text-white">
+            이메일
+          </label>
+          <div className="flex items-start gap-3">
+            <Input
+              id={emailId}
+              type="email"
+              autoComplete="email"
+              placeholder="이메일을 입력해주세요"
+              className="flex-1"
+              state={errors.email ? 'error' : 'default'}
+              message={errors.email?.message}
+              {...register('email')}
+            />
+            <Button
+              type="button"
+              variant="primary"
+              disabled={!emailValid}
+              onClick={handleSendCode}
+              className="shrink-0"
+            >
+              이메일 인증
+            </Button>
+          </div>
         </div>
         <Input
           label="이메일 인증"
