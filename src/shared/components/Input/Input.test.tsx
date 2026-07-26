@@ -27,7 +27,17 @@ describe('Input', () => {
 
     const input = screen.getByLabelText('이메일')
     expect(input).toHaveAttribute('aria-invalid', 'true')
-    expect(screen.getByText('형식이 올바르지 않습니다')).toBeInTheDocument()
+    const message = screen.getByText('형식이 올바르지 않습니다')
+    expect(message).toBeInTheDocument()
+    // 에러 상태에서는 메시지 앞에 에러 아이콘(svg)이 자동으로 붙는다
+    expect(message.parentElement?.querySelector('svg')).toBeInTheDocument()
+  })
+
+  it('default 상태에서는 메시지 앞 아이콘을 자동으로 붙이지 않는다', () => {
+    render(<Input label="이름" message="도움말 문구" />)
+
+    const message = screen.getByText('도움말 문구')
+    expect(message.parentElement?.querySelector('svg')).not.toBeInTheDocument()
   })
 
   it('disabled면 입력이 막힌다', async () => {

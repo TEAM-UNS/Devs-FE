@@ -54,7 +54,7 @@ describe('SignupPage', () => {
     )
   })
 
-  it('2단계부터는 간편로그인·로그인 링크를 노출하지 않는다', async () => {
+  it('2단계로 넘어가면 간편로그인(소셜)은 사라지고 로그인 링크는 유지된다', async () => {
     renderPage()
 
     // 진입 지점(1단계)에서는 간편로그인이 보인다
@@ -65,12 +65,13 @@ describe('SignupPage', () => {
     await userEvent.type(screen.getByLabelText('이메일 인증'), '123456')
     await userEvent.click(screen.getByRole('button', { name: /다음/ }))
 
-    // 2단계로 넘어가면 간편로그인·로그인 링크는 사라진다
+    // 2단계(이름·비밀번호) 진입
+    expect(screen.getByLabelText('이름')).toBeInTheDocument()
+    // 소셜 로그인은 사라지고
     expect(
       screen.queryByRole('button', { name: /Google/ }),
     ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('link', { name: '로그인' }),
-    ).not.toBeInTheDocument()
+    // 로그인 링크는 전 단계 공통으로 유지된다
+    expect(screen.getByRole('link', { name: '로그인' })).toBeInTheDocument()
   })
 })
