@@ -72,16 +72,18 @@ export const MAX_MAJORS = 5
 /**
  * 회원가입 3단계(전공·경력) 스키마 — 검증+타입 단일 소스.
  * 전공 1~MAX_MAJORS개 + 경력 유무, 경력 '있음'이면 연차(careerLevel) 필수.
+ *
+ * 1·2단계와 달리 에러 문구(`message`)와 소속 필드(`path`)를 두지 않는다. 이 단계는
+ * react-hook-form 없이 `safeParse().success`만 읽어 '다음' 버튼 활성 여부로만 쓰므로
+ * 문구를 화면에 띄우는 곳이 없다. 읽히지 않는 문구는 실제 UX 문구와 조용히 어긋난다.
+ * 인라인 에러를 붙이는 시점에 문구와 path를 함께 넣는다.
  */
 export const signupStep3Schema = z
   .object({
-    majors: z.array(z.string()).min(1, '전공을 선택해주세요').max(MAX_MAJORS),
+    majors: z.array(z.string()).min(1).max(MAX_MAJORS),
     careerType: z.enum(['none', 'has']),
     careerLevel: z.string().optional(),
   })
-  .refine((d) => d.careerType !== 'has' || Boolean(d.careerLevel), {
-    message: '경력을 선택해주세요',
-    path: ['careerLevel'],
-  })
+  .refine((d) => d.careerType !== 'has' || Boolean(d.careerLevel))
 
 export type SignupStep3Input = z.infer<typeof signupStep3Schema>
