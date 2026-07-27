@@ -10,8 +10,10 @@
  * 디자인 토큰은 아래 @theme 블록에서 정의하면 유틸리티 클래스로 노출된다.
  */
 @theme {
+  /* self-host한 'Pretendard Variable'을 최우선으로 — 시스템에 설치된 다른
+     'Pretendard' 대신 번들 폰트를 확실히 사용해 Figma와 자형을 일치시킨다. */
   --font-sans:
-    'Pretendard', 'Pretendard Variable', system-ui, 'Segoe UI', Roboto,
+    'Pretendard Variable', 'Pretendard', system-ui, 'Segoe UI', Roboto,
     sans-serif;
   --font-mono: ui-monospace, Consolas, monospace;
 
