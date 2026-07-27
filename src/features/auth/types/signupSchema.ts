@@ -87,3 +87,17 @@ export const signupStep3Schema = z
   .refine((d) => d.careerType !== 'has' || Boolean(d.careerLevel))
 
 export type SignupStep3Input = z.infer<typeof signupStep3Schema>
+
+/**
+ * 회원가입 4단계(기술 스택) 스키마 — 검증+타입 단일 소스.
+ * `techStacks`는 전공 id → 선택한 기술 스택 id 목록. 디자인의 그룹 헤더가
+ * "(N개 선택됨)"을 전공별로 보여주므로 선택 상태도 전공별로 나눠 담는다.
+ * 3단계와 같은 이유로 에러 문구·path를 두지 않는다(위 주석 참고).
+ */
+export const signupStep4Schema = z
+  .object({
+    techStacks: z.record(z.string(), z.array(z.string())),
+  })
+  .refine((d) => Object.values(d.techStacks).some((tags) => tags.length > 0))
+
+export type SignupStep4Input = z.infer<typeof signupStep4Schema>

@@ -199,6 +199,28 @@
   z-index: var(--z-toast);
 }
 
+/* 얇은 커스텀 스크롤바 — Figma가 스크롤 영역에 그려둔 막대(폭 4px · gray-400 · pill · 트랙 투명).
+   OS 기본 스크롤바는 두껍고 각져서 디자인과 어긋난다. */
+@utility scrollbar-slim {
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400);
+    border-radius: var(--radius-full);
+  }
+  /* Chrome 121+는 scrollbar-width가 지정되면 ::-webkit-scrollbar를 통째로 무시한다.
+     그래서 표준 속성은 webkit 의사요소가 없는 브라우저(Firefox)에만 준다. */
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-gray-400) transparent;
+  }
+}
+
 /* duration 명명 유틸리티 — @theme의 --duration-* 토큰을 duration-{name} 클래스로 감싼다. */
 @utility duration-fast {
   transition-duration: var(--duration-fast);
