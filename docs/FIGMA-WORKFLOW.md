@@ -45,6 +45,11 @@ Figma 프레임 URL
   `get_metadata`로 leaf까지 재귀 수집한 뒤 `get_design_context`를 **전체 node-id로 1회** 호출.
 - **Rule 2 — 토큰/호출 최적화**: 비싼 `get_design_context`를 최소화한다.
   "풀 프레임 한 번, 섹션은 정말 필요할 때만". 이미 받은 코드·토큰은 로컬에서 재사용.
+- **Rule 3 — 아이콘·이미지는 Figma 에셋을 export해서 사용 (직접 작도 금지)**:
+  Figma에 에셋으로 존재하는 아이콘·이미지·로고는 반드시 `download_assets`/`get_design_context`로
+  **export**해서 쓴다. 임의로 `<svg>`/`<path>`를 손으로 그리거나 "비슷한 다른 아이콘"으로
+  대체하지 않는다. 불가피한 각색(예: `currentColor` 재색상)은 **export한 실제 path를 기반**으로만
+  하고 형상은 원본과 동일해야 한다. 퍼블리싱 뒤 **"Figma에 있는데 안 쓴 에셋이 없는지" 자가 점검**한다.
 
 ## 4. 코드 작성 규칙 (CONVENTIONS 연결)
 

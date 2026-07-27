@@ -1,10 +1,19 @@
-import type { SVGProps } from 'react'
+import githubLogoSrc from '@/assets/social-github.png'
+import { cn } from '@/shared/utils/cn'
 
-/** GitHub 마크(단색) — currentColor 상속. */
-export function GithubIcon(props: SVGProps<SVGSVGElement>) {
+interface GithubIconProps {
+  /** 접근성 이름 (기본 '' — 아이콘 슬롯이 이미 aria-hidden) */
+  alt?: string
+  /** 병합할 클래스 (기본 size-6 = Figma 24px) */
+  className?: string
+}
+
+/**
+ * GitHub 로고 배지 (PNG). Figma 원본이 흰 원 + 마크 합성이라
+ * 24px 배지를 4배 래스터로 export해 쓴다.
+ */
+export function GithubIcon({ alt = '', className }: GithubIconProps) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
-      <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.26-.45-1.28.1-2.66 0 0 .84-.27 2.75 1.02a9.55 9.55 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.66.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 22 12 10 10 0 0 0 12 2z" />
-    </svg>
+    <img src={githubLogoSrc} alt={alt} className={cn('size-6', className)} />
   )
 }

@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react'
+import { CloseIcon } from '@/shared/components/icons'
 import { cn } from '@/shared/utils/cn'
 
 type ChipSize = 'default' | 'small'
@@ -59,16 +60,7 @@ const REMOVE_BUTTON = [
 ].join(' ')
 
 // 삭제 아이콘(×). currentColor로 칩 텍스트 색을 상속한다. 모듈 스코프 JSX(react-perf).
-const REMOVE_ICON = (
-  <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" className="size-full">
-    <path
-      d="M4.5 4.5l7 7m0-7l-7 7"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-  </svg>
-)
+const REMOVE_ICON = <CloseIcon className="size-full" />
 
 /**
  * 공용 칩. 태그·필터·입력(추가/삭제) 칩을 하나의 API로 통합한 pill 요소다.

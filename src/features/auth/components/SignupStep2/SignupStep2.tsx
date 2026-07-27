@@ -3,11 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
 import { Input } from '@/shared/components/Input'
-import {
-  ChevronRightIcon,
-  EyeIcon,
-  EyeOffIcon,
-} from '@/shared/components/icons'
+import { ArrowIcon, EyeIcon, EyeOffIcon } from '@/shared/components/icons'
 import { signupStep2Schema, type SignupStep2Input } from '../../types'
 
 // 모듈 스코프 상수 (react-perf).
@@ -17,7 +13,7 @@ const DEFAULT_VALUES: SignupStep2Input = {
   password: '',
   passwordConfirm: '',
 }
-const NEXT_ICON = <ChevronRightIcon className="size-full" />
+const NEXT_ICON = <ArrowIcon className="size-full rotate-180" />
 
 interface PasswordToggleProps {
   shown: boolean

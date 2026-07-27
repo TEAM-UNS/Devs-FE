@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
 import { Input } from '@/shared/components/Input'
-import { ChevronRightIcon } from '@/shared/components/icons'
+import { ArrowIcon } from '@/shared/components/icons'
 import { useCountdown } from '../../hooks/useCountdown'
 import {
   CODE_LENGTH,
@@ -15,7 +15,7 @@ import {
 // 모듈 스코프 상수 (react-perf).
 const RESOLVER = zodResolver(signupStep1Schema)
 const DEFAULT_VALUES: SignupStep1Input = { email: '', code: '' }
-const NEXT_ICON = <ChevronRightIcon className="size-full" />
+const NEXT_ICON = <ArrowIcon className="size-full rotate-180" />
 const CODE_TTL = 300 // 인증 코드 유효시간 5:00 (초)
 
 /** 초를 m:ss 형식으로 포맷한다. */
