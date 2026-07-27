@@ -65,3 +65,23 @@ export const signupStep2Schema = z
   })
 
 export type SignupStep2Input = z.infer<typeof signupStep2Schema>
+
+/** 전공 최대 선택 개수. */
+export const MAX_MAJORS = 5
+
+/**
+ * 회원가입 3단계(전공·경력) 스키마 — 검증+타입 단일 소스.
+ * 전공 1~MAX_MAJORS개 + 경력 유무, 경력 '있음'이면 연차(careerLevel) 필수.
+ */
+export const signupStep3Schema = z
+  .object({
+    majors: z.array(z.string()).min(1, '전공을 선택해주세요').max(MAX_MAJORS),
+    careerType: z.enum(['none', 'has']),
+    careerLevel: z.string().optional(),
+  })
+  .refine((d) => d.careerType !== 'has' || Boolean(d.careerLevel), {
+    message: '경력을 선택해주세요',
+    path: ['careerLevel'],
+  })
+
+export type SignupStep3Input = z.infer<typeof signupStep3Schema>
