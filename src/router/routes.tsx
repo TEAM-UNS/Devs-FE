@@ -21,19 +21,32 @@ const HomePage = lazy(() => import('@/pages/HomePage'))
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const SignupPage = lazy(() => import('@/pages/SignupPage'))
+const LoginPage = lazy(() => import('@/pages/LoginPage'))
 
 // 인증 화면은 전체 화면(네비 없음)이라 RootLayout 밖에 두고 자체 Suspense로 감싼다.
-const signupFallback = <RouteFallback />
+const authFallback = <RouteFallback />
 
 function SignupRoute() {
   return (
-    <Suspense fallback={signupFallback}>
+    <Suspense fallback={authFallback}>
       <SignupPage />
     </Suspense>
   )
 }
 
+function LoginRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <LoginPage />
+    </Suspense>
+  )
+}
+
 export const routes: RouteObject[] = [
+  {
+    path: '/login',
+    element: <LoginRoute />,
+  },
   {
     path: '/signup',
     element: <SignupRoute />,

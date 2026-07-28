@@ -11,3 +11,4 @@ export {
   type SignupStep3Input,
   type SignupStep4Input,
 } from './signupSchema'
+export { loginSchema, type LoginInput } from './loginSchema'
