@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
 import { Input } from '@/shared/components/Input'
-import { ArrowIcon, EyeIcon, EyeOffIcon } from '@/shared/components/icons'
+import { ArrowIcon } from '@/shared/components/icons'
 import { signupStep2Schema, type SignupStep2Input } from '../../types'
+import { PasswordToggle } from '../PasswordToggle'
 
 // 모듈 스코프 상수 (react-perf).
 const RESOLVER = zodResolver(signupStep2Schema)
@@ -14,30 +15,6 @@ const DEFAULT_VALUES: SignupStep2Input = {
   passwordConfirm: '',
 }
 const NEXT_ICON = <ArrowIcon className="size-full rotate-180" />
-
-interface PasswordToggleProps {
-  shown: boolean
-  onToggle: () => void
-}
-
-/** 비밀번호 표시/숨김 토글 버튼 (Input trailing 슬롯용, 접근성 라벨 포함). */
-function PasswordToggle({ shown, onToggle }: PasswordToggleProps) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-label={shown ? '비밀번호 숨기기' : '비밀번호 표시'}
-      aria-pressed={shown}
-      className="flex size-full items-center justify-center text-gray-300 transition-colors hover:text-white"
-    >
-      {shown ? (
-        <EyeIcon className="size-full" />
-      ) : (
-        <EyeOffIcon className="size-full" />
-      )}
-    </button>
-  )
-}
 
 interface SignupStep2Props {
   /** 검증 통과 시 호출 */

@@ -7,6 +7,7 @@ import {
   SignupStep2,
   SignupStep3,
   SignupStep4,
+  AuthDivider,
   SocialLoginButtons,
   Stepper,
   type SignupStep3Input,
@@ -59,13 +60,7 @@ export default function SignupPage() {
               {/* 간편로그인(소셜)은 진입 지점(1단계)에서만 노출 */}
               {isFirstStep && (
                 <>
-                  <div className="flex items-center gap-3">
-                    <span className="h-px flex-1 bg-element" />
-                    <span className="text-body-sm text-gray-300">
-                      간편로그인
-                    </span>
-                    <span className="h-px flex-1 bg-element" />
-                  </div>
+                  <AuthDivider label="간편로그인" />
                   <SocialLoginButtons />
                 </>
               )}
