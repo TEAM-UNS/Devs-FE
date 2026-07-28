@@ -1,5 +1,6 @@
 import type { KeyboardEvent } from 'react'
 import { memo, useCallback, useEffect, useId, useRef, useState } from 'react'
+import { ArrowIcon } from '@/shared/components/icons'
 import { cn } from '@/shared/utils/cn'
 
 interface DropdownOption {
@@ -39,7 +40,7 @@ const TRIGGER_BASE = [
   'flex h-12 w-full items-center justify-between gap-2 rounded-sm border px-4',
   'text-left text-body-md',
   'transition-colors duration-fast ease-standard',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
   'disabled:cursor-not-allowed',
 ].join(' ')
 
@@ -69,18 +70,8 @@ const CHEVRON_WRAP = [
   'transition-transform duration-fast ease-standard',
 ].join(' ')
 
-// 인트린식 셰브론(다운). Figma 벡터 asset은 7일 후 만료되므로 자체 caret로 재현.
-const CHEVRON_ICON = (
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="size-6">
-    <path
-      d="m6 9 6 6 6-6"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+// Figma 셰브론은 `icon / UI_actions / arrow`와 같은 에셋이라 ArrowIcon(‹)을 아래로 돌려 쓴다.
+const CHEVRON_ICON = <ArrowIcon className="size-6 -rotate-90" />
 
 interface DropdownOptionItemProps {
   /** 옵션 DOM id (aria-activedescendant 대상) */
@@ -141,7 +132,7 @@ const DropdownOptionItem = memo(function DropdownOptionItem({
       onKeyDown={handleKeyDown}
       className={cn(
         OPTION_BASE,
-        selected ? 'text-primary-400' : 'text-white',
+        selected ? 'text-primary-500' : 'text-white',
         active && 'bg-gray-200',
       )}
     >

@@ -1,8 +1,9 @@
 /* 이 파일은 컴포넌트 모듈이 아니라 "라우트 설정" 모듈이라 fast-refresh 대상이 아니다.
    lazy 컴포넌트 정의와 routes 배열(비컴포넌트)을 함께 export 하므로 해당 규칙을 끈다. */
 /* eslint-disable react-refresh/only-export-components */
-import { lazy } from 'react'
+import { lazy, Suspense } from 'react'
 import type { RouteObject } from 'react-router-dom'
+import { RouteFallback } from '@/shared/components/RouteFallback'
 import { RootLayout } from './RootLayout'
 
 /**
@@ -19,8 +20,37 @@ import { RootLayout } from './RootLayout'
 const HomePage = lazy(() => import('@/pages/HomePage'))
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+const SignupPage = lazy(() => import('@/pages/SignupPage'))
+const LoginPage = lazy(() => import('@/pages/LoginPage'))
+
+// 인증 화면은 전체 화면(네비 없음)이라 RootLayout 밖에 두고 자체 Suspense로 감싼다.
+const authFallback = <RouteFallback />
+
+function SignupRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <SignupPage />
+    </Suspense>
+  )
+}
+
+function LoginRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <LoginPage />
+    </Suspense>
+  )
+}
 
 export const routes: RouteObject[] = [
+  {
+    path: '/login',
+    element: <LoginRoute />,
+  },
+  {
+    path: '/signup',
+    element: <SignupRoute />,
+  },
   {
     path: '/',
     element: <RootLayout />,

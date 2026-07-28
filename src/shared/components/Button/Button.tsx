@@ -24,7 +24,7 @@ const BASE_STYLES = [
   'inline-flex items-center justify-center gap-2 rounded-sm',
   'text-base font-semibold whitespace-nowrap',
   'transition-colors duration-fast ease-standard',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
   'disabled:cursor-not-allowed',
 ].join(' ')
 
@@ -32,17 +32,18 @@ const BASE_STYLES = [
 // primary는 배경색, outline은 테두리(+surface 채움), ghost는 텍스트 색으로 위계를 표현.
 const VARIANT_STYLES: Record<ButtonVariant, string> = {
   primary: [
-    'bg-primary-400 text-white',
-    'hover:bg-primary-500 active:bg-primary-600',
+    'bg-primary-500 text-white',
+    'hover:bg-primary-400 active:bg-primary-300',
     'disabled:bg-gray-200 disabled:text-gray-300',
   ].join(' '),
   outline: [
     'bg-canvas text-white ring-1 ring-inset ring-gray-200',
     'hover:bg-container active:bg-element',
-    'disabled:bg-transparent disabled:text-gray-300',
+    // Figma outline/Disabled은 투명이 아니라 gray-200 채움 + gray-300 테두리다.
+    'disabled:bg-gray-200 disabled:text-gray-300 disabled:ring-gray-300',
   ].join(' '),
   ghost: [
-    'text-primary-500',
+    'text-primary-400',
     'hover:bg-container active:bg-element',
     'disabled:text-gray-100',
   ].join(' '),

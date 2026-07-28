@@ -1,6 +1,7 @@
 import type { InputHTMLAttributes, ReactNode } from 'react'
 import { useId } from 'react'
 import { cn } from '@/shared/utils/cn'
+import { XCircleIcon } from '@/shared/components/icons'
 
 type InputState = 'default' | 'error' | 'success'
 
@@ -44,6 +45,9 @@ const MESSAGE_COLOR: Record<InputState, string> = {
 
 const ICON_SLOT = 'inline-flex shrink-0 items-center justify-center'
 
+// state="error"일 때 메시지 앞에 자동으로 붙는 기본 아이콘.
+const ERROR_ICON = <XCircleIcon className="size-full" />
+
 /**
  * 공용 텍스트 입력 필드. 레이블·필드·메시지로 구성되며 상태(default/error/success)에 따라
  * 테두리와 메시지 색이 바뀐다. 색·치수·타이포는 Figma "input" 컴포넌트를 그대로 구현했고,
@@ -73,6 +77,9 @@ export function Input({
   const generatedId = useId()
   const inputId = id ?? generatedId
   const messageId = `${inputId}-message`
+  // 에러 상태면 메시지 앞에 기본 에러 아이콘을 자동 노출 (명시 messageIcon이 우선).
+  const resolvedMessageIcon =
+    messageIcon ?? (state === 'error' ? ERROR_ICON : undefined)
 
   return (
     <div className={cn('flex w-full flex-col gap-1', className)}>
@@ -108,16 +115,14 @@ export function Input({
                 <span
                   className={cn(
                     'text-body-md',
-                    disabled ? 'text-element' : 'text-primary-400',
+                    disabled ? 'text-element' : 'text-primary-500',
                   )}
                 >
                   {timer}
                 </span>
               )}
               {trailingIcon && (
-                <span className={cn(ICON_SLOT, 'size-5')} aria-hidden="true">
-                  {trailingIcon}
-                </span>
+                <span className={cn(ICON_SLOT, 'size-5')}>{trailingIcon}</span>
               )}
             </div>
           )}
@@ -125,9 +130,12 @@ export function Input({
       </div>
       {message && (
         <div id={messageId} className="flex items-center gap-0.5">
-          {messageIcon && (
-            <span className={cn(ICON_SLOT, 'size-4')} aria-hidden="true">
-              {messageIcon}
+          {resolvedMessageIcon && (
+            <span
+              className={cn(ICON_SLOT, 'size-4', MESSAGE_COLOR[state])}
+              aria-hidden="true"
+            >
+              {resolvedMessageIcon}
             </span>
           )}
           <span className={cn('text-body-xs', MESSAGE_COLOR[state])}>
