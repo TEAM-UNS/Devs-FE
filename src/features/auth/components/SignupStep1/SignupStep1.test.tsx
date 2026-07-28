@@ -37,14 +37,20 @@ describe('SignupStep1', () => {
     expect(screen.getByLabelText('이메일 인증')).toBeDisabled()
   })
 
-  it('인증 버튼을 누르면 코드 입력이 열리고 타이머(5:00)가 뜬다', async () => {
+  it('인증 버튼을 누르면 코드 입력이 열리고 타이머(3:00)가 뜬다', async () => {
     render(<SignupStep1 onNext={noop} />)
 
     await userEvent.type(screen.getByLabelText('이메일'), 'user@uns.dev')
     await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
 
     expect(screen.getByLabelText('이메일 인증')).toBeEnabled()
-    expect(screen.getByText('5:00')).toBeInTheDocument()
+    expect(screen.getByText('3:00')).toBeInTheDocument()
+    // 전송 후에는 재전송을 막는다 (Figma 120:1684 이후 인증 버튼 비활성)
+    expect(screen.getByRole('button', { name: '이메일 인증' })).toBeDisabled()
+    // 전송 성공 토스트
+    expect(
+      screen.getByText('이메일이 전송되었어요! 메일함을 확인해주세요.'),
+    ).toBeInTheDocument()
   })
 
   it('이메일·코드가 모두 유효해야 다음 버튼이 활성화되고 onNext로 값이 전달된다', async () => {
