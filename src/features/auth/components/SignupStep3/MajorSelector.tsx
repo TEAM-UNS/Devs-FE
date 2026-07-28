@@ -40,14 +40,14 @@ const MajorCard = memo(function MajorCard({
         'flex size-[100px] shrink-0 flex-col items-center justify-center gap-[3px]',
         'rounded-sm border bg-element transition-colors duration-fast ease-standard',
         selected
-          ? cn('border-primary-400', SELECTED_GLOW)
+          ? cn('border-primary-500', SELECTED_GLOW)
           : 'border-transparent',
       )}
     >
       <Icon
         className={cn(
           'size-8',
-          selected ? 'text-primary-400' : 'text-gray-300',
+          selected ? 'text-primary-500' : 'text-gray-300',
         )}
       />
       <span
@@ -87,7 +87,7 @@ export function MajorSelector({ selected, onToggle }: MajorSelectorProps) {
           전공 선택 (최대 {MAX_MAJORS}개 다중 선택)
         </span>
         <span className="text-gray-300">
-          <span className="text-primary-400">{selected.length}</span>
+          <span className="text-primary-500">{selected.length}</span>
           {` / ${MAX_MAJORS}`}
         </span>
       </div>

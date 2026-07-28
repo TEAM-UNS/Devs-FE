@@ -11,7 +11,7 @@ const CHECK_ICON = <CheckIcon className="size-full" />
 
 const HEADER_STYLES = [
   'flex w-fit items-center gap-1 rounded-sm',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
 ].join(' ')
 
 interface TechChipProps {
@@ -80,7 +80,7 @@ export const TechStackSection = memo(function TechStackSection({
         <span className="text-body-md font-semibold text-white">
           {group.label}
           {selected.length > 0 && (
-            <span className="text-primary-400">
+            <span className="text-primary-500">
               {` (${selected.length}개 선택됨)`}
             </span>
           )}

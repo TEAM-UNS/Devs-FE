@@ -76,7 +76,7 @@ export default function SignupPage() {
               <span className="text-gray-300">계정이 있으신가요?</span>
               <Link
                 to="/login"
-                className="font-semibold text-primary-400 hover:text-primary-300"
+                className="font-semibold text-primary-500 hover:text-primary-600"
               >
                 로그인
               </Link>

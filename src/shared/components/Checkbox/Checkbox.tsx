@@ -21,18 +21,18 @@ interface CheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
 
 // 박스 — relative 래퍼를 채우는 24px 정사각, radius 6px(rounded-sm). 값은 Figma
 // "Checkbox" 컴포넌트(node 125:994) 기준. off는 gray-200 테두리(투명 채움),
-// on/indeterminate는 primary-400 채움. (렌더 hex: #bc72f4→primary-400, #495057→gray-200)
+// on/indeterminate는 primary-500 채움. (렌더 hex: #bc72f4→primary-500, #495057→gray-200)
 const BOX_BASE = [
   'absolute inset-0 rounded-sm border',
   'transition-colors duration-fast ease-standard',
-  'peer-focus-visible:ring-2 peer-focus-visible:ring-primary-400',
+  'peer-focus-visible:ring-2 peer-focus-visible:ring-primary-500',
   'peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-canvas',
 ].join(' ')
 
 const BOX_ENABLED = [
   'border-gray-200 bg-transparent',
-  'peer-checked:border-transparent peer-checked:bg-primary-400',
-  'peer-indeterminate:border-transparent peer-indeterminate:bg-primary-400',
+  'peer-checked:border-transparent peer-checked:bg-primary-500',
+  'peer-indeterminate:border-transparent peer-indeterminate:bg-primary-500',
 ].join(' ')
 
 // 비활성 — 선택 여부와 무관하게 gray-200 채움. (Figma 렌더 hex: 박스 #495057→gray-200)

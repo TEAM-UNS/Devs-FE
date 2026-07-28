@@ -18,20 +18,23 @@
   --font-mono: ui-monospace, Consolas, monospace;
 
   /* ── Color (다크 테마 기준) ─────────────────────────────────
-     Figma "Color System" 스와치 값. 라이트 모드는 추후 도입.
-     (Figma Variables 일부 오류가 있어 렌더된 스와치를 정답으로 사용) */
+     Figma 변수는 두 겹이다: Global(원본 팔레트) ← Token/dark_mod(다크모드 시맨틱).
+     디자인 노드는 전부 Token 레이어를 바인딩하므로 **여기 값은 Token 기준**이다.
+     Global은 스케일 방향이 반대라 그 번호를 보면 어긋난다. 라이트 모드는 추후 도입. */
 
-  /* Primary — 브랜드(보라) */
-  --color-primary-50: #f8f3fe;
-  --color-primary-100: #efe4fd;
-  --color-primary-200: #e1c4fb;
-  --color-primary-300: #ce9af7;
-  --color-primary-400: #bc72f4;
-  --color-primary-500: #aa5ef1;
-  --color-primary-600: #913de2;
-  --color-primary-700: #7726bf;
-  --color-primary-800: #591796;
-  --color-primary-900: #4d1a7e;
+  /* Primary — 브랜드(보라). Figma Token 컬렉션(dark_mod) 기준이라 숫자가 커질수록 밝다
+     (gray 스케일과 방향이 같다). Global 컬렉션은 방향이 반대이니 그쪽 번호를 보지 말 것.
+     브랜드 보라 #bc72f4 = primary-500. */
+  --color-primary-50: #4d1a7e;
+  --color-primary-100: #591796;
+  --color-primary-200: #7726bf;
+  --color-primary-300: #913de2;
+  --color-primary-400: #aa5ef1;
+  --color-primary-500: #bc72f4;
+  --color-primary-600: #ce9af7;
+  --color-primary-700: #e1c4fb;
+  --color-primary-800: #efe4fd;
+  --color-primary-900: #f8f3fe;
 
   /* Gray — 0(검정) → 1000(흰색) */
   --color-gray-0: #000000;
@@ -53,8 +56,11 @@
   --color-error: #ff7272;
   --color-info: #62caf4;
 
-  /* Surface — 배경 (canvas < container < element) */
-  --color-canvas: #212529;
+  /* Surface — 배경 (canvas < container < element)
+     Figma Token 컬렉션의 별칭을 끝까지 해석한 값이다:
+     bg/canvas→gray/950 #1e2126 · bg/container→gray/850 #25292d · bg/element→gray/800 #343a40.
+     (Figma gray 스케일은 우리와 반대 방향이고 850·950은 우리 스케일에 없어 여기서만 쓴다.) */
+  --color-canvas: #1e2126;
   --color-container: #25292d;
   --color-element: #343a40;
 

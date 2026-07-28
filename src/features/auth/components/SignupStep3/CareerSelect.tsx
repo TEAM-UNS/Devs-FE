@@ -17,7 +17,7 @@ const SEGMENT_BASE = [
   'flex h-full flex-1 items-center justify-center rounded-sm px-6',
   'text-body-md whitespace-nowrap',
   'transition-colors duration-fast ease-standard',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
 ].join(' ')
 
 interface CareerSelectProps {
@@ -60,7 +60,7 @@ export function CareerSelect({
             className={cn(
               SEGMENT_BASE,
               careerType === 'none'
-                ? 'bg-primary-400 text-white'
+                ? 'bg-primary-500 text-white'
                 : 'text-gray-300',
             )}
           >
@@ -73,7 +73,7 @@ export function CareerSelect({
             className={cn(
               SEGMENT_BASE,
               careerType === 'has'
-                ? 'bg-primary-400 text-white'
+                ? 'bg-primary-500 text-white'
                 : 'text-gray-300',
             )}
           >

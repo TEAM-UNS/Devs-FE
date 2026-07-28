@@ -115,7 +115,7 @@ export function Input({
                 <span
                   className={cn(
                     'text-body-md',
-                    disabled ? 'text-element' : 'text-primary-400',
+                    disabled ? 'text-element' : 'text-primary-500',
                   )}
                 >
                   {timer}

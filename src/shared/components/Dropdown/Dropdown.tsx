@@ -40,7 +40,7 @@ const TRIGGER_BASE = [
   'flex h-12 w-full items-center justify-between gap-2 rounded-sm border px-4',
   'text-left text-body-md',
   'transition-colors duration-fast ease-standard',
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
   'disabled:cursor-not-allowed',
 ].join(' ')
 
@@ -132,7 +132,7 @@ const DropdownOptionItem = memo(function DropdownOptionItem({
       onKeyDown={handleKeyDown}
       className={cn(
         OPTION_BASE,
-        selected ? 'text-primary-400' : 'text-white',
+        selected ? 'text-primary-500' : 'text-white',
         active && 'bg-gray-200',
       )}
     >

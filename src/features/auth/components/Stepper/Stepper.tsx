@@ -22,7 +22,7 @@ export function Stepper({ total, current }: StepperProps) {
           key={i}
           className={cn(
             'size-2 rounded-full transition-colors duration-fast ease-standard',
-            i + 1 === current ? 'bg-primary-400' : 'bg-gray-200',
+            i + 1 === current ? 'bg-primary-500' : 'bg-gray-200',
           )}
         />
       ))}

@@ -33,7 +33,7 @@ const BASE_STYLES = [
 
 // 키보드 포커스 링 (a11y). 상호작용 요소(토글 칩·삭제 버튼)에만 적용.
 const FOCUS_RING =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400'
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500'
 
 // 크기 — 높이·텍스트 스케일만 다르다(패딩·gap·아이콘은 두 크기 공통).
 const SIZE_STYLES: Record<ChipSize, string> = {
@@ -42,9 +42,9 @@ const SIZE_STYLES: Record<ChipSize, string> = {
 }
 
 // 선택 상태색 — off는 element보다 밝은 gray-200 배경·gray-400 텍스트,
-// on은 primary-400 배경·흰 텍스트에 보라 글로우. (Figma 변수명은 primary/500이지만
-// 렌더 hex #bc72f4 = 우리 primary-400. 글로우 = primary-400 60% blur 4px.)
-const SELECTED_STYLES = 'bg-primary-400 text-white'
+// on은 primary-500 배경·흰 텍스트에 보라 글로우. (Figma 변수명은 primary/500이지만
+// 렌더 hex #bc72f4 = 우리 primary-500. 글로우 = primary-500 60% blur 4px.)
+const SELECTED_STYLES = 'bg-primary-500 text-white'
 const SELECTED_GLOW = 'drop-shadow-[0_0_4px_rgba(188,114,244,0.6)]'
 const UNSELECTED_STYLES = 'bg-gray-200 text-gray-400'
 
