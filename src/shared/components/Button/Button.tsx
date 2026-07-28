@@ -39,7 +39,8 @@ const VARIANT_STYLES: Record<ButtonVariant, string> = {
   outline: [
     'bg-canvas text-white ring-1 ring-inset ring-gray-200',
     'hover:bg-container active:bg-element',
-    'disabled:bg-transparent disabled:text-gray-300',
+    // Figma outline/Disabled은 투명이 아니라 gray-200 채움 + gray-300 테두리다.
+    'disabled:bg-gray-200 disabled:text-gray-300 disabled:ring-gray-300',
   ].join(' '),
   ghost: [
     'text-primary-400',
