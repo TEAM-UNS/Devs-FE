@@ -176,6 +176,20 @@
   --duration-fast: 150ms; /* hover·색 전환 등 작은 상태 변화 */
   --duration-normal: 250ms; /* 드롭다운·아코디언·토글 */
   --duration-slow: 400ms; /* 모달·드로어·페이지 전환 */
+
+  /* ── Motion: Animation ───────────────────────────────────────
+     `--animate-*` 네임스페이스 → animate-{name} 유틸리티로 노출된다.
+     gauge-grow: 진입 시 게이지가 왼쪽에서 오른쪽으로 차오른다
+     (Figma 274:1871 주석 "그래프가 왼쪽->오른쪽 상승하는 애니메이션").
+     `to`를 생략하면 요소의 실제 width가 종료값이 되므로, 데이터로 폭이 정해지는
+     게이지에 그대로 쓸 수 있다(폭을 keyframe에 하드코딩하지 않아도 된다). */
+  --animate-gauge-grow: gauge-grow var(--duration-slow) var(--ease-decelerate);
+
+  @keyframes gauge-grow {
+    from {
+      width: 0;
+    }
+  }
 }
 
 /* z-index 명명 유틸리티 — @theme의 --z-* 토큰을 z-{name} 클래스로 감싼다.

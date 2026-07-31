@@ -1,0 +1,1 @@
+export { CompanyScaleCard } from './CompanyScaleCard'
