@@ -252,6 +252,16 @@
   transition-duration: var(--duration-slow);
 }
 
+/* Tailwind v4 preflight는 button의 커서를 `default`로 둔다(v3까지는 pointer였다).
+   그대로 두면 앱의 모든 버튼이 클릭 가능해 보이지 않아 조작 대상을 알 수 없다.
+   비활성 버튼은 각 컴포넌트의 `disabled:cursor-not-allowed`가 계속 이긴다. */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}
+
 html,
 body,
 #root {
