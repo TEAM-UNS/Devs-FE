@@ -41,6 +41,7 @@ export function DashboardOverview({
         filters={data.stackFilters}
         selectedFilter={selectedFilter}
         onSelectFilter={setSelectedFilter}
+        bars={data.popularStacks}
       />
 
       {/* 하단 두 카드의 폭 비율(490:606)과 높이(316)는 Figma 290:1052 그대로 */}
@@ -50,8 +51,8 @@ export function DashboardOverview({
           periods={data.risingPeriods}
           selectedPeriod={selectedPeriod}
           onSelectPeriod={setSelectedPeriod}
-          legend={data.risingLegend}
-          hasData={data.risingHasData}
+          series={data.risingSeries}
+          axisLabels={data.risingAxis}
         />
       </div>
     </div>

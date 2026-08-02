@@ -2,7 +2,7 @@ export type {
   DashboardData,
   KpiCaption,
   KpiMetric,
-  RisingLegendItem,
+  RisingSeries,
   StackBar,
   StackRank,
   TrendDirection,

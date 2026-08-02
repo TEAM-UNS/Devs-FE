@@ -43,10 +43,16 @@ export interface StackRank {
   percent: number
 }
 
-/** 급상승 기술 스택 그래프의 범례 항목. 데이터가 없으면 label이 '-'. */
-export interface RisingLegendItem {
+/**
+ * 급상승 기술 스택 그래프의 시리즈 하나. 범례도 이 목록에서 그린다
+ * (범례 색 순서와 영역 색 순서가 어긋나지 않게 하려고 한 곳에서 관리한다).
+ */
+export interface RisingSeries {
   id: string
+  /** 범례 라벨. 데이터가 없으면 '-' */
   label: string
+  /** 시점별 값. 비어 있으면 그래프 대신 '정보가 없습니다.'가 뜬다 */
+  values: readonly number[]
 }
 
 /** 대시보드 한 화면이 필요로 하는 데이터 전부. */
@@ -60,6 +66,7 @@ export interface DashboardData {
   companyRanks: readonly StackRank[]
   risingPeriods: readonly string[]
   selectedRisingPeriod: string
-  risingLegend: readonly RisingLegendItem[]
-  risingHasData: boolean
+  /** 급상승 그래프의 시점 라벨. 축엔 안 보이고 툴팁에만 쓰인다 (Figma 290:1004) */
+  risingAxis: readonly string[]
+  risingSeries: readonly RisingSeries[]
 }

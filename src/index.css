@@ -262,6 +262,77 @@
   }
 }
 
+/* 내용이 빈 툴팁은 감춘다 — 그래프가 없는 빈 곳에 커서가 있을 때 formatter가 ''를
+   돌려주는데, ECharts는 배경·패딩을 인라인으로 넣어 빈 상자가 그대로 보인다. */
+.uns-chart-tooltip:empty {
+  display: none;
+}
+
+/* ECharts 차트 툴팁 — Figma 290:1004.
+   툴팁 DOM은 ECharts가 만들기 때문에 Tailwind 유틸리티를 붙일 수 없어 여기서 정의한다.
+   ⚠️ 배경·패딩·radius는 ECharts가 **인라인 스타일**로 넣어 여기서 덮을 수 없다.
+   그쪽은 buildRisingStacksOption의 tooltip 옵션이 담당하고, 이 규칙은 꼬리와 글자만 맡는다. */
+
+/* 가운데 정렬 + 꼬리 높이만큼 위로.
+   ⚠️ `transform`이 아니라 `translate` 속성이어야 한다 — ECharts가 툴팁 좌표를
+   `transform: translate(x,y)` 인라인으로 넣기 때문에 transform으로 쓰면 덮인다.
+   `translate`는 별도 속성이라 ECharts의 transform과 합성된다.
+   또 JS에서 크기를 재서 빼는 방식은 쓸 수 없다: position 콜백 시점의 DOM은 아직
+   **직전 내용** 크기라 이름 길이가 바뀌면 가로 중앙이 최대 13px 어긋났다. */
+.uns-chart-tooltip {
+  translate: -50% calc(-100% - 10.5px);
+}
+
+/* 아래를 가리키는 꼬리 12.12 × 10.5 (Figma 290:1002).
+   색은 옵션의 TOOLTIP_BG(gray-200)와 반드시 같아야 한다. */
+.uns-chart-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border-inline: 6.06px solid transparent;
+  border-top: 10.5px solid var(--color-gray-200);
+}
+
+/* 위쪽 공간이 모자라 커서 아래로 뒤집힌 경우 — 꼬리도 위를 가리킨다 */
+.uns-chart-tooltip--below {
+  translate: -50% 10.5px;
+}
+
+.uns-chart-tooltip--below::after {
+  top: auto;
+  bottom: 100%;
+  border-top: 0;
+  border-bottom: 10.5px solid var(--color-gray-200);
+}
+
+.uns-chart-tooltip__row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1, 4px);
+}
+
+.uns-chart-tooltip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+}
+
+.uns-chart-tooltip__name {
+  font-size: var(--text-body-xs);
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--color-gray-1000);
+}
+
+.uns-chart-tooltip__date {
+  display: block;
+  font-size: var(--text-body-xs);
+  line-height: 1.5;
+  color: var(--color-gray-500);
+}
+
 html,
 body,
 #root {
