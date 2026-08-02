@@ -8,7 +8,7 @@ import { RootLayout } from './RootLayout'
 
 /**
  * ── 라우트 단위 코드 스플리팅 ──
- * 각 페이지를 React.lazy로 감싸면 Vite가 페이지별 청크(HomePage.[hash].js 등)를
+ * 각 페이지를 React.lazy로 감싸면 Vite가 페이지별 청크(DashboardPage.[hash].js 등)를
  * 분리 생성한다. 최초 진입 시에는 진입한 라우트의 청크만 내려받고, 다른 페이지는
  * 실제로 이동할 때 네트워크로 가져온다 → 초기 번들 크기와 LCP를 줄인다.
  *
@@ -17,7 +17,7 @@ import { RootLayout } from './RootLayout'
  * - RootLayout(공통 네비게이션)은 lazy로 감싸지 않는다. 항상 즉시 필요하고,
  *   여기에 Suspense 경계를 두어 자식 청크 로딩을 한 곳에서 처리하기 때문이다.
  */
-const HomePage = lazy(() => import('@/pages/HomePage'))
+const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const SignupPage = lazy(() => import('@/pages/SignupPage'))
@@ -55,7 +55,7 @@ export const routes: RouteObject[] = [
     path: '/',
     element: <RootLayout />,
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, element: <DashboardPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],

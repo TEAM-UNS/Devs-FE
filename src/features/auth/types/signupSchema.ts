@@ -28,18 +28,23 @@ function hasRepeatedRun(value: string): boolean {
   return /(.)\1{3}/.test(value)
 }
 
-/** 문자 코드가 4자 이상 연속 증가/감소하는지 (예: abcd, 1234, dcba). */
+/**
+ * 문자 코드가 4자 이상 연속 증가/감소하는지 (예: abcd, 1234, dcba).
+ * 앞 글자와의 차이만 보며 연속 길이를 세고, 끊기면 1로 되돌린다.
+ */
 function hasSequentialRun(value: string): boolean {
-  for (let i = 0; i + 3 < value.length; i++) {
-    let ascending = true
-    let descending = true
-    for (let k = 1; k < 4; k++) {
-      const diff = value.charCodeAt(i + k) - value.charCodeAt(i + k - 1)
-      if (diff !== 1) ascending = false
-      if (diff !== -1) descending = false
-    }
-    if (ascending || descending) return true
+  let ascending = 1
+  let descending = 1
+
+  for (let i = 1; i < value.length; i++) {
+    const diff = value.charCodeAt(i) - value.charCodeAt(i - 1)
+
+    ascending = diff === 1 ? ascending + 1 : 1
+    descending = diff === -1 ? descending + 1 : 1
+
+    if (ascending >= 4 || descending >= 4) return true
   }
+
   return false
 }
 

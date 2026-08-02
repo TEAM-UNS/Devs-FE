@@ -20,4 +20,17 @@ describe('cn', () => {
     expect(merged).toContain('py-2')
     expect(merged).not.toContain('px-4')
   })
+
+  it('@theme 커스텀 텍스트 스케일을 색 클래스와 함께 써도 살아남는다', () => {
+    // tailwind-merge에 우리 font-size 스케일을 등록하지 않으면 text-body-sm이
+    // 색으로 오해받아 삭제된다 (Chip small이 16px로 렌더되던 회귀).
+    const merged = cn('text-body-sm', 'text-gray-400')
+    expect(merged).toContain('text-body-sm')
+    expect(merged).toContain('text-gray-400')
+  })
+
+  it('같은 그룹의 텍스트 크기끼리는 뒤 것이 앞을 덮는다', () => {
+    expect(cn('text-body-md', 'text-body-sm')).toBe('text-body-sm')
+    expect(cn('text-h2', 'text-display-lg')).toBe('text-display-lg')
+  })
 })
