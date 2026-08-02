@@ -23,9 +23,6 @@ export const emailOnlySchema = signupStep1Schema.shape.email
 const PASSWORD_MIN = 8
 const PASSWORD_MAX = 20
 
-/** 동일·연속 문자를 몇 자부터 막을지 */
-const SEQUENTIAL_LIMIT = 4
-
 /** 같은 문자가 4자 이상 연속되는지 (예: aaaa, 1111). */
 function hasRepeatedRun(value: string): boolean {
   return /(.)\1{3}/.test(value)
@@ -45,9 +42,7 @@ function hasSequentialRun(value: string): boolean {
     ascending = diff === 1 ? ascending + 1 : 1
     descending = diff === -1 ? descending + 1 : 1
 
-    if (ascending >= SEQUENTIAL_LIMIT || descending >= SEQUENTIAL_LIMIT) {
-      return true
-    }
+    if (ascending >= 4 || descending >= 4) return true
   }
 
   return false
