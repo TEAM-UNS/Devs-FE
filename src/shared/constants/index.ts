@@ -8,6 +8,8 @@
  */
 export const ROUTES = {
   home: '/',
+  login: '/login',
+  signup: '/signup',
   weeklyReport: '/weekly-report',
   stackCompare: '/stack-compare',
   roadmap: '/roadmap',

@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { getAccessToken } from '@/shared/api'
 import { AppSidebar } from '@/shared/components/AppSidebar'
 import { RouteFallback } from '@/shared/components/RouteFallback'
 
@@ -17,8 +18,15 @@ const ROADMAP_PROGRESS = 64
  * @returns 사이드바 + Suspense로 감싼 `<Outlet />` 레이아웃
  */
 export function RootLayout() {
-  // TODO: 라우트 가드 — 비로그인 상태면 /login으로 보낸다. 토큰 저장 위치와
-  // 갱신 전략이 정해진 뒤 이 자리(또는 상위 loader)에 붙인다.
+  const location = useLocation()
+
+  // 라우트 가드 — accessToken이 없으면 로그인 화면으로 보낸다.
+  // 만료 여부는 여기서 보지 않는다. 만료된 토큰은 요청이 401로 돌아올 때
+  // HTTP 층이 재발급을 시도하고, 그마저 실패하면 토큰을 지워 다음 이동에서 걸린다.
+  // `state.from`: 로그인 후 원래 가려던 곳으로 돌려보내려고 남긴다.
+  if (!getAccessToken()) {
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+  }
 
   // TODO: ThemeToggle이 있던 자리. Figma 메인페이지에 토글 슬롯이 없어 이번
   // 퍼블리싱에서 화면에서 빠졌다(컴포넌트는 shared에 그대로 있다). 노출 위치 확정 후 되살린다.
