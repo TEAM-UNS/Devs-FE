@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/shared/components/Button'
 import { majorQueries } from '../../api'
 import { signupStep4Schema, type SignupStep4Input } from '../../types'
+import { MajorListStatus } from '../MajorListStatus'
 import { toMajorOption } from '../SignupStep3/majors'
 import { TechStackSection } from './TechStackSection'
 import type { TechStackGroup } from './techStacks'
@@ -46,7 +47,8 @@ export function SignupStep4({ majors, onSubmit, pending }: SignupStep4Props) {
   // 기본은 전부 펼침. 접힌 것만 담으면 노출 그룹이 바뀌어도 초기화가 필요 없다.
   const [closed, setClosed] = useState<string[]>([])
 
-  const { data } = useQuery(majorQueries.list())
+  const majorList = useQuery(majorQueries.list())
+  const { data } = majorList
 
   // 헤더 라벨은 3단계 카드와 같은 표기표를 써서 두 단계가 같은 이름을 보이게 한다.
   // TechStackSection이 memo라 배열 identity를 유지해야 해서 useMemo를 둔다.
@@ -97,6 +99,11 @@ export function SignupStep4({ majors, onSubmit, pending }: SignupStep4Props) {
         <span className="text-body-md text-white">기술 스택 선택</span>
         <div className={PANEL_STYLES}>
           <div className={SCROLL_STYLES}>
+            <MajorListStatus
+              pending={majorList.isPending}
+              failed={majorList.isError}
+              onRetry={majorList.refetch}
+            />
             <div className="flex flex-col gap-8">
               {groups.map((group) => (
                 <TechStackSection

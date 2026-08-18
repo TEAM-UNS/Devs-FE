@@ -8,6 +8,7 @@ import {
   signupStep3Schema,
   type SignupStep3Input,
 } from '../../types'
+import { MajorListStatus } from '../MajorListStatus'
 import { CareerSelect } from './CareerSelect'
 import { MajorSelector } from './MajorSelector'
 import { toMajorOption } from './majors'
@@ -30,9 +31,10 @@ export function SignupStep3({ onNext }: SignupStep3Props) {
   const [careerType, setCareerType] = useState<CareerType | undefined>()
   const [careerLevel, setCareerLevel] = useState<string | undefined>()
 
-  const { data } = useQuery(majorQueries.list())
+  const majorList = useQuery(majorQueries.list())
   // 선택지는 서버 목록에서 오고, 라벨·아이콘만 표기표에서 잇는다.
-  const majorOptions = data?.categories.map(toMajorOption) ?? []
+  const majorOptions = majorList.data?.categories.map(toMajorOption) ?? []
+  const listReady = majorList.data !== undefined
 
   const handleToggleMajor = useCallback((id: string) => {
     setMajors((prev) => {
@@ -66,11 +68,19 @@ export function SignupStep3({ onNext }: SignupStep3Props) {
   return (
     <div className="flex flex-col gap-12">
       <div className="flex flex-col gap-6">
-        <MajorSelector
-          majors={majorOptions}
-          selected={majors}
-          onToggle={handleToggleMajor}
-        />
+        {listReady ? (
+          <MajorSelector
+            majors={majorOptions}
+            selected={majors}
+            onToggle={handleToggleMajor}
+          />
+        ) : (
+          <MajorListStatus
+            pending={majorList.isPending}
+            failed={majorList.isError}
+            onRetry={majorList.refetch}
+          />
+        )}
         <CareerSelect
           careerType={careerType}
           careerLevel={careerLevel}
