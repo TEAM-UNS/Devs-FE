@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -41,6 +41,7 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid },
   } = useForm<SignupStep1Input>({
     resolver: RESOLVER,
@@ -56,18 +57,28 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
   const sendCode = useMutation({ mutationFn: sendEmailCode })
   const verify = useMutation({ mutationFn: verifyEmail })
 
+  // 코드를 보낸 이메일. 지금 입력된 이메일과 달라지면 그 코드는 더 이상 쓸 수 없다.
+  const [sentTo, setSentTo] = useState<string>()
+
   const email = watch('email')
   const emailValid = emailOnlySchema.safeParse(email).success
-  // 발송 성공 여부는 뮤테이션이 이미 들고 있다. 재발송은 버튼을 잠가 막으므로 되돌지 않는다.
-  const codeSent = sendCode.isSuccess
 
-  // 실패 토스트는 queryClient가 전역으로 띄운다 — 여기선 성공 경로만 다룬다.
+  // 코드가 살아 있는 조건: 보낸 이메일 그대로 + 유효시간 남음.
+  // 둘 중 하나만 깨져도 입력을 닫고 재전송을 연다.
+  const codeActive = sentTo === email && secondsLeft > 0
+
+  // 이메일을 바꾸면 이전 코드로 다음 단계에 가지 못하도록 입력값도 비운다.
+  useEffect(() => {
+    if (sentTo !== undefined && sentTo !== email) setValue('code', '')
+  }, [email, sentTo, setValue])
+
+  // 실패 토스트는 queryClient가 전역으로 띄운다 — 여긴 성공 경로만 다룬다.
   const handleSendCode = () => {
-    // TODO: 타이머 만료 시 재전송 버튼 노출
     sendCode.mutate(
       { email },
       {
         onSuccess: () => {
+          setSentTo(email)
           startCountdown(CODE_TTL)
           showToast({ type: 'success', title: SENT_MESSAGE })
         },
@@ -102,7 +113,7 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
             <Button
               type="button"
               variant="primary"
-              disabled={!emailValid || codeSent || sendCode.isPending}
+              disabled={!emailValid || codeActive || sendCode.isPending}
               onClick={handleSendCode}
               className="shrink-0"
             >
@@ -115,8 +126,8 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
           inputMode="numeric"
           maxLength={CODE_LENGTH}
           placeholder={`전송된 코드 ${CODE_LENGTH}자리를 입력해주세요`}
-          disabled={!codeSent}
-          timer={codeSent ? formatTimer(secondsLeft) : undefined}
+          disabled={!codeActive}
+          timer={codeActive ? formatTimer(secondsLeft) : undefined}
           state={errors.code ? 'error' : 'default'}
           message={errors.code?.message}
           {...register('code')}
@@ -125,7 +136,7 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
       <Button
         type="submit"
         variant="primary"
-        disabled={!isValid || verify.isPending}
+        disabled={!isValid || !codeActive || verify.isPending}
         endIcon={NEXT_ICON}
         className="w-full"
       >

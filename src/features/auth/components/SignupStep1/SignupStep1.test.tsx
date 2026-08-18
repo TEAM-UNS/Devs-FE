@@ -71,6 +71,28 @@ describe('SignupStep1', () => {
     ])
   })
 
+  it('이메일을 바꾸면 이전 코드가 무효가 되고 재전송이 열린다', async () => {
+    renderWithQuery(<SignupStep1 onNext={noop} />)
+
+    const emailInput = screen.getByLabelText('이메일')
+    await userEvent.type(emailInput, 'user@uns.dev')
+    await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
+    await screen.findByText('3:00')
+
+    const codeInput = screen.getByLabelText('이메일 인증')
+    await userEvent.type(codeInput, '123456')
+    expect(screen.getByRole('button', { name: /다음/ })).toBeEnabled()
+
+    // 이메일을 바꾸면 그 코드는 다른 주소로 발급된 것이라 쓸 수 없다.
+    await userEvent.type(emailInput, '.kr')
+
+    expect(codeInput).toBeDisabled()
+    expect(codeInput).toHaveValue('')
+    expect(screen.getByRole('button', { name: /다음/ })).toBeDisabled()
+    // 새 주소로 다시 받을 수 있어야 한다.
+    expect(screen.getByRole('button', { name: '이메일 인증' })).toBeEnabled()
+  })
+
   it('발송이 실패하면 에러 토스트를 띄우고 코드 입력을 열지 않는다', async () => {
     const { sendEmailCode } = await import('../../api')
     vi.mocked(sendEmailCode).mockRejectedValueOnce(new Error('boom'))
