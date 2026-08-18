@@ -1,12 +1,14 @@
-import { useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import loginBackgroundSrc from '@/assets/login-background.webp'
+import { ROUTES } from '@/shared/constants'
 import {
   AuthDivider,
   AuthHeader,
   AuthLayout,
   LoginForm,
   SocialLoginButtons,
+  useLogin,
+  type LoginInput,
 } from '@/features/auth'
 
 // 모듈 스코프 — 렌더마다 새 엘리먼트를 만들지 않는다 (react-perf).
@@ -23,9 +25,21 @@ const BACKGROUND = (
 
 /** 로그인 페이지 — 이메일·비밀번호 + 간편로그인(소셜). */
 export default function LoginPage() {
-  const handleLogin = useCallback(() => {
-    // TODO: 로그인 API 연동
-  }, [])
+  const navigate = useNavigate()
+  const location = useLocation()
+  const loginMutation = useLogin()
+
+  // 가드가 넘겨준 원래 목적지 (없으면 홈)
+  const redirectTo =
+    (location.state as { from?: string } | null)?.from ?? ROUTES.home
+
+  // 토큰 저장은 useLogin이, 실패 토스트는 queryClient가 맡는다. 여기 남는 건 이동뿐이다.
+  const handleLogin = (data: LoginInput) => {
+    loginMutation.mutate(data, {
+      // replace: 뒤로가기로 로그인 화면에 다시 돌아오지 않게 한다.
+      onSuccess: () => navigate(redirectTo, { replace: true }),
+    })
+  }
 
   return (
     <AuthLayout background={BACKGROUND}>
@@ -33,7 +47,7 @@ export default function LoginPage() {
         <AuthHeader title="다시 만나서 반가워요!" />
 
         <div className="flex flex-col gap-6">
-          <LoginForm onSubmit={handleLogin} />
+          <LoginForm onSubmit={handleLogin} pending={loginMutation.isPending} />
 
           <AuthDivider label="간편로그인" />
 
@@ -42,7 +56,7 @@ export default function LoginPage() {
             <p className="flex items-center justify-center gap-1.5 text-body-sm">
               <span className="text-gray-300">아직 계정이 없으신가요?</span>
               <Link
-                to="/signup"
+                to={ROUTES.signup}
                 className="font-semibold text-primary-500 hover:text-primary-600"
               >
                 회원가입

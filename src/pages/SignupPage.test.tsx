@@ -1,16 +1,34 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { renderWithQuery } from '@/test/renderWithQuery'
 import SignupPage from './SignupPage'
 
-/** 라우터 컨텍스트(로그인 링크)가 필요하므로 MemoryRouter로 감싼다. */
+// 1단계가 발송·검증 API를 부른다. 여기서 보는 건 단계 전환이므로 성공 응답으로 대체한다.
+vi.mock('@/features/auth/api', () => ({
+  sendEmailCode: vi.fn(() => Promise.resolve({ message: 'sent' })),
+  verifyEmail: vi.fn(() => Promise.resolve({ message: 'verified' })),
+  signup: vi.fn(),
+}))
+
+/** 라우터 컨텍스트(로그인 링크)와 QueryClient가 모두 필요하다. */
 function renderPage() {
-  return render(
+  return renderWithQuery(
     <MemoryRouter>
       <SignupPage />
     </MemoryRouter>,
   )
+}
+
+/** 1단계(이메일 인증)를 통과해 2단계로 넘어간다. */
+async function passStep1() {
+  await userEvent.type(screen.getByLabelText('이메일'), 'user@uns.dev')
+  await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
+  await screen.findByText('3:00')
+  await userEvent.type(screen.getByLabelText('이메일 인증'), '123456')
+  await userEvent.click(screen.getByRole('button', { name: /다음/ }))
+  await screen.findByLabelText('이름')
 }
 
 describe('SignupPage', () => {
@@ -43,10 +61,7 @@ describe('SignupPage', () => {
   it('1단계를 통과하면 2단계로 진행한다', async () => {
     renderPage()
 
-    await userEvent.type(screen.getByLabelText('이메일'), 'user@uns.dev')
-    await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
-    await userEvent.type(screen.getByLabelText('이메일 인증'), '123456')
-    await userEvent.click(screen.getByRole('button', { name: /다음/ }))
+    await passStep1()
 
     expect(screen.getByRole('progressbar')).toHaveAttribute(
       'aria-valuenow',
@@ -60,13 +75,8 @@ describe('SignupPage', () => {
     // 진입 지점(1단계)에서는 간편로그인이 보인다
     expect(screen.getByRole('button', { name: /Google/ })).toBeInTheDocument()
 
-    await userEvent.type(screen.getByLabelText('이메일'), 'user@uns.dev')
-    await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
-    await userEvent.type(screen.getByLabelText('이메일 인증'), '123456')
-    await userEvent.click(screen.getByRole('button', { name: /다음/ }))
+    await passStep1()
 
-    // 2단계(이름·비밀번호) 진입
-    expect(screen.getByLabelText('이름')).toBeInTheDocument()
     // 소셜 로그인은 사라지고
     expect(
       screen.queryByRole('button', { name: /Google/ }),

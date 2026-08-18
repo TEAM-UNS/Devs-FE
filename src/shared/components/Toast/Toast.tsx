@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/shared/utils/cn'
 
-type ToastType = 'success' | 'warning' | 'error' | 'info'
+export type ToastType = 'success' | 'warning' | 'error' | 'info'
 type ToastSize = 'sm' | 'md'
 
 interface ToastProps extends HTMLAttributes<HTMLDivElement> {
@@ -80,7 +80,7 @@ export function Toast({
             {icon}
           </span>
         )}
-        <span className="text-base font-semibold">{title}</span>
+        <span className="text-body-md font-semibold">{title}</span>
       </div>
       {size === 'md' && description && (
         <p className="text-body-sm text-white/50">{description}</p>

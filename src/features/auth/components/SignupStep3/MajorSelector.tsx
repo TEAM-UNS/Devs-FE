@@ -2,7 +2,7 @@ import { memo, useCallback, useRef } from 'react'
 import { ArrowIcon } from '@/shared/components/icons'
 import { cn } from '@/shared/utils/cn'
 import { MAX_MAJORS } from '../../types'
-import { MAJORS, type Major } from './majors'
+import type { MajorOption } from './majors'
 
 // 화살표 한 번에 스크롤할 거리 (카드 2개 + 간격).
 const SCROLL_STEP = 232
@@ -15,7 +15,7 @@ const ARROW_BUTTON =
 const SELECTED_GLOW = 'drop-shadow-[0px_0px_4px_rgba(188,114,244,0.6)]'
 
 interface MajorCardProps {
-  major: Major
+  major: MajorOption
   selected: boolean
   onToggle: (id: string) => void
 }
@@ -63,6 +63,8 @@ const MajorCard = memo(function MajorCard({
 })
 
 interface MajorSelectorProps {
+  /** 서버에서 받은 전공 선택지 */
+  majors: MajorOption[]
   /** 선택된 전공 id 목록 */
   selected: string[]
   /** 전공 토글 콜백 */
@@ -70,7 +72,11 @@ interface MajorSelectorProps {
 }
 
 /** 전공 선택 — 패널 안 가로 캐러셀 카드(다중선택 최대 MAX_MAJORS) + n/최대 카운터 + 좌우 스크롤. */
-export function MajorSelector({ selected, onToggle }: MajorSelectorProps) {
+export function MajorSelector({
+  majors,
+  selected,
+  onToggle,
+}: MajorSelectorProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const scrollLeft = useCallback(() => {
@@ -108,7 +114,7 @@ export function MajorSelector({ selected, onToggle }: MajorSelectorProps) {
             ref={scrollRef}
             className="-my-2 flex flex-1 gap-4 overflow-x-auto scroll-smooth py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            {MAJORS.map((major) => (
+            {majors.map((major) => (
               <MajorCard
                 key={major.id}
                 major={major}

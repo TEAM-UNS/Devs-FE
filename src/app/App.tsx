@@ -1,5 +1,6 @@
 import { RouterProvider } from 'react-router-dom'
 import { router } from '@/router'
+import { ToastViewport } from '@/shared/components/ToastViewport'
 import { AppProviders } from './providers/AppProviders'
 import { useApplyTheme } from './theme/useApplyTheme'
 
@@ -18,6 +19,8 @@ export function App() {
   return (
     <AppProviders>
       <RouterProvider router={router} />
+      {/* 인증 화면과 앱 화면이 레이아웃을 공유하지 않아, 공통 조상인 여기에 둔다. */}
+      <ToastViewport />
     </AppProviders>
   )
 }

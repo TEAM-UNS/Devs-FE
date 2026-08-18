@@ -1,11 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
+import { renderWithQuery } from '@/test/renderWithQuery'
 import LoginPage from './LoginPage'
 
-/** 라우터 컨텍스트(회원가입 링크)가 필요하므로 MemoryRouter로 감싼다. */
+/** 라우터 컨텍스트(회원가입 링크)와 QueryClient가 모두 필요하다. */
 function renderPage() {
-  return render(
+  return renderWithQuery(
     <MemoryRouter>
       <LoginPage />
     </MemoryRouter>,

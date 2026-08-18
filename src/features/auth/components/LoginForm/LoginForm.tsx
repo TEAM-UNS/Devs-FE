@@ -13,10 +13,12 @@ const DEFAULT_VALUES: LoginInput = { email: '', password: '' }
 interface LoginFormProps {
   /** 검증 통과 시 호출 */
   onSubmit: (data: LoginInput) => void
+  /** 요청 중이면 제출 버튼을 잠근다 */
+  pending?: boolean
 }
 
 /** 로그인 폼 — 이메일·비밀번호 (비밀번호 표시 토글 포함). */
-export function LoginForm({ onSubmit }: LoginFormProps) {
+export function LoginForm({ onSubmit, pending }: LoginFormProps) {
   const {
     register,
     handleSubmit,
@@ -64,7 +66,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
       <Button
         type="submit"
         variant="primary"
-        disabled={!isValid}
+        disabled={!isValid || pending}
         className="w-full"
       >
         로그인

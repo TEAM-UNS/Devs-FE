@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query'
-import { fetchTechTrends } from './fetchTechTrends'
+import { fetchTechTrends } from './requests'
 
 /**
  * 기술 트렌드 쿼리 정의 팩토리.

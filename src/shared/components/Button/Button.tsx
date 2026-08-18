@@ -22,7 +22,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 // transition·focus 링은 Figma엔 없지만 상호작용 부드러움·a11y용으로 추가(모션 토큰 사용).
 const BASE_STYLES = [
   'inline-flex items-center justify-center gap-2 rounded-sm',
-  'text-base font-semibold whitespace-nowrap',
+  'text-body-md font-semibold whitespace-nowrap',
   'transition-colors duration-fast ease-standard',
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
   'disabled:cursor-not-allowed',
