@@ -11,24 +11,23 @@
 export type PersonalHistory =
   'NONE' | 'ENTRY_LEVEL' | 'JUNIOR' | 'MIDDLE' | 'SENIOR'
 
-/** 안내 문구만 돌려주는 응답 (회원가입·이메일 발송·이메일 인증 공통). */
+/** 안내 문구를 돌려주는 응답. */
 export interface MessageResponse {
   message: string
 }
 
 /**
- * POST /signup 요청 본문.
+ * POST /user/signup 요청 본문.
  *
- * `personal_history`만 snake_case인 것은 명세 그대로다(나머지는 camelCase).
- * 임의로 통일하면 서버가 필드를 못 읽으므로 명세를 따른다.
+ * 필드명은 명세를 그대로 따른다(스네이크케이스). 임의로 통일하면 서버가 못 읽는다.
  */
 export interface SignupRequest {
   email: string
   name: string
   password: string
   personal_history: PersonalHistory
-  majorIds: number[]
-  techStackIds: number[]
+  major_ids: number[]
+  skill_ids: number[]
 }
 
 /** POST /login 요청 본문. */
@@ -57,7 +56,7 @@ export interface VerifyEmailRequest {
   code: string
 }
 
-/** 기술 스택 한 개. `id`가 회원가입의 `techStackIds` 원소가 된다. */
+/** 기술 스택 한 개. `id`가 회원가입의 `skill_ids` 원소가 된다. */
 export interface TechStackDto {
   id: number
   name: string
@@ -70,7 +69,7 @@ export interface TechStackDto {
 export interface MajorCategoryDto {
   id: number
   major: string
-  techStacks: TechStackDto[]
+  tech_stacks: TechStackDto[]
 }
 
 /** GET /majors 응답 (200). 전공 안에 기술 스택이 중첩돼 온다. */

@@ -59,7 +59,7 @@ export function SignupStep4({ majors, onSubmit, pending }: SignupStep4Props) {
       .map((category) => ({
         majorId: String(category.id),
         label: toMajorOption(category).label,
-        tags: category.techStacks.map((stack) => ({
+        tags: category.tech_stacks.map((stack) => ({
           id: String(stack.id),
           label: stack.name,
         })),

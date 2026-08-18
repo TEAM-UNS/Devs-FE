@@ -7,16 +7,16 @@ import {
   setTokens,
 } from './tokenStorage'
 
-const REISSUE_PATH = '/reissue'
+const REISSUE_PATH = '/user/reissue'
 const REFRESH_TOKEN_HEADER = 'X-Refresh-Token'
 
 /* 토큰 없이 부르는 경로. 옛 토큰을 실으면 오히려 401이 나고, 401이 나도 재발급으로
    결과가 바뀌지 않으므로 재시도 대상에서도 뺀다. */
 const PUBLIC_PATHS = new Set([
-  '/login',
-  '/signup',
-  '/email/send',
-  '/email/verify',
+  '/user/login',
+  '/user/signup',
+  '/user/email/send',
+  '/user/email/verify',
   REISSUE_PATH,
 ])
 
