@@ -36,3 +36,6 @@ test-results
 *.njsproj
 *.sln
 *.sw?
+
+# 에이전트 세션 설정 (로컬 전용, 커밋 안 함)
+.claude/

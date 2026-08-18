@@ -23,18 +23,18 @@
 
 ## 2. 폴더 · 파일 네이밍
 
-| 대상               | 규칙              | 예시                                  |
-| ------------------ | ----------------- | ------------------------------------- |
-| feature 폴더       | kebab-case        | `features/job-trends/`                |
-| 컴포넌트 파일/폴더 | PascalCase        | `TrendCard/TrendCard.tsx`             |
-| 훅                 | `use` + camelCase | `useTechTrends.ts`                    |
-| 유틸/일반 함수     | camelCase         | `sortTrends.ts`                       |
-| `api/` 파일        | 동사 + 엔드포인트 | `fetchTrends.ts`, `createBookmark.ts` |
-| `types/` 파일      | 도메인 엔티티명   | `techTrend.ts`                        |
-| 이벤트 핸들러 prop | `on` + PascalCase | `onSelect`, `onSubmit`                |
-| 내부 핸들러 함수   | `handle` + Pascal | `handleClick`, `handleSubmit`         |
-| 상수               | UPPER_SNAKE_CASE  | `MEDIA_QUERIES`, `ROUTES`             |
-| 타입/인터페이스    | PascalCase        | `TechTrend`                           |
+| 대상               | 규칙              | 예시                             |
+| ------------------ | ----------------- | -------------------------------- |
+| feature 폴더       | kebab-case        | `features/job-trends/`           |
+| 컴포넌트 파일/폴더 | PascalCase        | `TrendCard/TrendCard.tsx`        |
+| 훅                 | `use` + camelCase | `useTechTrends.ts`               |
+| 유틸/일반 함수     | camelCase         | `sortTrends.ts`                  |
+| `api/` 파일        | 역할별 묶음       | `requests.ts`, `trendQueries.ts` |
+| `types/` 파일      | 도메인 엔티티명   | `techTrend.ts`                   |
+| 이벤트 핸들러 prop | `on` + PascalCase | `onSelect`, `onSubmit`           |
+| 내부 핸들러 함수   | `handle` + Pascal | `handleClick`, `handleSubmit`    |
+| 상수               | UPPER_SNAKE_CASE  | `MEDIA_QUERIES`, `ROUTES`        |
+| 타입/인터페이스    | PascalCase        | `TechTrend`                      |
 
 - 이벤트: 자식이 부모에게 받는 콜백은 `onXxx`, 컴포넌트 내부 구현 함수는 `handleXxx`.
   (예: 부모가 `onSelect`를 넘기면, 자식은 `handleClick`에서 `onSelect(...)`를 호출)
@@ -77,7 +77,7 @@ feature는 아래 세그먼트로 구성한다. **`api`·`types`는 단일 파�
 
 ```
 features/<name>/
-├─ api/          # 서버 호출 + 쿼리 팩토리. 파일당 1함수 `동사+엔드포인트` (fetchTrends.ts)
+├─ api/          # requests.ts(요청 함수 모음) + xxxQueries.ts(쿼리 팩토리)
 │  └─ index.ts   # 배럴
 ├─ types/        # 도메인 타입/스키마. 엔티티별 파일 (techTrend.ts)
 │  └─ index.ts   # 배럴
@@ -90,6 +90,9 @@ features/<name>/
 
 - 원칙: **세그먼트(api/types/stores/hooks/utils/components)는 폴더**, 그 안의 **개별 항목**은
   컴포넌트만 폴더, 나머지(api·types·store·hook·util 파일)는 flat 파일.
+- **`api/`의 요청 함수는 `requests.ts` 한 파일에 모은다.** 함수당 파일을 만들면 대부분이
+  import 2줄 + 본문 1줄짜리 껍데기가 되고, 배럴에서 같은 이름을 한 번 더 나열하게 된다.
+  쿼리 팩토리는 캐시 키·옵션을 함께 담으므로 `xxxQueries.ts`로 따로 둔다.
 - 스토어(상태)와 hooks(뮤테이션·재사용 로직)를 **세그먼트로 분리**한다 — 성격이 다르므로.
 - 외부는 세그먼트 배럴로만 접근한다 (`../api`, `../types`). 개별 파일 직접 import 금지.
 
@@ -134,7 +137,10 @@ features/<name>/
 
 - **조회(Query) = `queryOptions` 팩토리** (껍데기 훅 X). feature `api/`에 `xxxQueries.ts`를 두어
   키 + queryFn + 옵션을 모으고, 컴포넌트는 `useQuery(xxxQueries.list())`로 직접 호출한다.
-- **변경(Mutation) = 훅** (`hooks/useCreateXxx.ts`). `useMutation` + 성공 시 캐시 무효화.
+- **변경(Mutation)**: 호출 뒤 추가 로직(무효화·토큰 저장·변환)이 있으면 **훅**
+  (`hooks/useCreateXxx.ts`). 없으면 **훅을 만들지 않고** 호출부에서
+  `useMutation({ mutationFn: createXxx })`를 바로 쓴다 — 훅의 존재 이유가 그 추가 로직이라,
+  비어 있으면 파일만 하나 더 생긴다.
 - **기준**: 호출 뒤 추가 로직(무효화·조합·변환)이 있으면 **훅**, 그냥 읽기면 **팩토리 항목**.
 - **쿼리 키는 팩토리 안에서 계층형**으로 지어, `invalidateQueries({ queryKey: xxxQueries.all() })`
   한 번으로 관련 캐시를 무효화(= "캐시를 낡음으로 표시 → 자동 재요청")한다.
