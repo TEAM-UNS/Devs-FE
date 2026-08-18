@@ -9,7 +9,7 @@
 
 /** 경력 구간 — 명세의 `personal_history` ENUM. */
 export type PersonalHistory =
-  'NONE' | 'ENTRY_LEVEL' | 'JUNIOR' | 'MIDDLE' | 'SENIOR'
+  'NO_EXPERIENCE' | 'ENTRY_LEVEL' | 'JUNIOR' | 'MIDDLE' | 'SENIOR'
 
 /** 안내 문구를 돌려주는 응답. */
 export interface MessageResponse {

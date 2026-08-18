@@ -24,12 +24,12 @@ const lookup: Record<string, PersonalHistory | undefined> = LEVEL_TO_HISTORY
  * 3단계 경력 선택을 회원가입 요청의 `personal_history` 값으로 바꾼다.
  *
  * @param career 3단계에서 고른 경력 유무·연차
- * @returns 서버 ENUM 값 ('경력 없음'이거나 표에 없는 연차면 `NONE`)
+ * @returns 서버 ENUM 값 ('경력 없음'이거나 표에 없는 연차면 `NO_EXPERIENCE`)
  */
 export function toPersonalHistory(
   career: Partial<Pick<SignupStep3Input, 'careerType' | 'careerLevel'>>,
 ): PersonalHistory {
-  if (career.careerType !== 'has' || !career.careerLevel) return 'NONE'
+  if (career.careerType !== 'has' || !career.careerLevel) return 'NO_EXPERIENCE'
 
-  return lookup[career.careerLevel] ?? 'NONE'
+  return lookup[career.careerLevel] ?? 'NO_EXPERIENCE'
 }
