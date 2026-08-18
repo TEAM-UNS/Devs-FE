@@ -10,8 +10,9 @@ const TIMEOUT_CODES = new Set(['ECONNABORTED', 'ETIMEDOUT'])
 /**
  * 실패한 요청에서 화면에 띄울 문구를 뽑는다.
  *
- * 명세의 `Exception` 칸이 비어 있어 에러 본문의 모양을 모른다. 성공 응답이 전부
- * `message` 키를 쓰므로 그것만 보고, 없으면 고정 문구로 떨어진다.
+ * 서버 에러는 두 가지 모양으로 온다. 비즈니스 에러는
+ * `{ status, code, message }`라 `message`를 그대로 띄우고, 검증 실패(400)는 Spring 기본인
+ * `{ timestamp, status, error, path }`라 사용자에게 보여줄 문구가 없어 고정 문구로 떨어진다.
  *
  * @param error 실패 원인
  * @returns 표시할 문구

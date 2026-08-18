@@ -63,7 +63,7 @@ export interface TechStackDto {
 }
 
 /**
- * 전공 한 개. `id`가 회원가입의 `majorIds` 원소가 된다.
+ * 전공 한 개. `id`가 회원가입의 `major_ids` 원소가 된다.
  * `major`는 표시용 라벨이 아니라 `"BACKEND"` 같은 ENUM 문자열이다.
  */
 export interface MajorCategoryDto {
