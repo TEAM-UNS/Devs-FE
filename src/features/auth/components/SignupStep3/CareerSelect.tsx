@@ -1,16 +1,10 @@
 import { useCallback } from 'react'
 import { Dropdown } from '@/shared/components/Dropdown'
 import { cn } from '@/shared/utils/cn'
+// 변환표(toPersonalHistory)와 같은 값을 봐야 해서 목록은 utils가 소유한다.
+import { CAREER_LEVELS } from '../../utils/careerLevels'
 
 type CareerType = 'none' | 'has'
-
-// 경력 연차 선택지 (목데이터 — 추후 서버 연동 시 교체). 모듈 스코프(react-perf).
-const CAREER_LEVELS = [
-  { label: '~1년', value: 'lt1' },
-  { label: '1년~3년', value: '1to3' },
-  { label: '3년~5년', value: '3to5' },
-  { label: '5년~', value: 'gte5' },
-]
 
 // 세그먼트 버튼 공통 — 트랙을 균등 분할(flex-1), 선택 시 primary 채움.
 const SEGMENT_BASE = [

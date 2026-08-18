@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useId, useState } from 'react'
+import { useId } from 'react'
 import { useForm } from 'react-hook-form'
+import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
 import { Input } from '@/shared/components/Input'
-import { Toast } from '@/shared/components/Toast'
-import { ArrowIcon, CheckCircleIcon } from '@/shared/components/icons'
+import { ArrowIcon } from '@/shared/components/icons'
+import { useToastStore } from '@/shared/stores/useToastStore'
+import { sendEmailCode, verifyEmail } from '../../api'
 import { useCountdown } from '../../hooks/useCountdown'
 import {
   CODE_LENGTH,
@@ -19,15 +21,7 @@ const DEFAULT_VALUES: SignupStep1Input = { email: '', code: '' }
 const NEXT_ICON = <ArrowIcon className="size-full rotate-180" />
 const CODE_TTL = 180 // 인증 코드 유효시간 3:00 (초) — Figma 타이머 표기 기준
 
-// 코드 전송 성공 토스트 아이콘. 토스트 자체는 컴포넌트 안에서 렌더한다 — 모듈 스코프에서
-// 만든 JSX를 같은 스코프의 prop으로 넘기면 react-perf가 잡는다.
-const SENT_TOAST_ICON = <CheckCircleIcon className="size-full" />
-
-// 토스트 노출 시간 — Figma엔 스펙이 없어 읽을 만큼만 둔다.
-const TOAST_DURATION = 3000
-
-// 토스트 위치 — Figma는 화면 상단 36px 중앙에 pill(success/small)로 띄운다.
-const TOAST_VIEWPORT = 'fixed inset-x-0 top-9 z-toast flex justify-center px-4'
+const SENT_MESSAGE = '이메일이 전송되었어요! 메일함을 확인해주세요.'
 
 /** 초를 m:ss 형식으로 포맷한다. */
 function formatTimer(seconds: number): string {
@@ -55,42 +49,39 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
   })
 
   const emailId = useId()
-  const [codeSent, setCodeSent] = useState(false)
-  const [sentToastShown, setSentToastShown] = useState(false)
   const { secondsLeft, start: startCountdown } = useCountdown()
+
+  const showToast = useToastStore((state) => state.show)
+  // 무효화할 캐시가 없어 껍데기 훅을 두지 않고 여기서 바로 선언한다.
+  const sendCode = useMutation({ mutationFn: sendEmailCode })
+  const verify = useMutation({ mutationFn: verifyEmail })
 
   const email = watch('email')
   const emailValid = emailOnlySchema.safeParse(email).success
+  // 발송 성공 여부는 뮤테이션이 이미 들고 있다. 재발송은 버튼을 잠가 막으므로 되돌지 않는다.
+  const codeSent = sendCode.isSuccess
 
-  const handleSendCode = useCallback(() => {
-    // TODO: 실제 인증 코드 발송 API 연동
+  // 실패 토스트는 queryClient가 전역으로 띄운다 — 여기선 성공 경로만 다룬다.
+  const handleSendCode = () => {
     // TODO: 타이머 만료 시 재전송 버튼 노출
-    // TODO: 코드 불일치 응답 시 에러 상태(필드·타이머 빨강 + 문구) — Figma 120:2114
-    setCodeSent(true)
-    startCountdown(CODE_TTL)
-    setSentToastShown(true)
-  }, [startCountdown])
+    sendCode.mutate(
+      { email },
+      {
+        onSuccess: () => {
+          startCountdown(CODE_TTL)
+          showToast({ type: 'success', title: SENT_MESSAGE })
+        },
+      },
+    )
+  }
 
-  useEffect(() => {
-    if (!sentToastShown) return
-    const timer = setTimeout(() => setSentToastShown(false), TOAST_DURATION)
-    return () => clearTimeout(timer)
-  }, [sentToastShown])
-
-  const submit = handleSubmit(onNext)
+  // 코드가 맞을 때만 다음 단계로 넘어간다.
+  const submit = handleSubmit((data) => {
+    verify.mutate(data, { onSuccess: () => onNext(data) })
+  })
 
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-12">
-      {sentToastShown && (
-        <div className={TOAST_VIEWPORT}>
-          <Toast
-            type="success"
-            size="sm"
-            title="이메일이 전송되었어요! 메일함을 확인해주세요."
-            icon={SENT_TOAST_ICON}
-          />
-        </div>
-      )}
       <div className="flex flex-col gap-5">
         {/* 레이블을 행 위로 빼 필드와 버튼(둘 다 h-12)을 같은 높이로 정렬 */}
         <div className="flex flex-col gap-1.5">
@@ -111,7 +102,7 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
             <Button
               type="button"
               variant="primary"
-              disabled={!emailValid || codeSent}
+              disabled={!emailValid || codeSent || sendCode.isPending}
               onClick={handleSendCode}
               className="shrink-0"
             >
@@ -134,7 +125,7 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
       <Button
         type="submit"
         variant="primary"
-        disabled={!isValid}
+        disabled={!isValid || verify.isPending}
         endIcon={NEXT_ICON}
         className="w-full"
       >

@@ -1,18 +1,34 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import { MOCK_MAJORS } from '@/test/fixtures/majors'
+import { renderWithQuery } from '@/test/renderWithQuery'
 import { MAX_MAJORS } from '../../types'
-import { MAJORS } from './majors'
+import { toMajorOption } from './majors'
 import { SignupStep3 } from './SignupStep3'
+
+// 전공 목록은 GET /majors에서 온다. 쿼리 팩토리가 이 모듈을 직접 import하므로 여기를 막는다.
+vi.mock('../../api/requests', () => ({
+  fetchMajors: vi.fn(() => Promise.resolve(MOCK_MAJORS)),
+}))
 
 const noop = () => {}
 
-describe('SignupStep3', () => {
-  it('전공 카드·경력 토글·연차 드롭다운·다음 버튼을 렌더링한다', () => {
-    render(<SignupStep3 onNext={noop} />)
+const OPTIONS = MOCK_MAJORS.categories.map(toMajorOption)
+const BACKEND = OPTIONS[0]
+const FRONTEND = OPTIONS[1]
 
-    expect(screen.getByRole('button', { name: 'Backend' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Frontend' })).toBeInTheDocument()
+describe('SignupStep3', () => {
+  it('전공 카드·경력 토글·연차 드롭다운·다음 버튼을 렌더링한다', async () => {
+    renderWithQuery(<SignupStep3 onNext={noop} />)
+
+    // 카드는 서버 목록이 도착한 뒤에 그려진다.
+    expect(
+      await screen.findByRole('button', { name: BACKEND.label }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: FRONTEND.label }),
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: '경력 없음' }),
     ).toBeInTheDocument()
@@ -24,9 +40,9 @@ describe('SignupStep3', () => {
   })
 
   it('전공을 토글로 선택·해제할 수 있다', async () => {
-    render(<SignupStep3 onNext={noop} />)
+    renderWithQuery(<SignupStep3 onNext={noop} />)
 
-    const backend = screen.getByRole('button', { name: 'Backend' })
+    const backend = await screen.findByRole('button', { name: BACKEND.label })
     expect(backend).toHaveAttribute('aria-pressed', 'false')
 
     await userEvent.click(backend)
@@ -37,9 +53,10 @@ describe('SignupStep3', () => {
   })
 
   it(`전공은 최대 ${MAX_MAJORS}개까지만 선택되고 초과 선택은 무시된다`, async () => {
-    render(<SignupStep3 onNext={noop} />)
+    renderWithQuery(<SignupStep3 onNext={noop} />)
 
-    const cards = MAJORS.map(({ label }) =>
+    await screen.findByRole('button', { name: BACKEND.label })
+    const cards = OPTIONS.map(({ label }) =>
       screen.getByRole('button', { name: label }),
     )
     expect(cards.length).toBeGreaterThan(MAX_MAJORS) // 상한이 유효한 전제
@@ -61,13 +78,15 @@ describe('SignupStep3', () => {
     expect(overflowCard).toHaveAttribute('aria-pressed', 'true')
   })
 
-  it('전공 선택 + 경력 없음이면 다음이 활성화되고 onNext로 전달된다', async () => {
+  it('전공 선택 + 경력 없음이면 다음이 활성화되고 서버 id로 전달된다', async () => {
     const onNext = vi.fn()
-    render(<SignupStep3 onNext={onNext} />)
+    renderWithQuery(<SignupStep3 onNext={onNext} />)
 
     const next = screen.getByRole('button', { name: '다음' })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Backend' }))
+    await userEvent.click(
+      await screen.findByRole('button', { name: BACKEND.label }),
+    )
     // 전공만으론 부족(경력 미선택)
     expect(next).toBeDisabled()
 
@@ -76,15 +95,17 @@ describe('SignupStep3', () => {
 
     await userEvent.click(next)
     expect(onNext).toHaveBeenCalledWith(
-      expect.objectContaining({ majors: ['backend'], careerType: 'none' }),
+      expect.objectContaining({ majors: [BACKEND.id], careerType: 'none' }),
     )
   })
 
   it('경력 있음이면 연차까지 선택해야 다음이 활성화된다', async () => {
     const onNext = vi.fn()
-    render(<SignupStep3 onNext={onNext} />)
+    renderWithQuery(<SignupStep3 onNext={onNext} />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Frontend' }))
+    await userEvent.click(
+      await screen.findByRole('button', { name: FRONTEND.label }),
+    )
     await userEvent.click(screen.getByRole('button', { name: '경력 있음' }))
 
     const next = screen.getByRole('button', { name: '다음' })
@@ -99,7 +120,7 @@ describe('SignupStep3', () => {
     await userEvent.click(next)
     expect(onNext).toHaveBeenCalledWith(
       expect.objectContaining({
-        majors: ['frontend'],
+        majors: [FRONTEND.id],
         careerType: 'has',
         careerLevel: '1to3',
       }),

@@ -1,8 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/shared/components/Button'
+import { majorQueries } from '../../api'
 import { signupStep4Schema, type SignupStep4Input } from '../../types'
+import { toMajorOption } from '../SignupStep3/majors'
 import { TechStackSection } from './TechStackSection'
-import { TECH_STACK_GROUPS } from './techStacks'
+import type { TechStackGroup } from './techStacks'
 
 // 패널은 Figma에서 높이 280px 고정이고 그룹이 그보다 길다 → 안에서 세로 스크롤된다.
 // py-5 = 스크롤바 트랙을 위아래 20px씩 들여놓기 위한 여백 (아래 SCROLL_STYLES 참고).
@@ -27,24 +30,41 @@ type Selection = SignupStep4Input['techStacks']
 
 interface SignupStep4Props {
   /** 3단계에서 고른 전공 id 목록 — 이 전공들의 기술 스택만 노출한다 */
-  majors: string[]
+  majors?: string[]
   /** 검증 통과 시 호출 (마지막 단계) */
   onSubmit: (data: SignupStep4Input) => void
+  /** 제출 중이면 버튼을 잠근다 */
+  pending?: boolean
 }
 
 /**
  * 회원가입 4단계(마지막) — 전공별 기술 스택 선택.
  * 3단계와 같은 이유로(커스텀 선택 컨트롤) 로컬 상태 + Zod safeParse로 검증한다.
  */
-export function SignupStep4({ majors, onSubmit }: SignupStep4Props) {
+export function SignupStep4({ majors, onSubmit, pending }: SignupStep4Props) {
   const [techStacks, setTechStacks] = useState<Selection>({})
   // 기본은 전부 펼침. 접힌 것만 담으면 노출 그룹이 바뀌어도 초기화가 필요 없다.
   const [closed, setClosed] = useState<string[]>([])
 
-  const groups = useMemo(
-    () => TECH_STACK_GROUPS.filter((g) => majors.includes(g.majorId)),
-    [majors],
-  )
+  const { data } = useQuery(majorQueries.list())
+
+  // 헤더 라벨은 3단계 카드와 같은 표기표를 써서 두 단계가 같은 이름을 보이게 한다.
+  // TechStackSection이 memo라 배열 identity를 유지해야 해서 useMemo를 둔다.
+  const groups = useMemo<TechStackGroup[]>(() => {
+    const categories = data?.categories ?? []
+    const selected = majors ?? []
+
+    return categories
+      .filter((category) => selected.includes(String(category.id)))
+      .map((category) => ({
+        majorId: String(category.id),
+        label: toMajorOption(category).label,
+        tags: category.techStacks.map((stack) => ({
+          id: String(stack.id),
+          label: stack.name,
+        })),
+      }))
+  }, [data, majors])
 
   const handleToggleOpen = useCallback((majorId: string) => {
     setClosed((prev) =>
@@ -95,7 +115,7 @@ export function SignupStep4({ majors, onSubmit }: SignupStep4Props) {
       <Button
         type="button"
         variant="primary"
-        disabled={!isValid}
+        disabled={!isValid || pending}
         onClick={handleSubmit}
         className="w-full"
       >
