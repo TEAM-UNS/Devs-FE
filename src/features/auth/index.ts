@@ -9,6 +9,9 @@ export { SignupStep1 } from './components/SignupStep1'
 export { SignupStep2 } from './components/SignupStep2'
 export { SignupStep3 } from './components/SignupStep3'
 export { SignupStep4 } from './components/SignupStep4'
+export { signup } from './api'
+export { useLogin } from './hooks/useLogin'
+export { toPersonalHistory } from './utils/toPersonalHistory'
 export {
   type SignupStep1Input,
   type SignupStep2Input,
