@@ -7,8 +7,10 @@ import { toMajorOption } from '../SignupStep3/majors'
 import { SignupStep4 } from './SignupStep4'
 
 // 기술 스택 목록도 GET /majors에서 온다(전공 안에 중첩).
-vi.mock('../../api/requests', () => ({
-  fetchMajors: vi.fn(() => Promise.resolve(MOCK_MAJORS)),
+// 쿼리 팩토리는 그대로 두고 전송 계층만 막는다.
+vi.mock('@/shared/api/http', () => ({
+  get: vi.fn(() => Promise.resolve(MOCK_MAJORS)),
+  post: vi.fn(),
 }))
 
 const noop = () => {}

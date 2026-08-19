@@ -10,5 +10,13 @@ import { login } from '../api'
  * 부르는 쪽에 남긴다.
  */
 export function useLogin() {
-  return useMutation({ mutationFn: login, onSuccess: setTokens })
+  return useMutation({
+    mutationFn: login,
+    // 서버는 스네이크케이스로 주고 보관은 camelCase라 여기서 옮겨 담는다.
+    onSuccess: (data) =>
+      setTokens({
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+      }),
+  })
 }
