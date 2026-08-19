@@ -8,6 +8,8 @@ interface CompanyScaleCardProps {
   /** 현재 보고 있는 기업 규모 라벨 (예: '스타트업') */
   scale: string
   ranks: readonly StackRank[]
+  /** 이전/다음 규모로 이동. 넘기지 않으면 화살표는 표시만 된다 */
+  onStep?: (direction: -1 | 1) => void
 }
 
 // 순위별 게이지 색 — Figma 427:5437~5469 순서 그대로.
@@ -27,7 +29,11 @@ const STEP_BUTTON =
  * 기업 규모별 기술 스택 분석 카드 — 규모 좌우 전환 + 순위별 가로 게이지.
  * 게이지는 진입 시 왼쪽에서 오른쪽으로 차오른다(Figma 274:1871 주석).
  */
-export function CompanyScaleCard({ scale, ranks }: CompanyScaleCardProps) {
+export function CompanyScaleCard({
+  scale,
+  ranks,
+  onStep,
+}: CompanyScaleCardProps) {
   return (
     <ChartCard
       title="기업 규모별 기술 스택 분석"
@@ -36,11 +42,11 @@ export function CompanyScaleCard({ scale, ranks }: CompanyScaleCardProps) {
       className="gap-[19px]"
     >
       <div className="flex flex-col items-center gap-5">
-        {/* TODO: 기업 규모 전환 상태 연결 (지금은 Figma 선택 상태만 표시한다) */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             aria-label="이전 기업 규모"
+            onClick={() => onStep?.(-1)}
             className={STEP_BUTTON}
           >
             <ArrowIcon className="size-full" />
@@ -49,6 +55,7 @@ export function CompanyScaleCard({ scale, ranks }: CompanyScaleCardProps) {
           <button
             type="button"
             aria-label="다음 기업 규모"
+            onClick={() => onStep?.(1)}
             className={STEP_BUTTON}
           >
             <ArrowIcon className="size-full rotate-180" />
