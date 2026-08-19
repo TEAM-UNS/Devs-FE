@@ -7,9 +7,11 @@ import { MAX_MAJORS } from '../../types'
 import { toMajorOption } from './majors'
 import { SignupStep3 } from './SignupStep3'
 
-// 전공 목록은 GET /majors에서 온다. 쿼리 팩토리가 이 모듈을 직접 import하므로 여기를 막는다.
-vi.mock('../../api/requests', () => ({
-  fetchMajors: vi.fn(() => Promise.resolve(MOCK_MAJORS)),
+// 전공 목록은 GET /majors에서 온다. 쿼리 팩토리는 그대로 두고 전송 계층만 막아,
+// 실제 요청 함수를 거쳐 데이터가 흘러오는 경로를 그대로 검증한다.
+vi.mock('@/shared/api/http', () => ({
+  get: vi.fn(() => Promise.resolve(MOCK_MAJORS)),
+  post: vi.fn(),
 }))
 
 const noop = () => {}

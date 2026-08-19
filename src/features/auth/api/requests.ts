@@ -1,8 +1,7 @@
-import { get, post } from '@/shared/api'
+import { post } from '@/shared/api'
 import type {
   LoginRequest,
   LoginResponse,
-  MajorsResponse,
   MessageResponse,
   SendEmailCodeRequest,
   SignupRequest,
@@ -34,12 +33,4 @@ export async function verifyEmail(
   body: VerifyEmailRequest,
 ): Promise<MessageResponse> {
   return post<MessageResponse>('/user/email/verify', body)
-}
-
-/**
- * 전공 목록을 조회한다. (GET /majors)
- * 각 전공 안에 그 전공의 기술 스택이 중첩돼 오므로 3·4단계가 이 하나를 같이 쓴다.
- */
-export async function fetchMajors(): Promise<MajorsResponse> {
-  return get<MajorsResponse>('/majors')
 }

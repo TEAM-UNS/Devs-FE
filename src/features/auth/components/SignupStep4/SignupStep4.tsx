@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { majorQueries } from '@/shared/api'
 import { Button } from '@/shared/components/Button'
-import { majorQueries } from '../../api'
 import { signupStep4Schema, type SignupStep4Input } from '../../types'
 import { MajorListStatus } from '../MajorListStatus'
 import { toMajorOption } from '../SignupStep3/majors'

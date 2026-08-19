@@ -37,12 +37,15 @@ export interface LoginRequest {
 }
 
 /**
- * POST /login 응답 (200). 두 토큰 모두 본문으로 내려온다(쿠키 방식 아님).
+ * POST /user/login 응답 (200). 두 토큰 모두 본문으로 내려온다(쿠키 방식 아님).
  * 즉 저장·전송 책임이 전부 프론트에 있다.
+ *
+ * 서버는 모든 필드를 스네이크케이스로 준다. 보관 형태(`AuthTokens`)와 이름이 다르므로
+ * `useLogin`이 옮겨 담는다.
  */
 export interface LoginResponse {
-  accessToken: string
-  refreshToken: string
+  access_token: string
+  refresh_token: string
 }
 
 /** POST /email/send 요청 본문. */
@@ -54,25 +57,4 @@ export interface SendEmailCodeRequest {
 export interface VerifyEmailRequest {
   email: string
   code: string
-}
-
-/** 기술 스택 한 개. `id`가 회원가입의 `skill_ids` 원소가 된다. */
-export interface TechStackDto {
-  id: number
-  name: string
-}
-
-/**
- * 전공 한 개. `id`가 회원가입의 `major_ids` 원소가 된다.
- * `major`는 표시용 라벨이 아니라 `"BACKEND"` 같은 ENUM 문자열이다.
- */
-export interface MajorCategoryDto {
-  id: number
-  major: string
-  tech_stacks: TechStackDto[]
-}
-
-/** GET /majors 응답 (200). 전공 안에 기술 스택이 중첩돼 온다. */
-export interface MajorsResponse {
-  categories: MajorCategoryDto[]
 }

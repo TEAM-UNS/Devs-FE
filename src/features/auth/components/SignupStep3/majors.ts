@@ -1,5 +1,5 @@
 import type { ComponentType, SVGProps } from 'react'
-import type { MajorCategoryDto } from '../../types'
+import type { MajorCategoryDto } from '@/shared/api'
 import {
   AiIcon,
   AndroidIcon,

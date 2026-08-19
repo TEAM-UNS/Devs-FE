@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { majorQueries } from '@/shared/api'
 import { Button } from '@/shared/components/Button'
 import { ArrowIcon } from '@/shared/components/icons'
-import { majorQueries } from '../../api'
 import {
   MAX_MAJORS,
   signupStep3Schema,

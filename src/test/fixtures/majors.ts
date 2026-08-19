@@ -1,4 +1,4 @@
-import type { MajorsResponse } from '@/features/auth/types'
+import type { MajorsResponse } from '@/shared/api'
 
 /**
  * `GET /majors` 응답 대역. 실제 서버 모양(전공 안에 기술 스택 중첩)을 그대로 따른다.
