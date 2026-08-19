@@ -42,15 +42,15 @@ async function refreshAccessToken(): Promise<boolean> {
   if (!refreshToken) return false
 
   try {
-    const { data } = await client.post<{ accessToken?: string }>(
+    const { data } = await client.post<{ access_token?: string }>(
       REISSUE_PATH,
       undefined,
       { headers: { [REFRESH_TOKEN_HEADER]: refreshToken } },
     )
-    if (!data.accessToken) return false
+    if (!data.access_token) return false
 
     // 응답이 accessToken만 주므로 refreshToken은 회전 없이 재사용한다.
-    setTokens({ accessToken: data.accessToken, refreshToken })
+    setTokens({ accessToken: data.access_token, refreshToken })
     return true
   } catch (error) {
     // refreshToken이 거절당했을 때만 세션을 버린다. 5xx·네트워크 오류는 잠깐일 수 있어
@@ -97,9 +97,17 @@ async function withRetry<TResponse>(
   }
 }
 
-/** GET 요청. */
-export async function get<TResponse>(path: string): Promise<TResponse> {
-  return withRetry(path, () => client.get<TResponse>(path))
+/**
+ * GET 요청.
+ *
+ * `params`는 axios가 쿼리스트링으로 붙인다. 값이 `undefined`인 항목은 빼므로
+ * '필터 없음'을 부르는 쪽에서 분기하지 않고 그대로 넘기면 된다.
+ */
+export async function get<TResponse>(
+  path: string,
+  params?: Record<string, string | number | undefined>,
+): Promise<TResponse> {
+  return withRetry(path, () => client.get<TResponse>(path, { params }))
 }
 
 /** JSON 본문을 실어 POST 한다. */

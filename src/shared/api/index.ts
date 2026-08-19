@@ -6,3 +6,5 @@
 export { get, post } from './http'
 export { errorMessage } from './errorMessage'
 export { getAccessToken, setTokens } from './tokenStorage'
+export { majorQueries } from './majors'
+export type { TechStackDto, MajorCategoryDto, MajorsResponse } from './majors'
