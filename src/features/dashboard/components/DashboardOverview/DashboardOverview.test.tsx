@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import {
@@ -23,19 +23,35 @@ vi.mock('../../hooks/useEChart', () => ({
 /* 요약만 상황별로 바꿔 끼우고, 나머지는 고정 응답을 쓴다. */
 let summaryResponse = MOCK_SUMMARY
 
-// 전송 계층만 막아 요청 함수·쿼리 팩토리는 실제로 돌게 둔다.
+/* 경로를 하나도 빠짐없이 나열하고 나머지는 거부한다. 남는 경로에 아무 응답이나
+   돌려주면 요청 함수의 경로가 틀려도 테스트가 통과해, 이 파일이 지키려는 것을
+   정작 안 지키게 된다. */
 vi.mock('@/shared/api/http', () => ({
   get: vi.fn((path: string) => {
-    if (path === '/majors') return Promise.resolve(MOCK_MAJORS)
-    if (path === '/dashboard/summary') return Promise.resolve(summaryResponse)
-    if (path === '/dashboard/popular-tech-stacks')
-      return Promise.resolve(MOCK_POPULAR)
-    if (path === '/dashboard/company-size-tech-stacks')
-      return Promise.resolve(MOCK_COMPANY_SIZE)
-    return Promise.resolve(MOCK_RISING)
+    switch (path) {
+      case '/majors':
+        return Promise.resolve(MOCK_MAJORS)
+      case '/dashboard/summary':
+        return Promise.resolve(summaryResponse)
+      case '/dashboard/popular-tech-stacks':
+        return Promise.resolve(MOCK_POPULAR)
+      case '/dashboard/company-size-tech-stacks':
+        return Promise.resolve(MOCK_COMPANY_SIZE)
+      case '/dashboard/best-tech-stacks':
+        return Promise.resolve(MOCK_RISING)
+      default:
+        return Promise.reject(new Error(`요청하지 않아야 할 경로: ${path}`))
+    }
   }),
   post: vi.fn(),
 }))
+
+/** 특정 경로로 나간 마지막 요청의 쿼리 파라미터. */
+async function lastParamsOf(path: string) {
+  const { get } = await import('@/shared/api/http')
+  const calls = vi.mocked(get).mock.calls.filter(([called]) => called === path)
+  return calls.at(-1)?.[1]
+}
 
 const CARD_TITLES = [
   '인기 기술 스택',
@@ -126,6 +142,55 @@ describe('DashboardOverview', () => {
       screen.getByRole('button', { name: '이전 기업 규모' }),
     )
     expect(screen.getByText('대기업')).toBeInTheDocument()
+  })
+
+  it('선택한 필터가 쿼리 파라미터로 전달된다', async () => {
+    renderWithQuery(<DashboardOverview />)
+
+    // 처음에는 전체 집계라 major_id를 보내지 않는다
+    await screen.findByRole('button', { name: 'BACKEND' })
+    await waitFor(async () => {
+      expect(await lastParamsOf('/dashboard/popular-tech-stacks')).toEqual({
+        major_id: undefined,
+      })
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'BACKEND' }))
+    await waitFor(async () => {
+      expect(await lastParamsOf('/dashboard/popular-tech-stacks')).toEqual({
+        major_id: 1,
+      })
+    })
+
+    // 전공은 규모·급상승 조회에도 함께 넘어간다
+    expect(await lastParamsOf('/dashboard/company-size-tech-stacks')).toEqual({
+      company_size: 'STARTUP',
+      major_id: 1,
+    })
+    expect(await lastParamsOf('/dashboard/best-tech-stacks')).toEqual({
+      period: 'MONTH',
+      major_id: 1,
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: '1주' }))
+    await waitFor(async () => {
+      expect(await lastParamsOf('/dashboard/best-tech-stacks')).toEqual({
+        period: 'WEEK',
+        major_id: 1,
+      })
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: '다음 기업 규모' }),
+    )
+    await waitFor(async () => {
+      expect(await lastParamsOf('/dashboard/company-size-tech-stacks')).toEqual(
+        {
+          company_size: 'SMALL',
+          major_id: 1,
+        },
+      )
+    })
   })
 
   it('기업 규모별 순위를 순번과 함께 표시한다', async () => {
