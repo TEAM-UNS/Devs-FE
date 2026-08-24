@@ -22,6 +22,8 @@ const AboutPage = lazy(() => import('@/pages/AboutPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const SignupPage = lazy(() => import('@/pages/SignupPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
+const OAuthCallbackPage = lazy(() => import('@/pages/OAuthCallbackPage'))
+const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
 
 // 인증 화면은 전체 화면(네비 없음)이라 RootLayout 밖에 두고 자체 Suspense로 감싼다.
 const authFallback = <RouteFallback />
@@ -42,6 +44,22 @@ function LoginRoute() {
   )
 }
 
+function OAuthCallbackRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <OAuthCallbackPage />
+    </Suspense>
+  )
+}
+
+function OnboardingRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <OnboardingPage />
+    </Suspense>
+  )
+}
+
 export const routes: RouteObject[] = [
   {
     path: '/login',
@@ -50,6 +68,18 @@ export const routes: RouteObject[] = [
   {
     path: '/signup',
     element: <SignupRoute />,
+  },
+  /* OAuth 콜백은 가드 밖에 둔다 — 도착 시점에는 아직 토큰이 없어서, 가드 안에 두면
+     토큰 교환을 해보기도 전에 로그인 화면으로 튕긴다.
+     온보딩은 이미 로그인된 상태로 보는 화면이지만 회원가입처럼 전체 화면이라
+     RootLayout(사이드바) 밖에 둔다. */
+  {
+    path: '/oauth/callback',
+    element: <OAuthCallbackRoute />,
+  },
+  {
+    path: '/onboarding',
+    element: <OnboardingRoute />,
   },
   {
     path: '/',

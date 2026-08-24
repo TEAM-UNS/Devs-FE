@@ -1,9 +1,11 @@
 import { Button } from '@/shared/components/Button'
 import { GithubIcon, GoogleIcon } from '@/shared/components/icons'
 
+/* 핸들러를 필수로 둔다. optional이던 동안 `<SocialLoginButtons />`가 타입 검사를
+   통과해서, 아무 일도 하지 않는 버튼이 로그인 화면에 그대로 놓여 있었다. */
 interface SocialLoginButtonsProps {
-  onGoogleClick?: () => void
-  onGithubClick?: () => void
+  onGoogleClick: () => void
+  onGithubClick: () => void
 }
 
 // 아이콘은 모듈 스코프에 한 번만 생성해 재사용 (react-perf).

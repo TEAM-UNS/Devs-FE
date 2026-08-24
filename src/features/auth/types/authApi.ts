@@ -48,6 +48,36 @@ export interface LoginResponse {
   refresh_token: string
 }
 
+/**
+ * 소셜 로그인 provider. 값이 경로(`/user/oauth/{provider}/token`)와 인가 시작 주소
+ * (`/oauth2/authorization/{provider}`)에 그대로 들어가므로 서버 표기를 따른다.
+ */
+export type OAuthProvider = 'google' | 'github'
+
+/**
+ * POST /user/oauth/{provider}/token 응답 (200).
+ *
+ * 이메일 로그인과 달리 본문 없이 부르고, 인증 근거는 서버가 콜백에서 심어준 세션 쿠키다.
+ * 그래서 이 요청만 `withCredentials`가 필요하다.
+ */
+export interface OAuthTokenResponse {
+  access_token: string
+  refresh_token: string
+  /** 전공 또는 기술 스택이 비어 있어 온보딩이 필요한지. */
+  onboarding_required: boolean
+}
+
+/** PUT /user/major 요청 본문 — 온보딩에서 전공·경력을 채운다. */
+export interface UpdateMajorRequest {
+  personal_history: PersonalHistory
+  major_ids: number[]
+}
+
+/** PUT /user/tech-stack 요청 본문 — 온보딩에서 기술 스택을 채운다. */
+export interface UpdateTechStackRequest {
+  skill_ids: number[]
+}
+
 /** POST /email/send 요청 본문. */
 export interface SendEmailCodeRequest {
   email: string

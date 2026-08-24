@@ -9,8 +9,11 @@ export { SignupStep1 } from './components/SignupStep1'
 export { SignupStep2 } from './components/SignupStep2'
 export { SignupStep3 } from './components/SignupStep3'
 export { SignupStep4 } from './components/SignupStep4'
-export { signup } from './api'
+export { signup, updateMajor, updateTechStack } from './api'
 export { useLogin } from './hooks/useLogin'
+export { useOAuthLogin } from './hooks/useOAuthLogin'
+export { useOnboarding, type OnboardingInput } from './hooks/useOnboarding'
+export { startOAuthLogin, takeOAuthProvider } from './utils/oauthProvider'
 export { toPersonalHistory } from './utils/toPersonalHistory'
 export {
   type SignupStep1Input,
@@ -18,4 +21,5 @@ export {
   type SignupStep3Input,
   type SignupStep4Input,
   type LoginInput,
+  type OAuthProvider,
 } from './types'
