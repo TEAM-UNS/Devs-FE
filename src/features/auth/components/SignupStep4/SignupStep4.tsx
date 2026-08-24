@@ -36,13 +36,20 @@ interface SignupStep4Props {
   onSubmit: (data: SignupStep4Input) => void
   /** 제출 중이면 버튼을 잠근다 */
   pending?: boolean
+  /** 제출 버튼 문구. 회원가입 밖(온보딩)에서도 쓰므로 밖에서 정한다 */
+  submitLabel?: string
 }
 
 /**
  * 회원가입 4단계(마지막) — 전공별 기술 스택 선택.
  * 3단계와 같은 이유로(커스텀 선택 컨트롤) 로컬 상태 + Zod safeParse로 검증한다.
  */
-export function SignupStep4({ majors, onSubmit, pending }: SignupStep4Props) {
+export function SignupStep4({
+  majors,
+  onSubmit,
+  pending,
+  submitLabel = '회원가입',
+}: SignupStep4Props) {
   const [techStacks, setTechStacks] = useState<Selection>({})
   // 기본은 전부 펼침. 접힌 것만 담으면 노출 그룹이 바뀌어도 초기화가 필요 없다.
   const [closed, setClosed] = useState<string[]>([])
@@ -126,7 +133,7 @@ export function SignupStep4({ majors, onSubmit, pending }: SignupStep4Props) {
         onClick={handleSubmit}
         className="w-full"
       >
-        회원가입
+        {submitLabel}
       </Button>
     </div>
   )

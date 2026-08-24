@@ -7,6 +7,7 @@ import {
   AuthLayout,
   LoginForm,
   SocialLoginButtons,
+  startOAuthLogin,
   useLogin,
   type LoginInput,
 } from '@/features/auth'
@@ -52,7 +53,12 @@ export default function LoginPage() {
           <AuthDivider label="간편로그인" />
 
           <div className="flex flex-col gap-4">
-            <SocialLoginButtons />
+            {/* 소셜은 목적지를 여기서 못 정한다. 브라우저가 서버로 넘어갔다가
+                /oauth/callback으로 돌아오고, 온보딩 여부에 따라 그 화면이 정한다. */}
+            <SocialLoginButtons
+              onGoogleClick={() => startOAuthLogin('google')}
+              onGithubClick={() => startOAuthLogin('github')}
+            />
             <p className="flex items-center justify-center gap-1.5 text-body-sm">
               <span className="text-gray-300">아직 계정이 없으신가요?</span>
               <Link

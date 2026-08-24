@@ -16,6 +16,11 @@ export const ROUTES = {
   chat: '/chat',
   myPage: '/my',
   about: '/about',
+
+  /* 아래 둘은 네비게이션에 없다. 사용자가 직접 치고 들어오는 주소가 아니라
+     OAuth 리다이렉트가 도착하는 곳과 그 뒤에 이어지는 화면이다. */
+  oauthCallback: '/oauth/callback',
+  onboarding: '/onboarding',
 } as const
 
 export const MEDIA_QUERIES = {

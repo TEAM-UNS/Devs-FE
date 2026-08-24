@@ -14,6 +14,7 @@ import {
   SocialLoginButtons,
   Stepper,
   signup,
+  startOAuthLogin,
   toPersonalHistory,
   type SignupStep1Input,
   type SignupStep2Input,
@@ -99,7 +100,10 @@ export default function SignupPage() {
               {isFirstStep && (
                 <>
                   <AuthDivider label="간편로그인" />
-                  <SocialLoginButtons />
+                  <SocialLoginButtons
+                    onGoogleClick={() => startOAuthLogin('google')}
+                    onGithubClick={() => startOAuthLogin('github')}
+                  />
                 </>
               )}
             </div>

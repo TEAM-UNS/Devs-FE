@@ -20,7 +20,14 @@ const PUBLIC_PATHS = new Set([
   REISSUE_PATH,
 ])
 
-const isPublic = (path: string) => PUBLIC_PATHS.has(path)
+/* OAuth 토큰 교환(`/user/oauth/google/token` 등)도 같은 이유로 공개 경로다. 이 요청이
+   인증하는 근거는 accessToken이 아니라 서버가 심어준 세션 쿠키이고, 여기서 401이 나는 건
+   그 세션이 없다는 뜻이라 재발급으로 뒤집히지 않는다. provider가 경로에 들어가 목록으로
+   나열할 수 없어 접두사로 판별한다. */
+const OAUTH_TOKEN_PREFIX = '/user/oauth/'
+
+const isPublic = (path: string) =>
+  PUBLIC_PATHS.has(path) || path.startsWith(OAUTH_TOKEN_PREFIX)
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
@@ -110,10 +117,31 @@ export async function get<TResponse>(
   return withRetry(path, () => client.get<TResponse>(path, { params }))
 }
 
+/**
+ * 요청 단위로 열어두는 설정.
+ *
+ * `withCredentials`: 이 요청에만 쿠키를 실어 보낸다. 인스턴스 전체에 켜지 않는 이유는,
+ * 우리 인증이 Authorization 헤더라 나머지 요청에는 쿠키가 필요 없고 CSRF 표면만 넓어지기
+ * 때문이다. 지금 필요한 곳은 OAuth 토큰 교환 하나뿐이다.
+ */
+export interface RequestConfig {
+  withCredentials?: boolean
+}
+
 /** JSON 본문을 실어 POST 한다. */
 export async function post<TResponse>(
   path: string,
   body?: unknown,
+  config?: RequestConfig,
 ): Promise<TResponse> {
-  return withRetry(path, () => client.post<TResponse>(path, body))
+  return withRetry(path, () => client.post<TResponse>(path, body, config))
+}
+
+/** JSON 본문을 실어 PUT 한다. */
+export async function put<TResponse>(
+  path: string,
+  body?: unknown,
+  config?: RequestConfig,
+): Promise<TResponse> {
+  return withRetry(path, () => client.put<TResponse>(path, body, config))
 }
