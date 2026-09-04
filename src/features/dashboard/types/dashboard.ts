@@ -1,7 +1,9 @@
 import type { ComponentType, SVGProps } from 'react'
+import type { TrendDirection } from '@/shared/components/TrendMark'
 
-/** KPI 카드의 증감 방향 — 상승 · 하강 · 변동 없음. */
-export type TrendDirection = 'up' | 'down' | 'flat'
+/* 증감 방향은 표시 컴포넌트(shared/TrendMark)가 소유한다. 주간 리포트도 같은 표시를
+   쓰게 되어 shared로 올렸고, 여기서는 기존 import 경로를 유지하려고 다시 내보낸다. */
+export type { TrendDirection }
 
 /** KPI 카드 하단 보조 문구. 가운데 `value`만 SemiBold로 강조된다. */
 export interface KpiCaption {

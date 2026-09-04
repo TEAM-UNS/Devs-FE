@@ -1,5 +1,5 @@
 import type { KpiMetric } from '../../types'
-import { TrendMark } from './TrendMark'
+import { TrendMark } from '@/shared/components/TrendMark'
 
 /**
  * 대시보드 상단 KPI 카드 — 제목 · 큰 값 · 증감 문구 · 우측 아이콘.
