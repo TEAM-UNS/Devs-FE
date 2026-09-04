@@ -1,0 +1,1 @@
+export { TrendHighlights } from './TrendHighlights'
