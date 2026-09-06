@@ -43,6 +43,6 @@ export const majorQueries = {
     queryOptions({
       queryKey: [...majorQueries.all(), 'list'] as const,
       queryFn: fetchMajors,
-      staleTime: 30 * 60 * 1000,
+      staleTime: 12 * 60 * 60 * 1000,
     }),
 }
