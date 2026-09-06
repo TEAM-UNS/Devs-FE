@@ -10,8 +10,7 @@ import {
 const REISSUE_PATH = '/user/reissue'
 const REFRESH_TOKEN_HEADER = 'X-Refresh-Token'
 
-/* 토큰 없이 부르는 경로. 옛 토큰을 실으면 오히려 401이 나고, 401이 나도 재발급으로
-   결과가 바뀌지 않으므로 재시도 대상에서도 뺀다. */
+/* 토큰 없이 부르는 경로, 옛날 토큰을 담으면 401이 나고 401 에러가 반환 되더라도 재시도하지 않음 */
 const PUBLIC_PATHS = new Set([
   '/user/login',
   '/user/signup',
@@ -20,10 +19,8 @@ const PUBLIC_PATHS = new Set([
   REISSUE_PATH,
 ])
 
-/* OAuth 토큰 교환(`/user/oauth/google/token` 등)도 같은 이유로 공개 경로다. 이 요청이
-   인증하는 근거는 accessToken이 아니라 서버가 심어준 세션 쿠키이고, 여기서 401이 나는 건
-   그 세션이 없다는 뜻이라 재발급으로 뒤집히지 않는다. provider가 경로에 들어가 목록으로
-   나열할 수 없어 접두사로 판별한다. */
+/* OAuth 토큰 교환(`/user/oauth/google/token` 등)도 공개 경로이지만,
+뒤에 google과 같은 추가 경로 때문에 has로 정상정인 판별이 이루어지지 않기 때문에 접두사를 이용하여 판단 */
 const OAUTH_TOKEN_PREFIX = '/user/oauth/'
 
 const isPublic = (path: string) =>
@@ -31,7 +28,6 @@ const isPublic = (path: string) =>
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
-  // 서버가 죽어 있으면 응답 없이 매달려 있고 그동안 버튼이 잠긴 채로 남는다.
   timeout: 10_000,
 })
 
@@ -41,7 +37,7 @@ client.interceptors.request.use((config) => {
   return config
 })
 
-/* 동시에 401이 여러 개 떠도 재발급은 한 번만 돈다. */
+/* 동시에 여러 401 에러가 나더라도 1번만 리프래쉬 요청을 하도록 한다 */
 let refreshInFlight: Promise<boolean> | null = null
 
 async function refreshAccessToken(): Promise<boolean> {
@@ -56,12 +52,10 @@ async function refreshAccessToken(): Promise<boolean> {
     )
     if (!data.access_token) return false
 
-    // 응답이 accessToken만 주므로 refreshToken은 회전 없이 재사용한다.
     setTokens({ accessToken: data.access_token, refreshToken })
     return true
   } catch (error) {
-    // refreshToken이 거절당했을 때만 세션을 버린다. 5xx·네트워크 오류는 잠깐일 수 있어
-    // 토큰을 남기고 실패만 알린다.
+    // 네트워크 오류는 undefined로 뜨기 때문에 네트워크 오류는 넘기고 401이나 403만 토큰 초기화
     const status = axios.isAxiosError(error)
       ? error.response?.status
       : undefined
@@ -79,12 +73,10 @@ function refreshOnce(): Promise<boolean> {
 }
 
 /**
- * accessToken 만료로 401이면 재발급받아 한 번만 다시 보낸다.
- *
- * 재시도를 응답 인터셉터가 아니라 여기서 하는 이유: 인터셉터에서 `client(config)`를
- * 부르면 같은 체인으로 재진입해서, 무한 루프를 막으려면 config에 재시도 표시를
- * 남겨야 한다. 그 표시는 config 객체가 그대로 전달된다는 전제에 기대고 타입 검사도
- * 못 잡는다. 여기서는 `send()`를 두 번 부르고 끝이라 재귀가 없다.
+ * accessToken 만료로 401이면 재발급받아 한 번만 다시 보냄
+ * 첫 요청에서 성공하면 그대로 종료되고,
+ * 첫 요청에서 실패하면 에러 코드를 보고 401이 아니거나 공개 경로라면 리슈로 해결되는 것이 아니니
+ * 에러를 던지고 401이고 공개 경로도 아니라면 리슈 요청 후 본요청을 다시 보냄
  */
 async function withRetry<TResponse>(
   path: string,
@@ -105,10 +97,9 @@ async function withRetry<TResponse>(
 }
 
 /**
- * GET 요청.
- *
+ * GET 요청
  * `params`는 axios가 쿼리스트링으로 붙인다. 값이 `undefined`인 항목은 빼므로
- * '필터 없음'을 부르는 쪽에서 분기하지 않고 그대로 넘기면 된다.
+ * '필터 없음'을 부르는 쪽에서 직접 거를 필요 없이 바로 사용하면 됨
  */
 export async function get<TResponse>(
   path: string,
@@ -118,17 +109,14 @@ export async function get<TResponse>(
 }
 
 /**
- * 요청 단위로 열어두는 설정.
- *
  * `withCredentials`: 이 요청에만 쿠키를 실어 보낸다. 인스턴스 전체에 켜지 않는 이유는,
- * 우리 인증이 Authorization 헤더라 나머지 요청에는 쿠키가 필요 없고 CSRF 표면만 넓어지기
- * 때문이다. 지금 필요한 곳은 OAuth 토큰 교환 하나뿐이다.
+ * 우리 인증이 Authorization 헤더라 나머지 요청에는 쿠키가 필요 없음
  */
 export interface RequestConfig {
   withCredentials?: boolean
 }
 
-/** JSON 본문을 실어 POST 한다. */
+/** JSON 본문을 실어 POST 요청 */
 export async function post<TResponse>(
   path: string,
   body?: unknown,
@@ -137,7 +125,7 @@ export async function post<TResponse>(
   return withRetry(path, () => client.post<TResponse>(path, body, config))
 }
 
-/** JSON 본문을 실어 PUT 한다. */
+/** JSON 본문을 실어 PUT 요청 */
 export async function put<TResponse>(
   path: string,
   body?: unknown,
