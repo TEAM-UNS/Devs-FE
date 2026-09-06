@@ -20,7 +20,7 @@ const PUBLIC_PATHS = new Set([
 ])
 
 /* OAuth 토큰 교환(`/user/oauth/google/token` 등)도 공개 경로이지만,
-뒤에 google과 같은 추가 경로 때문에 has로 정상정인 판별이 이루어지지 않기 때문에 접두사를 이용하여 판단 */
+뒤에 google과 같은 추가 경로 때문에 has로 정상적인 판별이 이루어지지 않기 때문에 접두사를 이용하여 판단 */
 const OAUTH_TOKEN_PREFIX = '/user/oauth/'
 
 const isPublic = (path: string) =>
@@ -37,7 +37,7 @@ client.interceptors.request.use((config) => {
   return config
 })
 
-/* 동시에 여러 401 에러가 나더라도 1번만 리프래쉬 요청을 하도록 한다 */
+/* 동시에 여러 401 에러가 나더라도 1번만 리슈 요청을 하도록 한다 */
 let refreshInFlight: Promise<boolean> | null = null
 
 async function refreshAccessToken(): Promise<boolean> {
@@ -73,7 +73,7 @@ function refreshOnce(): Promise<boolean> {
 }
 
 /**
- * accessToken 만료로 401이면 재발급받아 한 번만 다시 보냄
+ * accessToken 만료로 401이면 리슈받아 한 번만 다시 보냄
  * 첫 요청에서 성공하면 그대로 종료되고,
  * 첫 요청에서 실패하면 에러 코드를 보고 401이 아니거나 공개 경로라면 리슈로 해결되는 것이 아니니
  * 에러를 던지고 401이고 공개 경로도 아니라면 리슈 요청 후 본요청을 다시 보냄

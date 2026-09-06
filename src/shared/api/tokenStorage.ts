@@ -6,18 +6,22 @@ export interface AuthTokens {
   refreshToken: string
 }
 
-/** 요청 헤더에 실을 accessToken */
+/**
+ * 저장된 accessToken. 쓰는 곳은 둘
+ * - `http.ts` 요청 헤더에 실음
+ * - `RootLayout` 라우트 가드 — 없으면 `/login`으로 보냄
+ */
 export function getAccessToken(): string | null {
   return localStorage.getItem(ACCESS_TOKEN_KEY)
 }
 
-/** 재발급에 쓸 refreshToken */
+/** 리슈에 쓸 refreshToken */
 export function getRefreshToken(): string | null {
   return localStorage.getItem(REFRESH_TOKEN_KEY)
 }
 
 /**
- * 로그인, 재발급으로 받은 토큰 보관
+ * 로그인, 리슈로 받은 토큰 보관
  *
  * 값이 문자열이 아니면 저장하지 않고 던진다 `localStorage.setItem`은 무엇이든
  * 문자열로 바꿔 담아서, 응답 필드명이 어긋나면 `"undefined"`가 저장되는데 그 값은
