@@ -1,5 +1,7 @@
 import { cn } from '@/shared/utils/cn'
-import type { TrendDirection } from '../../types'
+
+/** 증감 방향. 이 표시가 쓰이는 곳(대시보드 KPI·주간 리포트 순위)이 공유한다. */
+export type TrendDirection = 'up' | 'down' | 'flat'
 
 // 상승=빨강 · 하강=파랑. 한국 시장 관행(적상청하)을 따른 Figma 디자인 그대로다.
 // (Figma 상승 323:1639 = #ff7272 = error, 하강 323:1632 = #62caf4 = info)

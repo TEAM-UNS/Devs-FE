@@ -18,6 +18,7 @@ import { RootLayout } from './RootLayout'
  *   여기에 Suspense 경계를 두어 자식 청크 로딩을 한 곳에서 처리하기 때문이다.
  */
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
+const WeeklyReportPage = lazy(() => import('@/pages/WeeklyReportPage'))
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const SignupPage = lazy(() => import('@/pages/SignupPage'))
@@ -86,6 +87,7 @@ export const routes: RouteObject[] = [
     element: <RootLayout />,
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: 'weekly-report', element: <WeeklyReportPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
