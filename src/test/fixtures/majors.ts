@@ -10,7 +10,7 @@ export const MOCK_MAJORS: MajorsResponse = {
     {
       id: 1,
       major: 'BACKEND',
-      tech_stacks: [
+      techStacks: [
         { id: 101, name: 'Spring' },
         { id: 102, name: 'Node.js' },
       ],
@@ -18,18 +18,18 @@ export const MOCK_MAJORS: MajorsResponse = {
     {
       id: 2,
       major: 'FRONTEND',
-      tech_stacks: [
+      techStacks: [
         { id: 201, name: 'React' },
         { id: 202, name: 'Vue' },
       ],
     },
-    { id: 3, major: 'DEVOPS', tech_stacks: [{ id: 301, name: 'Docker' }] },
-    { id: 4, major: 'ANDROID', tech_stacks: [{ id: 401, name: 'Kotlin' }] },
-    { id: 5, major: 'IOS', tech_stacks: [{ id: 501, name: 'Swift' }] },
-    { id: 6, major: 'AI', tech_stacks: [{ id: 601, name: 'PyTorch' }] },
-    { id: 7, major: 'DATABASE', tech_stacks: [{ id: 701, name: 'MySQL' }] },
-    { id: 8, major: 'SECURITY', tech_stacks: [{ id: 801, name: 'Burp' }] },
-    { id: 9, major: 'DESIGN', tech_stacks: [{ id: 901, name: 'Figma' }] },
-    { id: 10, major: 'ETC', tech_stacks: [{ id: 1001, name: 'Etc' }] },
+    { id: 3, major: 'DEVOPS', techStacks: [{ id: 301, name: 'Docker' }] },
+    { id: 4, major: 'ANDROID', techStacks: [{ id: 401, name: 'Kotlin' }] },
+    { id: 5, major: 'IOS', techStacks: [{ id: 501, name: 'Swift' }] },
+    { id: 6, major: 'AI', techStacks: [{ id: 601, name: 'PyTorch' }] },
+    { id: 7, major: 'DATABASE', techStacks: [{ id: 701, name: 'MySQL' }] },
+    { id: 8, major: 'SECURITY', techStacks: [{ id: 801, name: 'Burp' }] },
+    { id: 9, major: 'DESIGN', techStacks: [{ id: 901, name: 'Figma' }] },
+    { id: 10, major: 'ETC', techStacks: [{ id: 1001, name: 'Etc' }] },
   ],
 }

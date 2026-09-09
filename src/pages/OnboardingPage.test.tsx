@@ -86,11 +86,11 @@ describe('OnboardingPage', () => {
     expect(await screen.findByText('대시보드')).toBeInTheDocument()
 
     expect(mocks.put).toHaveBeenCalledWith('/user/major', {
-      personal_history: 'NO_EXPERIENCE',
-      major_ids: [Number(BACKEND.id)],
+      personalHistory: 'NO_EXPERIENCE',
+      majorIds: [Number(BACKEND.id)],
     })
     expect(mocks.put).toHaveBeenCalledWith('/user/tech-stack', {
-      skill_ids: [101],
+      skillIds: [101],
     })
   })
 

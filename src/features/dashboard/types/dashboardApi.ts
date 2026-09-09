@@ -1,6 +1,7 @@
 /*
  * 대시보드 API의 응답 모양. Notion 명세(`/dashboard` 카테고리 4건)를 그대로 옮긴 것이며,
- * 화면이 쓰는 타입(`dashboard.ts`)과는 별개다. 서버는 스네이크케이스로 준다.
+ * 화면이 쓰는 타입(`dashboard.ts`)과는 별개다. 응답 필드는 카멜케이스,
+ * 쿼리 파라미터는 스네이크케이스다(`major_id`·`company_size`).
  */
 
 /** 기업 규모. `company-size-tech-stacks`의 쿼리 값이자 응답 값. */
@@ -23,18 +24,18 @@ export interface NamedRate {
 
 /** GET /dashboard/summary 응답 (200). KPI 카드 4장의 원본. */
 export interface DashboardSummaryResponse {
-  today_collected_count: number
-  today_diff: number
-  active_company_count: number
-  company_diff: number
-  most_mentioned_tech: NamedCount
-  most_rising_tech: NamedRate
+  todayCollectedCount: number
+  todayDiff: number
+  activeCompanyCount: number
+  companyDiff: number
+  mostMentionedTech: NamedCount
+  mostRisingTech: NamedRate
 }
 
 /** 인기 기술 스택 한 줄. */
 export interface PopularTechStackDto {
   rank: number
-  tech_stack_id: number
+  techStackId: number
   name: string
   count: number
 }
@@ -45,7 +46,7 @@ export interface PopularTechStackDto {
  */
 export interface PopularTechStacksResponse {
   major: string
-  tech_stacks: PopularTechStackDto[]
+  techStacks: PopularTechStackDto[]
 }
 
 /** 기업 규모별 기술 스택 한 줄. 비율(%)로 온다. */
@@ -57,9 +58,9 @@ export interface CompanySizeTechStackDto {
 
 /** GET /dashboard/company-size-tech-stacks 응답 (200). */
 export interface CompanySizeTechStacksResponse {
-  company_size: CompanySize
+  companySize: CompanySize
   category: string
-  tech_stacks: CompanySizeTechStackDto[]
+  techStacks: CompanySizeTechStackDto[]
 }
 
 /** 급상승 그래프의 한 시점. */
@@ -70,7 +71,7 @@ export interface RisingPointDto {
 
 /** 급상승 그래프의 시리즈 하나. */
 export interface RisingTechStackDto {
-  tech_stack_id: number
+  techStackId: number
   name: string
   values: RisingPointDto[]
 }
@@ -78,6 +79,6 @@ export interface RisingTechStackDto {
 /** GET /dashboard/best-tech-stacks 응답 (200). */
 export interface BestTechStacksResponse {
   period: RisingPeriod
-  major_id: number
-  tech_stacks: RisingTechStackDto[]
+  majorId: number
+  techStacks: RisingTechStackDto[]
 }

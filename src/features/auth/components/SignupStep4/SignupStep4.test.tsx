@@ -21,7 +21,7 @@ const frontend = toMajorOption(frontendCategory)
 
 /** 전공의 기술 스택을 화면 표기(문자열 id) 기준으로 바꾼다. */
 const tagsOf = (category: (typeof MOCK_MAJORS)['categories'][number]) =>
-  category.tech_stacks.map((stack) => ({
+  category.techStacks.map((stack) => ({
     id: String(stack.id),
     label: stack.name,
   }))

@@ -68,7 +68,7 @@ export function SignupStep4({
       .map((category) => ({
         majorId: String(category.id),
         label: toMajorOption(category).label,
-        tags: category.tech_stacks.map((stack) => ({
+        tags: category.techStacks.map((stack) => ({
           id: String(stack.id),
           label: stack.name,
         })),

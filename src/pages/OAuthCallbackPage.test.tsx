@@ -58,9 +58,9 @@ describe('OAuthCallbackPage', () => {
     sessionStorage.setItem(PROVIDER_KEY, 'google')
     mocks.post.mockImplementationOnce(() =>
       settleLater({
-        access_token: 'access-1',
-        refresh_token: 'refresh-1',
-        onboarding_required: false,
+        accessToken: 'access-1',
+        refreshToken: 'refresh-1',
+        onboardingRequired: false,
       }),
     )
 
@@ -75,9 +75,9 @@ describe('OAuthCallbackPage', () => {
     sessionStorage.setItem(PROVIDER_KEY, 'github')
     mocks.post.mockImplementationOnce(() =>
       settleLater({
-        access_token: 'a',
-        refresh_token: 'r',
-        onboarding_required: false,
+        accessToken: 'a',
+        refreshToken: 'r',
+        onboardingRequired: false,
       }),
     )
 
@@ -96,9 +96,9 @@ describe('OAuthCallbackPage', () => {
     sessionStorage.setItem(PROVIDER_KEY, 'google')
     mocks.post.mockImplementationOnce(() =>
       settleLater({
-        access_token: 'a',
-        refresh_token: 'r',
-        onboarding_required: true,
+        accessToken: 'a',
+        refreshToken: 'r',
+        onboardingRequired: true,
       }),
     )
 
@@ -128,13 +128,13 @@ describe('OAuthCallbackPage', () => {
 
   it('응답에 토큰이 없으면 로딩 화면에 가두지 않고 로그인 화면으로 돌려보낸다', async () => {
     sessionStorage.setItem(PROVIDER_KEY, 'google')
-    // 200이지만 refresh_token이 빠진 응답 — setTokens가 던진다.
+    // 200이지만 refreshToken이 빠진 응답 — setTokens가 던진다.
     // 저장이 onSuccess 안에 있으면 react-query가 이미 성공으로 판정한 뒤라
     // 실패 경로도 화면 이동도 타지 않고 로딩 화면에 영원히 멈춘다.
     mocks.post.mockImplementationOnce(() =>
       settleLater({
-        access_token: 'access-1',
-        onboarding_required: false,
+        accessToken: 'access-1',
+        onboardingRequired: false,
       }),
     )
 
@@ -149,9 +149,9 @@ describe('OAuthCallbackPage', () => {
     sessionStorage.setItem(PROVIDER_KEY, 'google')
     mocks.post.mockImplementationOnce(() =>
       settleLater({
-        access_token: 'a',
-        refresh_token: 'r',
-        onboarding_required: false,
+        accessToken: 'a',
+        refreshToken: 'r',
+        onboardingRequired: false,
       }),
     )
 

@@ -42,7 +42,7 @@ export default function OAuthCallbackPage() {
     mutateAsync(provider)
       .then((data) =>
         navigate(
-          data.onboarding_required ? ROUTES.onboarding : ROUTES.home,
+          data.onboardingRequired ? ROUTES.onboarding : ROUTES.home,
           // replace: 뒤로가기로 이 콜백 주소에 다시 오지 않게 한다.
           // 세션은 이미 소모돼서 돌아와도 실패한다.
           { replace: true },
