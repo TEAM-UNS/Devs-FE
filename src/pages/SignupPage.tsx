@@ -61,10 +61,10 @@ export default function SignupPage() {
         email,
         name,
         password,
-        personal_history: toPersonalHistory(draft),
-        major_ids: majors.map(Number),
+        personalHistory: toPersonalHistory(draft),
+        majorIds: majors.map(Number),
         // 서버는 전공 구분 없이 평평한 id 배열을 받는다.
-        skill_ids: Object.values(data.techStacks).flat().map(Number),
+        skillIds: Object.values(data.techStacks).flat().map(Number),
       },
       {
         onSuccess: () => {

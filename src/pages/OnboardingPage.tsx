@@ -48,10 +48,10 @@ export default function OnboardingPage() {
 
     onboardingMutation.mutate(
       {
-        personal_history: toPersonalHistory(majorStep),
-        major_ids: majorStep.majors.map(Number),
+        personalHistory: toPersonalHistory(majorStep),
+        majorIds: majorStep.majors.map(Number),
         // 서버는 전공 구분 없이 평평한 id 배열을 받는다.
-        skill_ids: Object.values(data.techStacks).flat().map(Number),
+        skillIds: Object.values(data.techStacks).flat().map(Number),
       },
       {
         onSuccess: () => {

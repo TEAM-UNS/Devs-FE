@@ -199,7 +199,7 @@ describe('DashboardOverview', () => {
     // 순위 3 + 급상승 범례 2
     expect(await screen.findByText('01')).toBeInTheDocument()
     expect(screen.getAllByRole('listitem')).toHaveLength(
-      MOCK_COMPANY_SIZE.tech_stacks.length + MOCK_RISING.tech_stacks.length,
+      MOCK_COMPANY_SIZE.techStacks.length + MOCK_RISING.techStacks.length,
     )
   })
 

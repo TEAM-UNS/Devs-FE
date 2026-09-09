@@ -7,7 +7,7 @@
  * 책임이라 `shared/api/http`가 직접 호출한다.
  */
 
-/** 경력 구간 — 명세의 `personal_history` ENUM. */
+/** 경력 구간 — 명세의 `personalHistory` ENUM. */
 export type PersonalHistory =
   'NO_EXPERIENCE' | 'ENTRY_LEVEL' | 'JUNIOR' | 'MIDDLE' | 'SENIOR'
 
@@ -19,15 +19,15 @@ export interface MessageResponse {
 /**
  * POST /user/signup 요청 본문.
  *
- * 필드명은 명세를 그대로 따른다(스네이크케이스). 임의로 통일하면 서버가 못 읽는다.
+ * 필드명은 명세를 그대로 따른다(카멜케이스). 임의로 바꾸면 서버가 못 읽는다.
  */
 export interface SignupRequest {
   email: string
   name: string
   password: string
-  personal_history: PersonalHistory
-  major_ids: number[]
-  skill_ids: number[]
+  personalHistory: PersonalHistory
+  majorIds: number[]
+  skillIds: number[]
 }
 
 /** POST /login 요청 본문. */
@@ -40,12 +40,11 @@ export interface LoginRequest {
  * POST /user/login 응답 (200). 두 토큰 모두 본문으로 내려온다(쿠키 방식 아님).
  * 즉 저장·전송 책임이 전부 프론트에 있다.
  *
- * 서버는 모든 필드를 스네이크케이스로 준다. 보관 형태(`AuthTokens`)와 이름이 다르므로
- * `useLogin`이 옮겨 담는다.
+ * 보관 형태(`AuthTokens`)와 이름이 같지만 타입이 달라 `useLogin`이 옮겨 담는다.
  */
 export interface LoginResponse {
-  access_token: string
-  refresh_token: string
+  accessToken: string
+  refreshToken: string
 }
 
 /**
@@ -61,21 +60,21 @@ export type OAuthProvider = 'google' | 'github'
  * 그래서 이 요청만 `withCredentials`가 필요하다.
  */
 export interface OAuthTokenResponse {
-  access_token: string
-  refresh_token: string
+  accessToken: string
+  refreshToken: string
   /** 전공 또는 기술 스택이 비어 있어 온보딩이 필요한지. */
-  onboarding_required: boolean
+  onboardingRequired: boolean
 }
 
 /** PUT /user/major 요청 본문 — 온보딩에서 전공·경력을 채운다. */
 export interface UpdateMajorRequest {
-  personal_history: PersonalHistory
-  major_ids: number[]
+  personalHistory: PersonalHistory
+  majorIds: number[]
 }
 
 /** PUT /user/tech-stack 요청 본문 — 온보딩에서 기술 스택을 채운다. */
 export interface UpdateTechStackRequest {
-  skill_ids: number[]
+  skillIds: number[]
 }
 
 /** POST /email/send 요청 본문. */

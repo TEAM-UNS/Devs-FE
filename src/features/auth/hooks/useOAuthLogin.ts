@@ -20,10 +20,10 @@ export function useOAuthLogin() {
     mutationFn: async (provider: OAuthProvider) => {
       const data = await exchangeOAuthToken(provider)
 
-      // 서버는 스네이크케이스로 주고 보관은 camelCase라 여기서 옮겨 담는다.
+      // 응답 타입과 보관 타입(`AuthTokens`)이 달라 여기서 옮겨 담는다.
       setTokens({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
       })
 
       return data

@@ -45,14 +45,14 @@ async function refreshAccessToken(): Promise<boolean> {
   if (!refreshToken) return false
 
   try {
-    const { data } = await client.post<{ access_token?: string }>(
+    const { data } = await client.post<{ accessToken?: string }>(
       REISSUE_PATH,
       undefined,
       { headers: { [REFRESH_TOKEN_HEADER]: refreshToken } },
     )
-    if (!data.access_token) return false
+    if (!data.accessToken) return false
 
-    setTokens({ accessToken: data.access_token, refreshToken })
+    setTokens({ accessToken: data.accessToken, refreshToken })
     return true
   } catch (error) {
     // 네트워크 오류는 undefined로 뜨기 때문에 네트워크 오류는 넘기고 401이나 403만 토큰 초기화

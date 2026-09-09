@@ -7,20 +7,20 @@ import { get } from './http'
  * 소유 피처를 하나로 정할 수 없어 공용으로 올림
  */
 
-/** 기술 스택 한 개 `id`가 회원가입의 `skill_ids` 원소 */
+/** 기술 스택 한 개 `id`가 회원가입의 `skillIds` 원소 */
 export interface TechStackDto {
   id: number
   name: string
 }
 
 /**
- * 전공 한 개 `id`가 회원가입의 `major_ids`이자 대시보드의 `major_id`가 됨
+ * 전공 한 개 `id`가 회원가입의 `majorIds`이자 대시보드 쿼리 파라미터 `major_id`가 됨
  * `major`는 표시용 라벨이 아니라 `"BACKEND"` 같은 ENUM 문자열
  */
 export interface MajorCategoryDto {
   id: number
   major: string
-  tech_stacks: TechStackDto[]
+  techStacks: TechStackDto[]
 }
 
 /** GET /majors 응답은 전공 안에 기술 스택이 중첩 되어서 옴  */

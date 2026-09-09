@@ -42,34 +42,34 @@ function directionOf(diff: number): TrendDirection {
  * @returns KPI 카드 데이터
  */
 export function toKpiMetrics(summary: DashboardSummaryResponse): KpiMetric[] {
-  const { most_mentioned_tech: mentioned, most_rising_tech: rising } = summary
+  const { mostMentionedTech: mentioned, mostRisingTech: rising } = summary
 
   return [
     {
       id: 'collected-postings',
       label: '오늘 수집된 공고',
-      value: String(summary.today_collected_count),
+      value: String(summary.todayCollectedCount),
       unit: '건',
       icon: MegaphoneIcon,
       caption: {
         prefix: '전일 대비',
-        value: withSign(summary.today_diff),
+        value: withSign(summary.todayDiff),
         suffix: '건',
       },
-      trend: directionOf(summary.today_diff),
+      trend: directionOf(summary.todayDiff),
     },
     {
       id: 'active-companies',
       label: '활성 채용 기업',
-      value: String(summary.active_company_count),
+      value: String(summary.activeCompanyCount),
       unit: '개',
       icon: BuildingIcon,
       caption: {
         prefix: '전주 대비',
-        value: withSign(summary.company_diff),
+        value: withSign(summary.companyDiff),
         suffix: '건',
       },
-      trend: directionOf(summary.company_diff),
+      trend: directionOf(summary.companyDiff),
     },
     {
       id: 'most-mentioned',
@@ -107,10 +107,10 @@ export function toKpiMetrics(summary: DashboardSummaryResponse): KpiMetric[] {
  * @returns 막대 데이터
  */
 export function toStackBars(response: PopularTechStacksResponse): StackBar[] {
-  const max = Math.max(...response.tech_stacks.map((s) => s.count), 0)
+  const max = Math.max(...response.techStacks.map((s) => s.count), 0)
 
-  return response.tech_stacks.map((stack) => ({
-    id: String(stack.tech_stack_id),
+  return response.techStacks.map((stack) => ({
+    id: String(stack.techStackId),
     label: stack.name,
     ratio: max > 0 ? stack.count / max : null,
   }))
@@ -125,7 +125,7 @@ export function toStackBars(response: PopularTechStacksResponse): StackBar[] {
 export function toStackRanks(
   response: CompanySizeTechStacksResponse,
 ): StackRank[] {
-  return response.tech_stacks.map((stack) => ({
+  return response.techStacks.map((stack) => ({
     id: `${stack.rank}-${stack.name}`,
     name: stack.name,
     percent: stack.percentage,
@@ -145,11 +145,11 @@ export function toRisingChart(response: BestTechStacksResponse): {
   series: RisingSeries[]
   axisLabels: string[]
 } {
-  const [first] = response.tech_stacks
+  const [first] = response.techStacks
 
   return {
-    series: response.tech_stacks.map((stack) => ({
-      id: String(stack.tech_stack_id),
+    series: response.techStacks.map((stack) => ({
+      id: String(stack.techStackId),
       label: stack.name,
       values: stack.values.map((point) => point.value),
     })),
