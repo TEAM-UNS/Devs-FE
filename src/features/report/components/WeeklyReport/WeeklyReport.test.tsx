@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { WeeklyReport } from './WeeklyReport'
 
 /** 선택된 칩의 라벨. 토글 칩은 `aria-pressed`로 선택을 드러낸다. */
@@ -11,6 +11,20 @@ function selectedChip() {
 }
 
 describe('WeeklyReport', () => {
+  /* 주차 라벨은 '지금'에서 계산되는데 컴포넌트는 기준 시각을 받지 않으므로
+     (weekRangeAt의 now 인자는 내부 호출까지 닿지 않는다) 여기서는 시계를 고정한다.
+     Date만 가짜로 바꾼다 — setTimeout·rAF까지 가로채면 카드 이동(600ms)이 멈춘다.
+     기준이 로컬 달력이라 날짜도 로컬 성분으로 만든다. 07-08(수) 정오가 속한 주는
+     07-06(월)에 시작한다. */
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date(2026, 6, 8, 12))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('주차·날짜 범위·직군 필터·푸터 문구를 렌더링한다', () => {
     render(<WeeklyReport />)
 

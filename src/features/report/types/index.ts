@@ -8,6 +8,8 @@ export interface WeekRange {
   label: string
   start: string
   end: string
+  /** 요청에 보낼 기준일 (예: `2026-07-06`) */
+  baseDate: string
 }
 
 export interface StackRank {
