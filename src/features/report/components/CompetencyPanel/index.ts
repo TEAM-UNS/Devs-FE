@@ -1,1 +1,0 @@
-export { CompetencyPanel } from './CompetencyPanel'
