@@ -270,7 +270,7 @@
     }
   }
 
-  /* 카드 안 역량 패널도 자리에 따라 색이 다르다 (이웃 #343a40 · 가운데 #1e2126) */
+  /* 카드 안 요약 리포트 패널도 자리에 따라 색이 다르다 (이웃 #343a40 · 가운데 #1e2126) */
   @keyframes panel-focus {
     to {
       background-color: var(--color-canvas);

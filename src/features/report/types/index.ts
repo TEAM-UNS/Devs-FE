@@ -58,22 +58,6 @@ export interface MentionBar {
   current: number
 }
 
-/** 역량 태그 하나. 일부만 강조 색으로 칠해진다. */
-export interface CompetencyTag {
-  id: string
-  label: string
-  /** 강조 여부. ⚠️ 디자인에 기준이 없어 목데이터에서 임의로 지정했다 */
-  highlighted: boolean
-}
-
-/** 역량 순위 한 줄 — 이름과 비중 게이지. */
-export interface CompetencyRank {
-  id: string
-  label: string
-  /** 비중(0~100) */
-  percent: number
-}
-
 /**
  * 한 주치 리포트 전체. 카드 하나가 이 덩어리 하나를 그린다.
  *
@@ -86,6 +70,6 @@ export interface WeekReport {
   ranks: StackRank[]
   highlights: TrendHighlight[]
   mentions: MentionBar[]
-  tags: CompetencyTag[]
-  competencies: CompetencyRank[]
+  /** AI 요약 리포트 문단들. 비어 있으면 빈 상태를 보여준다 */
+  summary: string[]
 }

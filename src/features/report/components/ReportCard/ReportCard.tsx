@@ -1,11 +1,11 @@
 import type { WeekReport } from '../../types'
-import { CompetencyPanel } from '../CompetencyPanel'
+import { ReportSummary } from '../ReportSummary'
 import { StackRankList } from '../StackRankList'
 import { TrendHighlights } from '../TrendHighlights'
 
 type ReportCardProps = Pick<
   WeekReport,
-  'ranks' | 'highlights' | 'mentions' | 'tags' | 'competencies'
+  'week' | 'ranks' | 'highlights' | 'mentions' | 'summary'
 >
 
 /* 이번 주 카드의 표면 — Figma 335:2275.
@@ -30,11 +30,11 @@ const SURFACE = [
  * 이번 주 카드와 좌우 프리뷰 카드가 같은 내용을 쓰되 표면이 달라서 나눠 뒀다.
  */
 export function ReportCardBody({
+  week,
   ranks,
   highlights,
   mentions,
-  tags,
-  competencies,
+  summary,
 }: ReportCardProps) {
   return (
     /* data-card-body: 주차를 넘길 때 WeekDeck이 이 내용의 밝기를 함께 낮춘다.
@@ -45,13 +45,13 @@ export function ReportCardBody({
         <TrendHighlights highlights={highlights} mentions={mentions} />
       </div>
 
-      <CompetencyPanel tags={tags} ranks={competencies} />
+      <ReportSummary week={week} paragraphs={summary} />
     </div>
   )
 }
 
 /**
- * 이번 주 리포트 카드. 순위·트렌드·언급량·역량이 한 장에 들어간다.
+ * 이번 주 리포트 카드. 순위·트렌드·언급량·요약이 한 장에 들어간다.
  * 폭·여백은 Figma 335:2275(978x650, padding 48, radius 12) 기준이다.
  */
 export function ReportCard(props: ReportCardProps) {

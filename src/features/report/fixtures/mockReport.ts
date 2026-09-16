@@ -1,7 +1,5 @@
 import { weekRangeAt } from '../utils/weekRange'
 import type {
-  CompetencyRank,
-  CompetencyTag,
   MentionBar,
   StackRank,
   TrendHighlight,
@@ -48,29 +46,6 @@ const MOCK_MENTIONS: MentionBar[] = [
   { name: 'Next.js', last: 37, current: 20 },
 ]
 
-/** 채용 공고·면접에 자주 나오는 역량 태그. 강조 위치도 디자인 목업을 따랐다. */
-const MOCK_TAGS: CompetencyTag[] = [
-  { id: 't1', label: '대용량 트래픽 처리', highlighted: false },
-  { id: 't2', label: 'CI/CD 구축 경험', highlighted: true },
-  { id: 't3', label: '테스트 자동화', highlighted: true },
-  { id: 't4', label: '성능 최적화', highlighted: true },
-  { id: 't5', label: '코드 리뷰', highlighted: false },
-  { id: 't6', label: '장애 대응', highlighted: false },
-  { id: 't7', label: '모니터링 구축', highlighted: false },
-  { id: 't8', label: '컨테이너 운영', highlighted: false },
-  { id: 't9', label: 'API 설계', highlighted: true },
-  { id: 't10', label: '클라우드 인프라', highlighted: false },
-  { id: 't11', label: '보안 점검', highlighted: false },
-]
-
-/** 역량 순위. 디자인은 네 줄 모두 82%지만 게이지가 움직이는지 보이도록 값을 나눴다. */
-const MOCK_COMPETENCIES: CompetencyRank[] = [
-  { id: 'c1', label: '대용량 트래픽 처리', percent: 82 },
-  { id: 'c2', label: 'CI/CD 구축 경험', percent: 74 },
-  { id: 'c3', label: '테스트 자동화', percent: 61 },
-  { id: 'c4', label: '성능 최적화', percent: 48 },
-]
-
 /**
  * 한 주치 리포트 묶음.
  *
@@ -84,8 +59,8 @@ const MOCK_REPORT: WeekReport = {
   ranks: MOCK_RANKS,
   highlights: MOCK_HIGHLIGHTS,
   mentions: MOCK_MENTIONS,
-  tags: MOCK_TAGS,
-  competencies: MOCK_COMPETENCIES,
+  /* 요약은 비워 둔다 — 빈 상태가 기본이고, 채워진 모습은 컴포넌트 테스트가 확인한다. */
+  summary: [],
 }
 
 /**
