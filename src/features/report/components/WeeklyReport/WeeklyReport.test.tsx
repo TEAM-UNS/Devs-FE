@@ -23,9 +23,9 @@ describe('WeeklyReport', () => {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
     }
 
-    // 수집 건수는 천 단위 구분자를 붙여 보여준다.
+    // 데이터 연결 전이라 수집 건수는 0이다(#35).
     expect(
-      screen.getByText(/19,283개의 공고를 분석한 결과입니다/),
+      screen.getByText(/0개의 공고를 분석한 결과입니다/),
     ).toBeInTheDocument()
   })
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { mockReportAt } from '../../fixtures/mockReport'
-import type { JobFilter } from '../../types'
+import type { JobFilter, WeekReport } from '../../types'
+import { weekRangeAt } from '../../utils/weekRange'
 import { JobFilters } from '../JobFilters'
 import { ReportCard, ReportCardBody } from '../ReportCard'
 import { WeekDeck } from '../WeekDeck'
@@ -14,11 +14,23 @@ const OLDEST_WEEK_OFFSET = 8
    이 대비가 없으면 주차가 영영 바뀌지 않고 화살표도 잠긴 채로 남는다. */
 const SLIDE_TIMEOUT = 600
 
+/* API를 붙이기 전(#35)이라 채울 데이터가 없다. 주차만 계산하고 나머지는 비워 둔다. */
+function emptyReportAt(offset: number): WeekReport {
+  return {
+    week: weekRangeAt(offset),
+    collectedCount: 0,
+    ranks: [],
+    highlights: [],
+    mentions: [],
+    summary: [],
+  }
+}
+
 /**
  * 주간 리포트 본문 — 주차 네비 · 직군 필터 · 리포트 카드 · 푸터 문구.
  * 폭·간격은 Figma `리포트`(325:1962) 기준이다.
  *
- * ⚠️ 아직 퍼블리싱 단계다. 데이터는 전부 목데이터다.
+ * ⚠️ 아직 데이터가 연결되지 않아 카드 내용이 비어 있다(#35).
  */
 export function WeeklyReport() {
   /* 직군 필터와 보고 있는 주차를 상태로 둔다.
@@ -66,9 +78,9 @@ export function WeeklyReport() {
     return () => clearTimeout(timer)
   }, [slidingTo])
 
-  const { collectedCount, ...report } = mockReportAt(weekOffset)
-  const previous = mockReportAt(weekOffset - 1)
-  const next = mockReportAt(weekOffset + 1)
+  const { collectedCount, ...report } = emptyReportAt(weekOffset)
+  const previous = emptyReportAt(weekOffset - 1)
+  const next = emptyReportAt(weekOffset + 1)
 
   /* 헤더는 **도착할 주차**를 먼저 보여준다. 이동이 끝난 뒤에 바꾸면 카드는 이미 새 주차인데
      글자만 400ms 늦게 툭 바뀌어 따로 노는 것처럼 보인다.
