@@ -6,6 +6,7 @@ const JULY_WEEK_2 = {
   label: '7월 2주차',
   start: '2026.07.06',
   end: '2026.07.12',
+  baseDate: '2026-07-06',
 }
 
 describe('ReportSummary', () => {
@@ -22,7 +23,12 @@ describe('ReportSummary', () => {
     // 12/28(월) ~ 1/3(일). 대부분 새해지만 시작이 12월이라 12월 주차로 친다.
     render(
       <ReportSummary
-        week={{ label: '12월 5주차', start: '2026.12.28', end: '2027.01.03' }}
+        week={{
+          label: '12월 5주차',
+          start: '2026.12.28',
+          end: '2027.01.03',
+          baseDate: '2026-12-28',
+        }}
         paragraphs={[]}
       />,
     )

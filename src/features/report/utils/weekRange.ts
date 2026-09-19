@@ -1,67 +1,67 @@
 import type { WeekRange } from '../types'
 
-/*
- * 주차 라벨·날짜 범위 계산.
- *
- * ⚠️ 임시다. 서버가 주간 리포트를 내려주면 라벨·범위도 응답에 실려 올 가능성이 높고,
- * 그러면 이 파일은 사라진다. 지금은 화살표를 눌렀을 때 주차가 실제로 바뀌는지
- * 확인하려고 둔다.
- *
- * 전제 두 가지 (서버 정의를 못 받아 디자인에서 역산했다):
- * ① 한 주는 월요일에 시작한다 — 디자인의 `2026.07.06 ~ 2026.07.12`가 월~일이다.
- * ② 그 달 1일이 속한 주가 1주차다 — 2026-07-01(수)이 속한 주가 1주차라야
- *    7/6 시작 주가 `7월 2주차`가 되어 디자인과 맞는다.
- */
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
-const DAY_MS = 24 * 60 * 60 * 1000
-const WEEK_MS = 7 * DAY_MS
+const pad = (n: number) => String(n).padStart(2, '0')
 
-/** 디자인에 그려진 주(월요일 시작). 여기서 오프셋만큼 앞뒤로 움직인다. */
-const BASE_MONDAY = Date.UTC(2026, 6, 6)
+/** 해당 일자가 포함된 주의 월요일을 찾는 함수 */
+function startOfWeek(date: Date): Date {
+  const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7))
 
-/** 월요일=0 … 일요일=6. `getUTCDay()`는 일요일이 0이라 그대로 쓰면 어긋난다. */
-function mondayIndex(date: Date): number {
-  return (date.getUTCDay() + 6) % 7
+  return monday
 }
 
-/** `2026.07.06` 형태로 찍는다. */
-function formatDate(date: Date): string {
-  const y = date.getUTCFullYear()
-  const m = String(date.getUTCMonth() + 1).padStart(2, '0')
-  const d = String(date.getUTCDate()).padStart(2, '0')
+/** 날짜에 일수를 더하는데 `setDate`가 월말·연말 넘김을 알아서 처리함 */
+function addDays(date: Date, days: number): Date {
+  const next = new Date(date)
+  next.setDate(next.getDate() + days)
 
-  return `${y}.${m}.${d}`
+  return next
 }
 
 /**
- * 그 달에서 몇 번째 주인지. 1일이 속한 주를 1주차로 센다.
+ * 넘겨 받은 날짜를 `2026-09-07`(요청용) 또는 `2026.09.07`(화면용)로 만드는 함수
+ * `toISOString()`을 쓰면 안 됨 UTC로 바꿔서 글자를 만들기 때문에 한국 9월 7일 0시가
+ * UTC 9월 6일 15시가 되어 하루 앞당겨진다
+ */
+function formatDate(date: Date, separator: '-' | '.'): string {
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+  ].join(separator)
+}
+
+/**
+ * 그 달에서 몇 번째 주인지 계산하는 함수
  *
  * @param monday 주의 시작(월요일)
  * @returns 1부터 시작하는 주차 번호
  */
 function weekOfMonth(monday: Date): number {
-  const first = new Date(
-    Date.UTC(monday.getUTCFullYear(), monday.getUTCMonth(), 1),
+  const firstMonday = startOfWeek(
+    new Date(monday.getFullYear(), monday.getMonth(), 1),
   )
-  // 1일이 속한 주의 월요일. 1일이 수요일이면 이틀 전으로 물러난다.
-  const firstMonday = first.getTime() - mondayIndex(first) * DAY_MS
 
-  return Math.round((monday.getTime() - firstMonday) / WEEK_MS) + 1
+  return Math.round((monday.getTime() - firstMonday.getTime()) / WEEK_MS) + 1
 }
 
 /**
- * 기준 주에서 `offset`주만큼 이동한 주차.
+ * 헤더에 표시할 주차 라벨, 날짜 범위와 요청에 보낼 기준일 반환
  *
- * @param offset 0이면 기준 주, 음수면 과거
- * @returns 헤더에 표시할 주차 라벨과 날짜 범위
+ * @param offset 0이면 기준 시각이 속한 주, 음수면 과거
+ * @param now 기준 시각. 테스트에서 특정 날짜를 넣으려고 열어 둔다
+ * @returns 헤더에 표시할 주차 라벨, 날짜 범위와 요청에 보낼 기준일
  */
-export function weekRangeAt(offset: number): WeekRange {
-  const monday = new Date(BASE_MONDAY + offset * WEEK_MS)
-  const sunday = new Date(monday.getTime() + 6 * DAY_MS)
+export function weekRangeAt(offset: number, now: Date = new Date()): WeekRange {
+  const monday = addDays(startOfWeek(now), offset * 7)
+  const sunday = addDays(monday, 6)
 
   return {
-    label: `${monday.getUTCMonth() + 1}월 ${weekOfMonth(monday)}주차`,
-    start: formatDate(monday),
-    end: formatDate(sunday),
+    label: `${monday.getMonth() + 1}월 ${weekOfMonth(monday)}주차`,
+    start: formatDate(monday, '.'),
+    end: formatDate(sunday, '.'),
+    baseDate: formatDate(monday, '-'),
   }
 }
