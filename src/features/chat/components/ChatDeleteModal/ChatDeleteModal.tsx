@@ -57,12 +57,10 @@ export function ChatDeleteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <button
-        type="button"
-        tabIndex={-1}
-        aria-label="삭제 취소"
+      <div
+        aria-hidden="true"
         className="absolute inset-0 size-full bg-black/35"
-        onClick={onCancel}
+        onPointerDown={onCancel}
       />
       <section
         ref={modalRef}

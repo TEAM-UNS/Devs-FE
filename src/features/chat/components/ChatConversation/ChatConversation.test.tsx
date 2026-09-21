@@ -17,6 +17,7 @@ describe('ChatConversation', () => {
       <ChatConversation threadId="thread-1" messages={[]} pending={false} />,
     )
 
+    scrollIntoView.mockClear()
     rerender(
       <ChatConversation
         threadId="thread-1"
