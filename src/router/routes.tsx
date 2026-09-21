@@ -12,6 +12,7 @@ const SignupPage = lazy(() => import('@/pages/SignupPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const OAuthCallbackPage = lazy(() => import('@/pages/OAuthCallbackPage'))
 const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
+const ChatPage = lazy(() => import('@/pages/ChatPage'))
 
 const authFallback = <RouteFallback />
 
@@ -72,6 +73,7 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: <DashboardPage /> },
       { path: 'weekly-report', element: <WeeklyReportPage /> },
+      { path: 'chat', element: <ChatPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],

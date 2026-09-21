@@ -3,6 +3,8 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { getAccessToken } from '@/shared/api'
 import { AppSidebar } from '@/shared/components/AppSidebar'
 import { RouteFallback } from '@/shared/components/RouteFallback'
+import { ROUTES } from '@/shared/constants'
+import { cn } from '@/shared/utils/cn'
 
 // fallback 엘리먼트를 모듈 스코프에 한 번만 만들어 재사용
 const routeFallback = <RouteFallback />
@@ -16,6 +18,7 @@ const ROADMAP_PROGRESS = 64
  */
 export function RootLayout() {
   const location = useLocation()
+  const isChatPage = location.pathname === ROUTES.chat
 
   if (!getAccessToken()) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
@@ -24,8 +27,13 @@ export function RootLayout() {
   // TODO: ThemeToggle이 있던 자리
   return (
     <div className="flex h-full bg-canvas text-gray-1000">
-      <AppSidebar roadmapProgress={ROADMAP_PROGRESS} />
-      <main className="min-w-0 flex-1 overflow-y-auto p-10">
+      {!isChatPage && <AppSidebar roadmapProgress={ROADMAP_PROGRESS} />}
+      <main
+        className={cn(
+          'min-w-0 flex-1 overflow-y-auto',
+          isChatPage ? 'p-0' : 'p-10',
+        )}
+      >
         <Suspense fallback={routeFallback}>
           <Outlet />
         </Suspense>
