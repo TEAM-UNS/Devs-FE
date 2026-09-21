@@ -48,7 +48,7 @@ export function ChatIntro({
   onSuggestionSelect,
 }: ChatIntroProps) {
   return (
-    <section className="flex min-w-0 flex-1 items-center justify-center bg-canvas px-10">
+    <section className="flex min-w-0 flex-1 items-center justify-center bg-canvas px-4 md:px-10">
       <div className="flex w-full max-w-[700px] -translate-y-[30px] flex-col items-center gap-12">
         <img src={devsLogo} alt="Devs" className="h-8 w-[168px]" />
 
@@ -60,7 +60,7 @@ export function ChatIntro({
             onSubmit={onQuestionSubmit}
           />
 
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 md:justify-between">
             {SUGGESTED_QUESTIONS.map((question) => (
               <SuggestedQuestionButton
                 key={question}

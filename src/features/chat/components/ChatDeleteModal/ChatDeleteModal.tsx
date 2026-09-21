@@ -1,22 +1,59 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import closeIcon from '@/assets/chat/close.svg'
 import { Button } from '@/shared/components/Button'
 
 interface ChatDeleteModalProps {
+  readonly restoreFocusTo: HTMLButtonElement | null
+  readonly fallbackFocusTo: HTMLButtonElement | null
   readonly onCancel: () => void
   readonly onConfirm: () => void
 }
 
 /** 삭제 전에 복구할 수 없다는 안내와 취소 기회를 제공 */
-export function ChatDeleteModal({ onCancel, onConfirm }: ChatDeleteModalProps) {
+export function ChatDeleteModal({
+  restoreFocusTo,
+  fallbackFocusTo,
+  onCancel,
+  onConfirm,
+}: ChatDeleteModalProps) {
+  const modalRef = useRef<HTMLElement>(null)
+  const initialActionRef = useRef<HTMLButtonElement>(null)
+
   useEffect(() => {
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') onCancel()
+    initialActionRef.current?.focus()
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        onCancel()
+        return
+      }
+      if (event.key !== 'Tab') return
+
+      const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      )
+      if (!focusableElements?.length) return
+
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement?.focus()
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement?.focus()
+      }
     }
 
-    window.addEventListener('keydown', handleEscape)
-    return () => window.removeEventListener('keydown', handleEscape)
-  }, [onCancel])
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      const focusTarget = restoreFocusTo?.isConnected
+        ? restoreFocusTo
+        : fallbackFocusTo
+      focusTarget?.focus()
+    }
+  }, [fallbackFocusTo, onCancel, restoreFocusTo])
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -28,14 +65,16 @@ export function ChatDeleteModal({ onCancel, onConfirm }: ChatDeleteModalProps) {
         onClick={onCancel}
       />
       <section
+        ref={modalRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="chat-delete-title"
         aria-describedby="chat-delete-description"
-        className="relative flex w-[492px] flex-col gap-6 rounded-md bg-element px-9 pt-6 pb-9"
+        className="relative flex w-[calc(100%-2rem)] max-w-[492px] flex-col gap-6 rounded-md bg-element px-6 pt-6 pb-9 sm:px-9"
       >
         <div className="flex justify-end">
           <button
+            ref={initialActionRef}
             type="button"
             onClick={onCancel}
             aria-label="삭제 모달 닫기"
@@ -46,7 +85,7 @@ export function ChatDeleteModal({ onCancel, onConfirm }: ChatDeleteModalProps) {
         </div>
 
         <div className="flex flex-col items-center gap-16">
-          <div className="flex w-80 flex-col items-center gap-1 text-center">
+          <div className="flex w-full max-w-80 flex-col items-center gap-1 text-center">
             <h2 id="chat-delete-title" className="text-h2 text-white">
               정말 이 채팅을 삭제하시겠습니까?
             </h2>

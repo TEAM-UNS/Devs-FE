@@ -1,3 +1,4 @@
+import type { RefObject } from 'react'
 import { Link } from 'react-router-dom'
 import arrowLeftIcon from '@/assets/chat/arrow-left.svg'
 import deleteIcon from '@/assets/chat/delete.svg'
@@ -10,15 +11,19 @@ interface ChatHistorySidebarProps {
   readonly threads: readonly ChatThread[]
   readonly activeThreadId?: string
   readonly onThreadSelect: (threadId: string) => void
-  readonly onThreadDelete: (threadId: string) => void
+  readonly onThreadDelete: (
+    threadId: string,
+    trigger: HTMLButtonElement,
+  ) => void
   readonly onNewChat: () => void
+  readonly newChatButtonRef: RefObject<HTMLButtonElement | null>
 }
 
 interface ChatHistoryItemProps {
   readonly thread: ChatThread
   readonly selected: boolean
   readonly onSelect: (threadId: string) => void
-  readonly onDelete: (threadId: string) => void
+  readonly onDelete: (threadId: string, trigger: HTMLButtonElement) => void
 }
 
 function ChatHistoryItem({
@@ -31,8 +36,8 @@ function ChatHistoryItem({
     onSelect(thread.id)
   }
 
-  function handleDelete() {
-    onDelete(thread.id)
+  function handleDelete(event: React.MouseEvent<HTMLButtonElement>) {
+    onDelete(thread.id, event.currentTarget)
   }
 
   return (
@@ -53,7 +58,7 @@ function ChatHistoryItem({
         type="button"
         onClick={handleDelete}
         aria-label={`${thread.title} 삭제`}
-        className="ml-3 hidden size-4 shrink-0 items-center justify-center group-hover:flex group-focus-within:flex focus-visible:outline-2 focus-visible:outline-primary-500"
+        className="pointer-events-none ml-3 flex size-4 shrink-0 items-center justify-center opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 focus:pointer-events-auto focus:opacity-100 focus-visible:outline-2 focus-visible:outline-primary-500"
       >
         <img src={deleteIcon} alt="" className="size-4" />
       </button>
@@ -68,6 +73,7 @@ export function ChatHistorySidebar({
   onThreadSelect,
   onThreadDelete,
   onNewChat,
+  newChatButtonRef,
 }: ChatHistorySidebarProps) {
   return (
     <aside className="relative flex h-full w-60 shrink-0 flex-col bg-container py-12 after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-element">
@@ -106,6 +112,7 @@ export function ChatHistorySidebar({
       </div>
 
       <button
+        ref={newChatButtonRef}
         type="button"
         onClick={onNewChat}
         className="flex items-center gap-1 px-5 py-3 text-body-md text-gray-1000 focus-visible:outline-2 focus-visible:outline-primary-500"

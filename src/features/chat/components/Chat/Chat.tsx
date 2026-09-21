@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { requestMockChatReply } from '../../api/mockChat'
 import type { ChatMessage, ChatThread } from '../../types/chat'
 import { ChatDeleteModal } from '../ChatDeleteModal'
@@ -15,16 +15,24 @@ export function Chat() {
   const [question, setQuestion] = useState('')
   const [threads, setThreads] = useState<readonly ChatThread[]>([])
   const [activeThreadId, setActiveThreadId] = useState<string>()
-  const [pendingThreadId, setPendingThreadId] = useState<string>()
+  const [pendingThreadIds, setPendingThreadIds] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  )
   const [deleteTargetId, setDeleteTargetId] = useState<string>()
-  const [error, setError] = useState<string>()
+  const [draftError, setDraftError] = useState<string>()
+  const [threadErrors, setThreadErrors] = useState<ReadonlyMap<string, string>>(
+    () => new Map(),
+  )
+  const deleteTriggerRef = useRef<HTMLButtonElement>(null)
+  const newChatButtonRef = useRef<HTMLButtonElement>(null)
+  const deletedThreadIdsRef = useRef<ReadonlySet<string>>(new Set())
 
   const activeThread = threads.find((thread) => thread.id === activeThreadId)
 
   async function handleSubmitQuestion(nextQuestion = question) {
     const trimmedQuestion = nextQuestion.trim()
     if (!trimmedQuestion) {
-      setError(EMPTY_QUESTION_ERROR)
+      setDraftError(EMPTY_QUESTION_ERROR)
       return
     }
 
@@ -36,9 +44,14 @@ export function Chat() {
       content: trimmedQuestion,
     }
 
-    setError(undefined)
+    setDraftError(undefined)
+    setThreadErrors((currentErrors) => {
+      const nextErrors = new Map(currentErrors)
+      nextErrors.delete(threadId)
+      return nextErrors
+    })
     setQuestion('')
-    setPendingThreadId(threadId)
+    setPendingThreadIds((currentIds) => new Set(currentIds).add(threadId))
     setActiveThreadId(threadId)
     // 응답을 기다리는 동안 질문이 바로 보이도록 먼저 대화에 기록
     setThreads((currentThreads) => {
@@ -69,6 +82,7 @@ export function Chat() {
         role: 'assistant',
         content: reply,
       }
+      if (deletedThreadIdsRef.current.has(threadId)) return
       setThreads((currentThreads) =>
         currentThreads.map((thread) =>
           // 응답 중 다른 대화를 선택해도 요청을 시작한 대화에 답변을 남김
@@ -81,19 +95,23 @@ export function Chat() {
         ),
       )
     } catch {
-      setError(REQUEST_ERROR)
-    } finally {
-      // 먼저 시작한 요청이 다른 대화의 대기 상태를 해제하지 않도록 요청 대상을 확인
-      setPendingThreadId((currentThreadId) =>
-        currentThreadId === threadId ? undefined : currentThreadId,
+      if (deletedThreadIdsRef.current.has(threadId)) return
+      setThreadErrors((currentErrors) =>
+        new Map(currentErrors).set(threadId, REQUEST_ERROR),
       )
+    } finally {
+      setPendingThreadIds((currentIds) => {
+        const nextIds = new Set(currentIds)
+        nextIds.delete(threadId)
+        return nextIds
+      })
     }
   }
 
   function handleStartNewChat() {
     setActiveThreadId(undefined)
     setQuestion('')
-    setError(undefined)
+    setDraftError(undefined)
   }
 
   function handleDeleteThread() {
@@ -105,18 +123,28 @@ export function Chat() {
     setActiveThreadId((currentThreadId) =>
       currentThreadId === deleteTargetId ? undefined : currentThreadId,
     )
-    setPendingThreadId((currentThreadId) =>
-      currentThreadId === deleteTargetId ? undefined : currentThreadId,
+    deletedThreadIdsRef.current = new Set(deletedThreadIdsRef.current).add(
+      deleteTargetId,
     )
+    setPendingThreadIds((currentIds) => {
+      const nextIds = new Set(currentIds)
+      nextIds.delete(deleteTargetId)
+      return nextIds
+    })
+    setThreadErrors((currentErrors) => {
+      const nextErrors = new Map(currentErrors)
+      nextErrors.delete(deleteTargetId)
+      return nextErrors
+    })
     setDeleteTargetId(undefined)
-    setError(undefined)
   }
 
   function handleThreadSelect(threadId: string) {
     setActiveThreadId(threadId)
   }
 
-  function handleDeleteRequest(threadId: string) {
+  function handleDeleteRequest(threadId: string, trigger: HTMLButtonElement) {
+    deleteTriggerRef.current = trigger
     setDeleteTargetId(threadId)
   }
 
@@ -124,20 +152,29 @@ export function Chat() {
     setDeleteTargetId(undefined)
   }
 
-  const isActiveThreadPending = pendingThreadId === activeThreadId
+  const isActiveThreadPending = activeThreadId
+    ? pendingThreadIds.has(activeThreadId)
+    : false
+  const activeThreadError = activeThreadId
+    ? threadErrors.get(activeThreadId)
+    : draftError
 
   return (
     <div className="flex h-full min-h-0 bg-canvas text-gray-1000">
-      <ChatHistorySidebar
-        threads={threads}
-        activeThreadId={activeThreadId}
-        onThreadSelect={handleThreadSelect}
-        onThreadDelete={handleDeleteRequest}
-        onNewChat={handleStartNewChat}
-      />
+      <div className="hidden h-full md:block">
+        <ChatHistorySidebar
+          threads={threads}
+          activeThreadId={activeThreadId}
+          onThreadSelect={handleThreadSelect}
+          onThreadDelete={handleDeleteRequest}
+          onNewChat={handleStartNewChat}
+          newChatButtonRef={newChatButtonRef}
+        />
+      </div>
       {activeThread ? (
         <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-hidden p-10">
           <ChatConversation
+            threadId={activeThread.id}
             messages={activeThread.messages}
             pending={isActiveThreadPending}
           />
@@ -145,7 +182,7 @@ export function Chat() {
             <ChatComposer
               value={question}
               disabled={isActiveThreadPending}
-              error={error}
+              error={activeThreadError}
               onChange={setQuestion}
               onSubmit={handleSubmitQuestion}
             />
@@ -154,7 +191,7 @@ export function Chat() {
       ) : (
         <ChatIntro
           question={question}
-          error={error}
+          error={draftError}
           onQuestionChange={setQuestion}
           onQuestionSubmit={handleSubmitQuestion}
           onSuggestionSelect={handleSubmitQuestion}
@@ -162,6 +199,8 @@ export function Chat() {
       )}
       {deleteTargetId && (
         <ChatDeleteModal
+          restoreFocusTo={deleteTriggerRef.current}
+          fallbackFocusTo={newChatButtonRef.current}
           onCancel={handleDeleteCancel}
           onConfirm={handleDeleteThread}
         />
