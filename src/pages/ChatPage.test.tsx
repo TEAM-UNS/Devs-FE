@@ -74,9 +74,9 @@ describe('ChatPage', () => {
     renderPage()
 
     await user.click(
-      screen.getByRole('button', {
+      screen.getAllByRole('button', {
         name: '백엔드 중 가장 인기있는 기술 스택',
-      }),
+      })[0],
     )
     await screen.findByText('목 데이터 기반 답변입니다.')
     await user.click(screen.getByRole('button', { name: '새 대화 시작' }))
@@ -94,9 +94,9 @@ describe('ChatPage', () => {
     renderPage()
 
     await user.click(
-      screen.getByRole('button', {
+      screen.getAllByRole('button', {
         name: '백엔드 중 가장 인기있는 기술 스택',
-      }),
+      })[0],
     )
     await screen.findByText('목 데이터 기반 답변입니다.')
     await user.click(
@@ -173,5 +173,73 @@ describe('ChatPage', () => {
     expect(
       screen.getByRole('status', { name: '답변 생성 중' }),
     ).toBeInTheDocument()
+  })
+
+  it('keeps a pending thread disabled while another chat is open', async () => {
+    requestMockChatReply.mockReturnValue(new Promise(() => undefined))
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: '백엔드 중 가장 인기있는 기술 스택',
+      }),
+    )
+    await user.click(screen.getByRole('button', { name: '새 대화 시작' }))
+
+    expect(
+      screen.getByRole('textbox', { name: 'AI 챗봇에게 질문하기' }),
+    ).toBeEnabled()
+
+    await user.click(
+      screen.getAllByRole('button', {
+        name: '백엔드 중 가장 인기있는 기술 스택',
+      })[0],
+    )
+
+    expect(
+      screen.getByRole('textbox', { name: 'AI 챗봇에게 질문하기' }),
+    ).toBeDisabled()
+  })
+
+  it('restores focus to the delete button after closing the modal', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: '최근 한달 간 급하락중인 기술 스택',
+      }),
+    )
+    await screen.findByText('목 데이터 기반 답변입니다.')
+    const deleteButton = screen.getByRole('button', {
+      name: '최근 한달 간 급하락중인 기술 스택 삭제',
+    })
+
+    await user.click(deleteButton)
+    expect(screen.getByRole('button', { name: '삭제 모달 닫기' })).toHaveFocus()
+
+    await user.keyboard('{Escape}')
+    expect(deleteButton).toHaveFocus()
+  })
+
+  it('moves focus to new chat after deleting the focused thread', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(
+      screen.getByRole('button', {
+        name: '로드맵 생성 기준은 무엇인가요?',
+      }),
+    )
+    await screen.findByText('목 데이터 기반 답변입니다.')
+    await user.click(
+      screen.getByRole('button', {
+        name: '로드맵 생성 기준은 무엇인가요? 삭제',
+      }),
+    )
+    await user.click(screen.getByRole('button', { name: '삭제' }))
+
+    expect(screen.getByRole('button', { name: '새 대화 시작' })).toHaveFocus()
   })
 })
