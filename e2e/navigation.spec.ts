@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { mockApi } from './mockApi'
 
 // 앱 화면은 라우트 가드 뒤에 있다. 로그인 흐름 자체가 아니라 청크 로딩을 보는
 // 테스트라, 실제 로그인 대신 토큰을 미리 심어 가드를 통과시킨다.
@@ -7,6 +8,7 @@ test.beforeEach(async ({ page }) => {
     localStorage.setItem('uns-access-token', 'e2e-access-token')
     localStorage.setItem('uns-refresh-token', 'e2e-refresh-token')
   })
+  await mockApi(page)
 })
 
 test('사이드바로 이동하면 별도 lazy 청크가 로드된다', async ({ page }) => {
@@ -20,6 +22,8 @@ test('사이드바로 이동하면 별도 lazy 청크가 로드된다', async ({
   await expect(
     page.getByRole('heading', { name: '인기 기술 스택' }),
   ).toBeVisible()
+  // 목 응답까지 그려져야 통과한다. 응답 전 화면만 보면 크래시를 놓친다(#45)
+  await expect(page.getByText('오늘 수집된 공고')).toBeVisible()
 
   // 뒤로 가기 → 다시 소개
   await page.goBack()
