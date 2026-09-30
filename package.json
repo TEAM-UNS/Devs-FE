@@ -30,6 +30,7 @@
     ]
   },
   "dependencies": {
+    "@amplitude/unified": "^1.1.37",
     "@hookform/resolvers": "^5.4.0",
     "@sentry/react": "^10.65.0",
     "@tailwindcss/vite": "^4.3.2",
