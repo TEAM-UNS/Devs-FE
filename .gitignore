@@ -25,6 +25,9 @@ test-results
 .env
 .env.*
 !.env.example
+# 아래 둘은 비밀값이 아니라 빌드 대상별 공개 설정이라 커밋한다. 비밀값을 넣지 말 것
+!.env.development
+!.env.production
 
 # Editor directories and files
 .vscode/*
