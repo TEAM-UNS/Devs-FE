@@ -9,7 +9,9 @@ import OnboardingPage from './OnboardingPage'
 
 /* 전송 계층만 막는다. 요청 함수와 훅은 실제로 돌려서 두 PUT의 경로·본문까지 검증한다.
    나열하지 않은 경로는 거부해, 요청 함수의 경로가 틀리면 테스트가 잡아낸다. */
-const mocks = vi.hoisted(() => ({ put: vi.fn() }))
+const mocks = vi.hoisted(() => ({ put: vi.fn(), trackEvent: vi.fn() }))
+
+vi.mock('@/shared/analytics', () => ({ trackEvent: mocks.trackEvent }))
 
 vi.mock('@/shared/api/http', () => ({
   get: vi.fn((path: string) =>
@@ -48,6 +50,7 @@ describe('OnboardingPage', () => {
   beforeEach(() => {
     mocks.put.mockReset()
     mocks.put.mockResolvedValue({ message: 'ok' })
+    mocks.trackEvent.mockReset()
   })
 
   it('전공 선택으로 시작하고 2단계짜리 진행 표시를 보여준다', async () => {
@@ -92,6 +95,8 @@ describe('OnboardingPage', () => {
     expect(mocks.put).toHaveBeenCalledWith('/user/tech-stack', {
       skillIds: [101],
     })
+    // 가입은 했지만 여기서 멈춘 사람을 보려면 완료 지점이 남아야 한다
+    expect(mocks.trackEvent).toHaveBeenCalledWith('Onboarding Completed')
   })
 
   it('기술 스택은 전공이 저장된 뒤에 보낸다', async () => {

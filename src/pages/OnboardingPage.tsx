@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { trackEvent } from '@/shared/analytics'
 import { ROUTES } from '@/shared/constants'
 import { useToastStore } from '@/shared/stores/useToastStore'
 import {
@@ -55,6 +56,8 @@ export default function OnboardingPage() {
       },
       {
         onSuccess: () => {
+          // 소셜 로그인은 했지만, 온보딩에서 멈춘 사용자를 찾기 위한 이벤트 수집
+          trackEvent('Onboarding Completed')
           showToast({ type: 'success', title: ONBOARDING_DONE_MESSAGE })
           // replace: 뒤로가기로 온보딩에 다시 돌아오지 않게 한다.
           navigate(ROUTES.home, { replace: true })
