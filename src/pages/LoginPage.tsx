@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import loginBackgroundSrc from '@/assets/login-background.webp'
+import { trackEvent } from '@/shared/analytics'
 import { ROUTES } from '@/shared/constants'
 import {
   AuthDivider,
@@ -37,8 +38,12 @@ export default function LoginPage() {
   // 토큰 저장은 useLogin이, 실패 토스트는 queryClient가 맡는다. 여기 남는 건 이동뿐이다.
   const handleLogin = (data: LoginInput) => {
     loginMutation.mutate(data, {
-      // replace: 뒤로가기로 로그인 화면에 다시 돌아오지 않게 한다.
-      onSuccess: () => navigate(redirectTo, { replace: true }),
+      onSuccess: () => {
+        // method로 갈라 두면 소셜 로그인을 실제로 쓰는지 알 수 있음
+        trackEvent('Logged In', { method: 'email' })
+        // replace: 뒤로가기로 로그인 화면에 다시 돌아오지 않게 한다.
+        navigate(redirectTo, { replace: true })
+      },
     })
   }
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { trackEvent } from '@/shared/analytics'
 import { ROUTES } from '@/shared/constants'
 import { takeOAuthProvider, useOAuthLogin } from '@/features/auth'
 
@@ -40,14 +41,17 @@ export default function OAuthCallbackPage() {
        `mutateAsync`가 주는 프로미스는 리스너와 무관하게 결과를 준다.
        실패 토스트는 여전히 queryClient가 전역으로 띄운다. */
     mutateAsync(provider)
-      .then((data) =>
+      .then((data) => {
+        // Oauth 로그인 이벤트 수집
+        trackEvent('Logged In', { method: provider })
+
         navigate(
           data.onboardingRequired ? ROUTES.onboarding : ROUTES.home,
           // replace: 뒤로가기로 이 콜백 주소에 다시 오지 않게 한다.
           // 세션은 이미 소모돼서 돌아와도 실패한다.
           { replace: true },
-        ),
-      )
+        )
+      })
       // 사용자가 빈 로딩 화면에 갇히지 않도록 돌려보내는 것만 맡는다.
       .catch(() => navigate(ROUTES.login, { replace: true }))
   }, [mutateAsync, navigate])

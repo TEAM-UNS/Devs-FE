@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { trackEvent } from '@/shared/analytics'
 import { requestMockChatReply } from '../../api/mockChat'
 import type { ChatMessage, ChatThread } from '../../types/chat'
 import { ChatDeleteModal } from '../ChatDeleteModal'
@@ -29,7 +30,10 @@ export function Chat() {
 
   const activeThread = threads.find((thread) => thread.id === activeThreadId)
 
-  async function handleSubmitQuestion(nextQuestion = question) {
+  async function handleSubmitQuestion(
+    nextQuestion = question,
+    source: 'composer' | 'suggestion' = 'composer',
+  ) {
     const trimmedQuestion = nextQuestion.trim()
     if (!trimmedQuestion) {
       setDraftError(EMPTY_QUESTION_ERROR)
@@ -38,6 +42,12 @@ export function Chat() {
 
     // 첫 질문이면 새 대화를 만들고 이후 질문은 현재 대화에 이어 붙임
     const threadId = activeThreadId ?? crypto.randomUUID()
+
+    // 질문 내용은 수집하지 않고 추천 질문을 썼는지, 사용자가 직접 입력 했는지, 이어서 계속 질문 했는지 이벤트 수집
+    trackEvent('Chat Question Sent', {
+      is_suggested: source === 'suggestion',
+      is_follow_up: activeThreadId !== undefined,
+    })
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -194,7 +204,9 @@ export function Chat() {
           error={draftError}
           onQuestionChange={setQuestion}
           onQuestionSubmit={handleSubmitQuestion}
-          onSuggestionSelect={handleSubmitQuestion}
+          onSuggestionSelect={(selected) =>
+            handleSubmitQuestion(selected, 'suggestion')
+          }
         />
       )}
       {deleteTargetId && (

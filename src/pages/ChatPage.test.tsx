@@ -5,9 +5,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderWithQuery } from '@/test/renderWithQuery'
 import ChatPage from './ChatPage'
 
-const { requestMockChatReply } = vi.hoisted(() => ({
+const { requestMockChatReply, trackEvent } = vi.hoisted(() => ({
   requestMockChatReply: vi.fn(),
+  trackEvent: vi.fn(),
 }))
+
+vi.mock('@/shared/analytics', () => ({ trackEvent }))
 
 vi.mock('@/features/chat/api/mockChat', () => ({
   requestMockChatReply,
@@ -25,6 +28,7 @@ describe('ChatPage', () => {
   beforeEach(() => {
     requestMockChatReply.mockReset()
     requestMockChatReply.mockResolvedValue('목 데이터 기반 답변입니다.')
+    trackEvent.mockReset()
   })
 
   it('renders the empty chat screen from the design', () => {
@@ -67,6 +71,31 @@ describe('ChatPage', () => {
     expect(requestMockChatReply).toHaveBeenCalledWith(
       '로드맵 생성 기준은 무엇인가요?',
     )
+  })
+
+  it('추천 질문과 직접 입력을 구분해 전송 이벤트를 남긴다', async () => {
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(
+      screen.getByRole('button', { name: '백엔드 중 가장 인기있는 기술 스택' }),
+    )
+    expect(trackEvent).toHaveBeenCalledWith('Chat Question Sent', {
+      is_suggested: true,
+      is_follow_up: false,
+    })
+
+    await screen.findByText('목 데이터 기반 답변입니다.')
+    await user.type(
+      screen.getByRole('textbox', { name: 'AI 챗봇에게 질문하기' }),
+      '이어서 묻는 질문',
+    )
+    await user.click(screen.getByRole('button', { name: '질문 보내기' }))
+
+    expect(trackEvent).toHaveBeenLastCalledWith('Chat Question Sent', {
+      is_suggested: false,
+      is_follow_up: true,
+    })
   })
 
   it('starts a new empty chat while keeping the previous thread', async () => {

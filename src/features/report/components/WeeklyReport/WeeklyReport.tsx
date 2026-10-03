@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { trackEvent } from '@/shared/analytics'
 import type { JobFilter, WeekReport } from '../../types'
 import { weekRangeAt } from '../../utils/weekRange'
 import { JobFilters } from '../JobFilters'
@@ -54,6 +55,12 @@ export function WeeklyReport() {
 
     const offset = weekOffset + direction
     if (offset > 0 || offset < -OLDEST_WEEK_OFFSET) return
+
+    // 사용자들이 주간 리포트를 보러 다시 방문하는지 또 과거 리포트를 보는 확인하기 위함 이벤트 수집
+    trackEvent('Report Week Changed', {
+      direction: direction === -1 ? 'previous' : 'next',
+      week_offset: offset,
+    })
 
     setSlidingTo(direction)
   }
