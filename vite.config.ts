@@ -33,8 +33,10 @@ export default defineConfig(({ mode }) => {
         : []),
     ],
     build: {
-      // Sentry가 스택을 되돌리려면 소스맵이 있어야 한다. 위에서 업로드 후 삭제한다
-      sourcemap: true,
+      /* Sentry가 스택을 되돌리려면 소스맵이 있어야 한다. 올린 뒤에는 위에서 지운다
+         토큰이 없으면 지우는 단계도 건너뛰므로 아예 만들지 않는다
+         만들어두면 .map 파일이 그대로 배포돼 원본 코드가 공개된다 */
+      sourcemap: Boolean(sentryAuthToken),
     },
     resolve: {
       alias: {
