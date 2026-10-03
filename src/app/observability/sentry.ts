@@ -15,7 +15,8 @@ export function initSentry() {
       // Performance Monitoring: 페이지 로드/네비게이션 트랜잭션 자동 수집
       Sentry.browserTracingIntegration(),
     ],
-    // 트랜잭션 샘플링 비율. 프로덕션에서는 0.1~0.2 정도로 낮추는 것을 권장.
-    tracesSampleRate: 1.0,
+    /* 성능 추적만 솎아낸다. 에러는 샘플링과 무관하게 전부 올라간다
+       화면 이동마다 트랜잭션이 쌓여 무료 할당량을 금방 먹으므로 20%만 보낸다 */
+    tracesSampleRate: 0.2,
   })
 }
