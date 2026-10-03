@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
+import { trackEvent } from '@/shared/analytics'
 import { ROUTES } from '@/shared/constants'
 import { useToastStore } from '@/shared/stores/useToastStore'
 import {
@@ -47,6 +48,8 @@ export default function SignupPage() {
 
   // 1~3단계가 모두 "받은 값을 모으고 다음으로" 라서 핸들러 하나를 함께 쓴다.
   const handleNext = (data: SignupDraft) => {
+    // 어떤 단계에서 사용자들이 이탈하는지 알기 위함
+    trackEvent('Signup Step Completed', { step })
     setDraft((prev) => ({ ...prev, ...data }))
     setStep((s) => Math.min(s + 1, TOTAL_STEPS))
   }
@@ -68,6 +71,8 @@ export default function SignupPage() {
       },
       {
         onSuccess: () => {
+          // 서버가 받아준 뒤라 실패한 시도와 섞이지 않는다
+          trackEvent('Signed Up')
           showToast({ type: 'success', title: SIGNUP_DONE_MESSAGE })
           navigate(ROUTES.login)
         },

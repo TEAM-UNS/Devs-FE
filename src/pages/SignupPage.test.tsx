@@ -5,6 +5,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { renderWithQuery } from '@/test/renderWithQuery'
 import SignupPage from './SignupPage'
 
+const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }))
+vi.mock('@/shared/analytics', () => ({ trackEvent }))
+
 // 1단계가 발송·검증 API를 부른다. 여기서 보는 건 단계 전환이므로 성공 응답으로 대체한다.
 vi.mock('@/features/auth/api', () => ({
   sendEmailCode: vi.fn(() => Promise.resolve({ message: 'sent' })),
@@ -67,6 +70,16 @@ describe('SignupPage', () => {
       'aria-valuenow',
       '2',
     )
+  })
+
+  it('단계를 넘어갈 때 이탈 지점을 볼 수 있도록 단계 번호와 함께 이벤트를 남긴다', async () => {
+    trackEvent.mockClear()
+    renderPage()
+    await passStep1()
+
+    expect(trackEvent).toHaveBeenCalledWith('Signup Step Completed', {
+      step: 1,
+    })
   })
 
   it('2단계로 넘어가면 간편로그인(소셜)은 사라지고 로그인 링크는 유지된다', async () => {
