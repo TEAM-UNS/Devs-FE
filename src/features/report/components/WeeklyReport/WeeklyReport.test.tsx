@@ -3,6 +3,9 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { WeeklyReport } from './WeeklyReport'
 
+const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }))
+vi.mock('@/shared/analytics', () => ({ trackEvent }))
+
 /** 선택된 칩의 라벨. 토글 칩은 `aria-pressed`로 선택을 드러낸다. */
 function selectedChip() {
   return screen
@@ -64,6 +67,18 @@ describe('WeeklyReport', () => {
       await screen.findByRole('heading', { name: '6월 5주차' }),
     ).toBeInTheDocument()
     expect(screen.getByText('2026.06.29 ~ 2026.07.05')).toBeInTheDocument()
+  })
+
+  it('주차를 넘기면 방향과 이동한 주차를 이벤트로 남긴다', async () => {
+    trackEvent.mockClear()
+    render(<WeeklyReport />)
+
+    await userEvent.click(screen.getByRole('button', { name: '이전 주차' }))
+
+    expect(trackEvent).toHaveBeenCalledWith('Report Week Changed', {
+      direction: 'previous',
+      week_offset: -1,
+    })
   })
 
   it('가장 최근 주차에서는 다음으로 넘어갈 수 없다', () => {
