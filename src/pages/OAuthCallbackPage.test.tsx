@@ -7,7 +7,9 @@ import OAuthCallbackPage from './OAuthCallbackPage'
 
 /* 전송 계층만 막는다. 요청 함수(exchangeOAuthToken)와 훅은 실제로 돌려서
    경로·withCredentials까지 이 테스트가 지키게 한다. */
-const mocks = vi.hoisted(() => ({ post: vi.fn() }))
+const mocks = vi.hoisted(() => ({ post: vi.fn(), trackEvent: vi.fn() }))
+
+vi.mock('@/shared/analytics', () => ({ trackEvent: mocks.trackEvent }))
 
 vi.mock('@/shared/api/http', () => ({
   get: vi.fn(),
@@ -50,6 +52,7 @@ const settleLater = <T,>(value: T, fail = false) =>
 describe('OAuthCallbackPage', () => {
   beforeEach(() => {
     mocks.post.mockReset()
+    mocks.trackEvent.mockReset()
     sessionStorage.clear()
     localStorage.clear()
   })
@@ -69,6 +72,10 @@ describe('OAuthCallbackPage', () => {
     expect(await screen.findByText('대시보드')).toBeInTheDocument()
     expect(localStorage.getItem('uns-access-token')).toBe('access-1')
     expect(localStorage.getItem('uns-refresh-token')).toBe('refresh-1')
+    // 어떤 방법으로 로그인했는지 남겨야 소셜 로그인이 쓰이는지 알 수 있다
+    expect(mocks.trackEvent).toHaveBeenCalledWith('Logged In', {
+      method: 'google',
+    })
   })
 
   it('세션 쿠키를 실어 provider 경로로 교환을 요청한다', async () => {
