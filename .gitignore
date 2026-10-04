@@ -25,9 +25,8 @@ test-results
 .env
 .env.*
 !.env.example
-# 아래 둘은 비밀값이 아니라 빌드 대상별 공개 설정이라 커밋한다. 비밀값을 넣지 말 것
+# 값은 배포 플랫폼 환경변수에서 관리한다. 여기 커밋하는 건 개발 빌드 스위치뿐이다
 !.env.development
-!.env.production
 
 # Editor directories and files
 .vscode/*
