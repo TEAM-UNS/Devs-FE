@@ -2,6 +2,8 @@
 
 취준생들이 채용공고 트랜드를 한 눈에 파악할 수 있는 서비스
 
+![CI](https://github.com/TEAM-UNS/UNS-FE/actions/workflows/ci.yml/badge.svg)
+
 ## ⚠️ 현재 상태 — 스캐폴드
 
 이 저장소는 **아키텍처/툴링 스캐폴드**다. 아래 "실제 인프라"는 그대로 쓰고,

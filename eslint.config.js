@@ -55,15 +55,20 @@ export default tseslint.config(
       'react-hooks/exhaustive-deps': 'warn',
 
       // ─────────────────────────────────────────────────────────────
-      // react-perf — 리렌더를 유발하는 "매 렌더 새 참조 생성"을 검사
+      // react-perf — 전부 off. 의도적인 선택이다.
       // ─────────────────────────────────────────────────────────────
-      // JSX prop으로 매 렌더마다 새 객체/배열/함수/엘리먼트를 만들어 넘기면,
-      // 자식이 memo여도 참조가 매번 달라져 불필요하게 리렌더된다. 이를 잡아낸다.
-      // 예: <Child style={{ margin: 0 }} />  → style 객체가 매 렌더 새로 생성됨
-      'react-perf/jsx-no-new-object-as-prop': 'warn',
-      'react-perf/jsx-no-new-array-as-prop': 'warn',
-      'react-perf/jsx-no-new-function-as-prop': 'warn',
-      'react-perf/jsx-no-jsx-as-prop': 'warn',
+      // 이 룰들은 "매 렌더 새 참조 생성"을 잡아준다. 하지만 룰이 켜져 있으면
+      // 측정 없이 memo/useCallback/모듈 스코프 상수를 붙이게 되고, 그렇게 붙은
+      // 코드는 "왜 붙였나"에 "린트가 시켜서"밖에 답할 수 없다.
+      // docs/WORKING-RULES.md: 성능 최적화는 측정 없이 시작하지 않는다.
+      //
+      // 메모이제이션은 React DevTools Profiler로 리렌더를 확인한 뒤,
+      // 개선 전후 수치를 남기면서 붙인다. 룰로 강제하지 않는다.
+      // (기존 코드의 memo/useCallback도 측정 단계에서 근거를 재검토한다)
+      'react-perf/jsx-no-new-object-as-prop': 'off',
+      'react-perf/jsx-no-new-array-as-prop': 'off',
+      'react-perf/jsx-no-new-function-as-prop': 'off',
+      'react-perf/jsx-no-jsx-as-prop': 'off',
     },
   },
 

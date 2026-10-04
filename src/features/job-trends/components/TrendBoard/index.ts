@@ -1,1 +1,0 @@
-export { TrendBoard } from './TrendBoard'

@@ -23,18 +23,18 @@
 
 ## 2. 폴더 · 파일 네이밍
 
-| 대상               | 규칙              | 예시                                  |
-| ------------------ | ----------------- | ------------------------------------- |
-| feature 폴더       | kebab-case        | `features/job-trends/`                |
-| 컴포넌트 파일/폴더 | PascalCase        | `TrendCard/TrendCard.tsx`             |
-| 훅                 | `use` + camelCase | `useTechTrends.ts`                    |
-| 유틸/일반 함수     | camelCase         | `sortTrends.ts`                       |
-| `api/` 파일        | 동사 + 엔드포인트 | `fetchTrends.ts`, `createBookmark.ts` |
-| `types/` 파일      | 도메인 엔티티명   | `techTrend.ts`                        |
-| 이벤트 핸들러 prop | `on` + PascalCase | `onSelect`, `onSubmit`                |
-| 내부 핸들러 함수   | `handle` + Pascal | `handleClick`, `handleSubmit`         |
-| 상수               | UPPER_SNAKE_CASE  | `MEDIA_QUERIES`, `ROUTES`             |
-| 타입/인터페이스    | PascalCase        | `TechTrend`                           |
+| 대상               | 규칙              | 예시                             |
+| ------------------ | ----------------- | -------------------------------- |
+| feature 폴더       | kebab-case        | `features/job-trends/`           |
+| 컴포넌트 파일/폴더 | PascalCase        | `TrendCard/TrendCard.tsx`        |
+| 훅                 | `use` + camelCase | `useTechTrends.ts`               |
+| 유틸/일반 함수     | camelCase         | `sortTrends.ts`                  |
+| `api/` 파일        | 역할별 묶음       | `requests.ts`, `trendQueries.ts` |
+| `types/` 파일      | 도메인 엔티티명   | `techTrend.ts`                   |
+| 이벤트 핸들러 prop | `on` + PascalCase | `onSelect`, `onSubmit`           |
+| 내부 핸들러 함수   | `handle` + Pascal | `handleClick`, `handleSubmit`    |
+| 상수               | UPPER_SNAKE_CASE  | `MEDIA_QUERIES`, `ROUTES`        |
+| 타입/인터페이스    | PascalCase        | `TechTrend`                      |
 
 - 이벤트: 자식이 부모에게 받는 콜백은 `onXxx`, 컴포넌트 내부 구현 함수는 `handleXxx`.
   (예: 부모가 `onSelect`를 넘기면, 자식은 `handleClick`에서 `onSelect(...)`를 호출)
@@ -77,7 +77,7 @@ feature는 아래 세그먼트로 구성한다. **`api`·`types`는 단일 파�
 
 ```
 features/<name>/
-├─ api/          # 서버 호출 + 쿼리 팩토리. 파일당 1함수 `동사+엔드포인트` (fetchTrends.ts)
+├─ api/          # requests.ts(요청 함수 모음) + xxxQueries.ts(쿼리 팩토리)
 │  └─ index.ts   # 배럴
 ├─ types/        # 도메인 타입/스키마. 엔티티별 파일 (techTrend.ts)
 │  └─ index.ts   # 배럴
@@ -90,8 +90,19 @@ features/<name>/
 
 - 원칙: **세그먼트(api/types/stores/hooks/utils/components)는 폴더**, 그 안의 **개별 항목**은
   컴포넌트만 폴더, 나머지(api·types·store·hook·util 파일)는 flat 파일.
+- **`api/`의 요청 함수는 `requests.ts` 한 파일에 모은다.** 함수당 파일을 만들면 대부분이
+  import 2줄 + 본문 1줄짜리 껍데기가 되고, 배럴에서 같은 이름을 한 번 더 나열하게 된다.
+  쿼리 팩토리는 캐시 키·옵션을 함께 담으므로 `xxxQueries.ts`로 따로 둔다.
 - 스토어(상태)와 hooks(뮤테이션·재사용 로직)를 **세그먼트로 분리**한다 — 성격이 다르므로.
 - 외부는 세그먼트 배럴로만 접근한다 (`../api`, `../types`). 개별 파일 직접 import 금지.
+
+### 컴포넌트 variant vs 상태 (디자인 시스템)
+
+- **구조적 변형만 prop**으로 만든다: `variant`(예: primary/ghost/outline), `size`(md/sm), `type`, `checked`.
+- **상호작용 상태는 prop이 아니라 CSS로** 처리한다: hover/pressed/disabled/focus →
+  Tailwind `hover:`·`active:`·`disabled:`·`focus-visible:`. ⚠️ `state="hover"` 같은 상태 prop 금지.
+- Figma에 상태가 variant로 그려져 있어도 코드에선 CSS 상태로 옮긴다.
+  (Figma 한글 축 → prop 매핑은 [docs/FIGMA-WORKFLOW.md](./docs/FIGMA-WORKFLOW.md) §5.1)
 
 ## 5. feature 공개 API (barrel)
 
@@ -114,6 +125,9 @@ features/<name>/
 - **조건부 클래스는 `cn()`** — 상태에 따라 클래스를 켜고 끌 땐 `@/shared/utils/cn` 사용.
   - 예: `cn('px-3 py-1', active && 'bg-indigo-600 text-white')`
 - **인라인 `style={{...}}` 금지** — 매 렌더 새 객체라 리렌더를 유발한다(§12). 유틸리티/`cn`으로.
+  - **예외: 데이터로 결정되는 연속 치수**(게이지 폭 `82%`, 막대 높이 등)는 **자식이 없는
+    말단 엘리먼트에 한해** `style`로 준다. 임의 퍼센트는 정적 유틸리티로 표현할 수 없고,
+    말단 노드에는 위 근거(자식 리렌더)가 적용되지 않는다. 쓸 때는 이 예외임을 주석으로 남긴다.
 - **디자인 토큰은 `src/index.css`의 `@theme`** — 색·폰트 등 공통 값은 여기서 정의한다.
   (Tailwind v4는 별도 `tailwind.config.js` 없이 이 방식으로 토큰을 관리)
 
@@ -123,7 +137,10 @@ features/<name>/
 
 - **조회(Query) = `queryOptions` 팩토리** (껍데기 훅 X). feature `api/`에 `xxxQueries.ts`를 두어
   키 + queryFn + 옵션을 모으고, 컴포넌트는 `useQuery(xxxQueries.list())`로 직접 호출한다.
-- **변경(Mutation) = 훅** (`hooks/useCreateXxx.ts`). `useMutation` + 성공 시 캐시 무효화.
+- **변경(Mutation)**: 호출 뒤 추가 로직(무효화·토큰 저장·변환)이 있으면 **훅**
+  (`hooks/useCreateXxx.ts`). 없으면 **훅을 만들지 않고** 호출부에서
+  `useMutation({ mutationFn: createXxx })`를 바로 쓴다 — 훅의 존재 이유가 그 추가 로직이라,
+  비어 있으면 파일만 하나 더 생긴다.
 - **기준**: 호출 뒤 추가 로직(무효화·조합·변환)이 있으면 **훅**, 그냥 읽기면 **팩토리 항목**.
 - **쿼리 키는 팩토리 안에서 계층형**으로 지어, `invalidateQueries({ queryKey: xxxQueries.all() })`
   한 번으로 관련 캐시를 무효화(= "캐시를 낡음으로 표시 → 자동 재요청")한다.
@@ -167,23 +184,45 @@ export const bookmarkQueries = {
   - 예: `types/bookmark.ts`가 `bookmarkInputSchema` + `type BookmarkInput = z.infer<...>`를 함께 export.
 - 참고: Zod 스키마는 폼 전용이 아니라 **데이터 모양 명세**다. API 응답 검증 등에도 같은 스키마를 쓴다.
 
-## 10. JSDoc (ESLint `jsdoc`로 강제, 현재 warn)
+## 10. 주석 — JSDoc · 인라인 (JSDoc은 ESLint `jsdoc`로 강제, 현재 warn)
 
-**함수·컴포넌트에는 항상 JSDoc**으로 역할·인자·반환을 간략히 적는다.
+원칙: **주석은 "왜"를 적고 "무엇"은 코드에 맡긴다.** 코드보다 주석이 많아지면 과한 것 —
+이름·타입·구조로 대체한다.
+
+### JSDoc (공개 export 함수·컴포넌트·훅에 필수)
+
+**역할을 핵심만 한 줄**로 적는다. 인자·반환 타입은 시그니처가, prop 설명은 인터페이스가 이미 말해준다.
 
 ```ts
-/**
- * 트렌드를 공고 수 내림차순으로 정렬한다. (원본 불변)
- *
- * @param trends 정렬할 트렌드 배열
- * @returns count 기준 내림차순 새 배열
- */
+/** 트렌드를 공고 수 내림차순으로 정렬한다. (원본 불변) */
 export function sortTrendsByCount(trends: TechTrend[]): TechTrend[] { ... }
+
+/** 회원가입 1단계 — 이메일 인증. 코드 전송 후 6자리 입력 시 '다음' 활성화. */
+export function SignupStep1({ onNext }: SignupStep1Props) { ... }
 ```
 
 - **타입은 JSDoc에 적지 않는다** (`@param {string}` ✕). 타입은 TypeScript가 담당.
-- 컴포넌트는 역할 + 주요 prop + 반환(무엇을 렌더하는지)을 적는다.
+- **`@param`/`@returns`는 기본 생략.** prop 설명은 인터페이스 각 필드의 `/** */`에 두고,
+  인자·반환 타입은 시그니처에 이미 있다 → 중복이라 오히려 노이즈.
+  (ESLint도 태그 존재는 강제하지 않음: `require-param`/`require-returns` = off. 단, **쓰면** 설명 필수.)
+- 인터페이스 prop 주석도 **비직관적인 것만**. 자명한 prop(`children`·`title` 등)은 생략.
+- 정말 짚어야 할 비직관적 인자에 한해 예외적으로 `@param` 한 줄.
 - 현재 `warn` 레벨(공개 export 대상). 릴리스 전 `error`로 승격 권장.
+
+### 인라인 주석 (`//`) — 합의 규칙
+
+**비직관적인 것만** 짧게 남긴다:
+
+- 결정의 근거·트레이드오프 (예: `간편로그인은 진입 지점(1단계)에서만 노출`)
+- 매직값의 의미 (예: `const CODE_TTL = 300 // 5:00`)
+- 성능 이유 (react-perf: `모듈 스코프에 한 번만 생성해 재사용`)
+- 디자인 값 출처 (Figma node·렌더 hex 매핑)
+- `TODO:` — 미래 독자가 이해할 문구로 (대화·리뷰용 임시 라벨 `TODO(F4)` 금지)
+
+적지 않는 것:
+
+- 코드가 그대로 하는 일의 서술 (`secondsLeft를 1 줄인다` ✕)
+- 코드로 자명한 레이아웃/값 나열 (`gap 24 / 항목간 20` ✕ — className에 이미 있음)
 
 ## 11. 테스트 위치
 
@@ -195,6 +234,25 @@ export function sortTrendsByCount(trends: TechTrend[]): TechTrend[] { ... }
 
 - "unit vs RTL"은 대립 개념이 아니다. RTL은 컴포넌트를 테스트하는 **도구**다.
 - 로직이 복잡하면 순수 함수/훅으로 **분리**해 각각 테스트한다(렌더/로직 분리).
+
+### 무엇에 테스트를 쓰는가
+
+기준은 하나다. **"깨졌을 때 화면만 봐서 아는가."** 모르면 쓰고, 보면 바로 아는 것은 쓰지 않는다.
+
+**쓴다**
+
+- **순수 함수·훅** — 입력과 출력이 분명해 비용이 가장 싸다 (`weekRange`, `cn`, `oauthProvider`)
+- **상태가 바뀌는 컴포넌트** — "A를 켜면 B가 꺼진다" 같은 규칙은 코드를 읽어야만 안다
+  (`ReportSubscriptionCard`)
+- **접근성 계약** — `role`·`aria-*`·포커스 이동. 마크업을 고치다 깨져도 화면은 멀쩡해 보인다 (`Toggle`)
+- **화면 흐름** — 폼 제출 후 이동, 실패 시 표시 등 페이지 단위 (`pages/*.test.tsx`)
+- **한 번 겪은 버그** — 다시 돌아오지 않게 고정한다
+
+**쓰지 않는다**
+
+- props를 그대로 그리기만 하는 마크업 (`TrendMark`, `RouteFallback`, 마이페이지 카드들)
+- 목데이터 값이 화면에 뜨는지 확인하는 테스트 — 목을 바꾸면 테스트도 바꿔야 해서 알려주는 게 없다
+- 클래스 이름·레이아웃 검사 — 리팩터링만 막는다
 
 ## 12. 성능 & 접근성 (ESLint로 감지)
 

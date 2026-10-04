@@ -10,8 +10,463 @@
  * 디자인 토큰은 아래 @theme 블록에서 정의하면 유틸리티 클래스로 노출된다.
  */
 @theme {
-  --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* self-host한 'Pretendard Variable'을 최우선으로 — 시스템에 설치된 다른
+     'Pretendard' 대신 번들 폰트를 확실히 사용해 Figma와 자형을 일치시킨다. */
+  --font-sans:
+    'Pretendard Variable', 'Pretendard', system-ui, 'Segoe UI', Roboto,
+    sans-serif;
   --font-mono: ui-monospace, Consolas, monospace;
+
+  /* ── Color (다크 테마 기준) ─────────────────────────────────
+     Figma 변수는 두 겹이다: Global(원본 팔레트) ← Token/dark_mod(다크모드 시맨틱).
+     디자인 노드는 전부 Token 레이어를 바인딩하므로 **여기 값은 Token 기준**이다.
+     Global은 스케일 방향이 반대라 그 번호를 보면 어긋난다. 라이트 모드는 추후 도입. */
+
+  /* Primary — 브랜드(보라). Figma Token 컬렉션(dark_mod) 기준이라 숫자가 커질수록 밝다
+     (gray 스케일과 방향이 같다). Global 컬렉션은 방향이 반대이니 그쪽 번호를 보지 말 것.
+     브랜드 보라 #bc72f4 = primary-500. */
+  --color-primary-50: #4d1a7e;
+  --color-primary-100: #591796;
+  --color-primary-200: #7726bf;
+  --color-primary-300: #913de2;
+  --color-primary-400: #aa5ef1;
+  --color-primary-500: #bc72f4;
+  --color-primary-600: #ce9af7;
+  --color-primary-700: #e1c4fb;
+  --color-primary-800: #efe4fd;
+  --color-primary-900: #f8f3fe;
+
+  /* Gray — 0(검정) → 1000(흰색) */
+  --color-gray-0: #000000;
+  --color-gray-50: #212529;
+  --color-gray-100: #343a40;
+  --color-gray-200: #495057;
+  --color-gray-300: #868e96;
+  --color-gray-400: #adb5bd;
+  --color-gray-500: #ced4da;
+  --color-gray-600: #dee2e6;
+  --color-gray-700: #e9ecef;
+  --color-gray-800: #f1f3f5;
+  --color-gray-900: #f8f9fa;
+  --color-gray-1000: #ffffff;
+
+  /* Semantic — 상태 */
+  --color-success: #55dc92;
+  --color-warning: #f8c952;
+  --color-error: #ff7272;
+  --color-info: #62caf4;
+
+  /* Surface — 배경 (canvas < container < element)
+     Figma Token 컬렉션의 별칭을 끝까지 해석한 값이다:
+     bg/canvas→gray/950 #1e2126 · bg/container→gray/850 #25292d · bg/element→gray/800 #343a40.
+     (Figma gray 스케일은 우리와 반대 방향이고 850·950은 우리 스케일에 없어 여기서만 쓴다.) */
+  --color-canvas: #1e2126;
+  --color-container: #25292d;
+  --color-element: #343a40;
+
+  /* Chart */
+  --color-chart-yellow: #f0f671;
+  --color-chart-mint: #28f3a5;
+  --color-chart-cyan: #12e1f9;
+  --color-chart-blue: #508aff;
+  --color-chart-violet: #aa5ef1;
+
+  /* ── Typography (Pretendard) ────────────────────────────────
+     size / line-height / font-weight 를 번들한 시맨틱 텍스트 스타일.
+     Display·Heading = lh 1.2, Body = lh 1.5. bold가 필요하면 font-semibold로 조합. */
+
+  /* Display — SemiBold 600 */
+  --text-display-lg: 64px;
+  --text-display-lg--line-height: 1.2;
+  --text-display-lg--font-weight: 600;
+  --text-display-md: 48px;
+  --text-display-md--line-height: 1.2;
+  --text-display-md--font-weight: 600;
+  --text-display-sm: 36px;
+  --text-display-sm--line-height: 1.2;
+  --text-display-sm--font-weight: 600;
+
+  /* Heading — Bold 700 */
+  --text-h1: 32px;
+  --text-h1--line-height: 1.2;
+  --text-h1--font-weight: 700;
+  --text-h2: 24px;
+  --text-h2--line-height: 1.2;
+  --text-h2--font-weight: 700;
+  --text-h3: 20px;
+  --text-h3--line-height: 1.2;
+  --text-h3--font-weight: 700;
+  --text-h4: 16px;
+  --text-h4--line-height: 1.2;
+  --text-h4--font-weight: 700;
+  --text-h5: 14px;
+  --text-h5--line-height: 1.2;
+  --text-h5--font-weight: 700;
+
+  /* Body — Regular 400 (bold는 font-semibold로) */
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.5;
+  --text-body-lg--font-weight: 400;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.5;
+  --text-body-md--font-weight: 400;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.5;
+  --text-body-sm--font-weight: 400;
+  --text-body-xs: 12px;
+  --text-body-xs--line-height: 1.5;
+  --text-body-xs--font-weight: 400;
+
+  /* ── Radius (디자인 5단계, Tailwind 기본 override) ───────────── */
+  --radius-xs: 2px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* ── Spacing ─────────────────────────────────────────────────
+     디자인은 4px 베이스 그리드(0/4/8/12/16/20/24/32/36/48).
+     Tailwind v4 기본값(--spacing: 0.25rem = 4px)과 동일하므로 별도 토큰 없이
+     기본 유틸리티를 그대로 쓴다: p-1=4 p-2=8 p-3=12 p-4=16 p-5=20 p-6=24
+     p-8=32 p-9=36 p-12=48 (gap-·m-·w-·h- 등도 동일). */
+
+  /* ── Shadow / Elevation ──────────────────────────────────────
+     `--shadow-*` 네임스페이스 → shadow-{name} 유틸리티로 노출된다.
+     다크 서피스는 대비가 낮아 Tailwind 기본 그림자(라이트용, 흐림)가 잘 안 보이므로
+     검정 불투명도를 높여 재튜닝했다. `--shadow-*: initial`로 기본 스케일을 지운 뒤
+     xs→xl 5단계만 남긴다. (앱 튜닝값 — Figma Elevation 확정 시 대조/보정) */
+  --shadow-*: initial;
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.24);
+  --shadow-sm:
+    0 2px 4px -1px rgb(0 0 0 / 0.28), 0 1px 2px -1px rgb(0 0 0 / 0.24);
+  --shadow-md:
+    0 4px 8px -2px rgb(0 0 0 / 0.32), 0 2px 4px -2px rgb(0 0 0 / 0.28);
+  --shadow-lg:
+    0 12px 20px -4px rgb(0 0 0 / 0.38), 0 4px 8px -4px rgb(0 0 0 / 0.32);
+  --shadow-xl:
+    0 24px 32px -8px rgb(0 0 0 / 0.44), 0 8px 12px -6px rgb(0 0 0 / 0.38);
+
+  /* ── z-index (레이어링 스케일) ────────────────────────────────
+     z-index는 Tailwind v4의 테마 네임스페이스가 아니라서 여기 값은 CSS 변수로만
+     노출된다. 명명 유틸리티(z-modal 등)는 @theme 블록 밖 @utility에서 생성한다.
+     값 사이 간격(100/1000대)은 추후 중간 레이어 삽입 여지를 남긴 것. */
+  --z-base: 0; /* 기본 문서 흐름 */
+  --z-raised: 10; /* 살짝 띄운 요소 (hover된 카드 등) */
+  --z-dropdown: 1000; /* 드롭다운 · 셀렉트 메뉴 */
+  --z-sticky: 1100; /* sticky 헤더 · 툴바 */
+  --z-overlay: 1200; /* 모달 뒤 딤(dim) 오버레이 */
+  --z-modal: 1300; /* 모달 · 다이얼로그 · 드로어 */
+  --z-popover: 1400; /* 팝오버 · 툴팁 (모달 위에도 뜰 수 있음) */
+  --z-toast: 1500; /* 토스트 · 알림 (항상 최상단) */
+
+  /* ── Motion: Easing (곡선) ────────────────────────────────────
+     `--ease-*` 네임스페이스 → ease-{name} 유틸리티로 자동 노출된다.
+     Figma엔 motion 스펙이 없어 코드가 소유하는 토큰(= 앱 표준).
+     standard=기본 상태 전환(hover·색), emphasized=강조·큰 이동,
+     decelerate=진입(빠르게 들어와 감속), accelerate=퇴장(가속해 사라짐). */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  /* carousel=먼 거리를 실제로 건너가는 이동(주간 리포트 카드 넘김).
+     위 네 개는 전부 앞쪽에 몰린 감속 곡선이라 짧은 상태 전환용이다 — emphasized는
+     **시간의 절반에 거리의 87%**를 가버려서, 1000px을 400ms에 건너가는 데 쓰면
+     앞에서 휙 튀고 뒤 200ms는 아무 일도 없는 것처럼 보인다.
+     이 곡선만 앞뒤로 완만해(ease-in-out) 주어진 시간을 고르게 쓴다. */
+  --ease-carousel: cubic-bezier(0.45, 0, 0.25, 1);
+
+  /* ── Motion: Duration (시간) ──────────────────────────────────
+     duration은 Tailwind v4 테마 네임스페이스가 아니라서(z-index와 동일) 여기 값은
+     CSS 변수로만 노출되고, 명명 유틸리티(duration-fast 등)는 @utility에서 만든다.
+     (Tailwind 기본 duration-<number>는 그대로 유효; 아래는 시맨틱 속도 전용) */
+  --duration-fast: 150ms; /* hover·색 전환 등 작은 상태 변화 */
+  --duration-normal: 250ms; /* 드롭다운·아코디언·토글 */
+  --duration-slow: 400ms; /* 모달·드로어·페이지 전환 */
+
+  /* ── Motion: Animation ───────────────────────────────────────
+     `--animate-*` 네임스페이스 → animate-{name} 유틸리티로 노출된다.
+     gauge-grow: 진입 시 게이지가 왼쪽에서 오른쪽으로 차오른다
+     (Figma 274:1871 주석 "그래프가 왼쪽->오른쪽 상승하는 애니메이션").
+     `to`를 생략하면 요소의 실제 width가 종료값이 되므로, 데이터로 폭이 정해지는
+     게이지에 그대로 쓸 수 있다(폭을 keyframe에 하드코딩하지 않아도 된다). */
+  --animate-gauge-grow: gauge-grow var(--duration-slow) var(--ease-decelerate);
+
+  @keyframes gauge-grow {
+    from {
+      width: 0;
+    }
+  }
+
+  /* bar-grow: 진입 시 막대가 아래에서 위로 올라온다
+     (Figma 335:2392 주석 "페이지 들어가면 아래에서 위로 올라가는 애니메이션 (이번 주만)").
+     gauge-grow와 같은 요령으로 `to`를 생략해, 데이터로 정해진 높이가 종료값이 된다. */
+  --animate-bar-grow: bar-grow var(--duration-slow) var(--ease-decelerate);
+
+  @keyframes bar-grow {
+    from {
+      height: 0;
+    }
+  }
+
+  /* 주차 넘김 — 이웃 카드가 옆자리에서 가운데로 들어오고, 보던 카드는 반대쪽 옆자리로 나간다.
+     자리마다 위치·기울기·크기·투명도·블러가 모두 달라(WeekDeck.tsx 실측표) 한 번에 바꾼다.
+     이동량은 무대 폭에 따라 달라지므로 --slide-* 변수로 받아 쓴다(WeekDeck이 계산해 넣는다).
+     ⚠️ Figma에 duration·easing 수치가 없다. slow(400ms)+emphasized는 "강조·큰 이동"용 토큰이다. */
+  --animate-slide-in: slide-in var(--duration-slow) var(--ease-carousel) both;
+  --animate-slide-out: slide-out var(--duration-slow) var(--ease-carousel) both;
+  --animate-body-focus: body-focus var(--duration-slow) var(--ease-carousel)
+    both;
+  --animate-body-dim: body-dim var(--duration-slow) var(--ease-carousel) both;
+  --animate-slide-away: slide-away var(--duration-slow) var(--ease-carousel)
+    both;
+  --animate-surface-dim: surface-dim var(--duration-slow) var(--ease-carousel)
+    both;
+  --animate-panel-focus: panel-focus var(--duration-slow) var(--ease-carousel)
+    both;
+  --animate-panel-dim: panel-dim var(--duration-slow) var(--ease-carousel) both;
+
+  /* 주차 라벨이 바뀔 때 살짝 페이드 — 카드가 움직이는 동안 글자만 툭 바뀌지 않게. */
+  /* 리포트 카드의 그림자 (Figma 335:2275 · offset(7,14) blur 12 검정 15%).
+     카드와 `slide-in` 키프레임 두 곳에서 써야 해서 토큰으로 둔다 — 값이 갈라지면
+     이동이 끝나는 마지막 한 프레임에서만 어긋나 알아채기 어렵다.
+     ⚠️ 기존 --shadow-* 스케일(xs~xl)은 전부 offset-x가 0이라 맞는 단계가 없다.
+     Figma Elevation이 확정되면 스케일에 편입할지 함께 정한다. */
+  --shadow-report-card: 7px 14px 12px rgb(0 0 0 / 0.15);
+
+  --animate-label-swap: label-swap var(--duration-normal) var(--ease-decelerate);
+
+  @keyframes label-swap {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* 옆자리 → 가운데.
+     **중간 지점(퍼센트 키프레임)을 두지 않는다.** 블러·투명도에 따로 구간을 주면 그 구간
+     안에서 easing이 한 번 더 돌아 이동과 어긋나고, 카드가 아직 한참 남았는데 이미 선명하거나
+     반대로 다 온 뒤에 흐린 채로 있는 구간이 생긴다. 거리·기울기·크기·블러·밝기를 전부
+     하나의 곡선에 태워야 "가까워지면서 또렷해진다"로 읽힌다.
+
+     크기는 **transform이 아니라 width/height로** 바꾼다. 두 자리는 비율이 달라(972x682 ↔
+     978x650) 배율로 맞추면 글자가 세로로 눌린다. 박스만 늘리고 안쪽 내용은 폭이 고정돼
+     있어(PREVIEW_BODY_WIDTH) 줄바꿈도 다시 일어나지 않는다. 절대 배치라 다른 요소를
+     밀지 않으므로 레이아웃 비용도 이 요소 하나에 그친다.
+
+     표면도 함께 바뀐다 — 이웃 카드는 채움 #343a40에 테두리·그림자가 없고, 가운데 카드는
+     채움 #25292d에 테두리 1px과 그림자가 있다. 이걸 같이 애니메이션하지 않으면 도착하는
+     순간 색과 테두리가 툭 바뀐다. */
+  @keyframes slide-in {
+    to {
+      transform: translate(var(--slide-x), var(--slide-y));
+      width: var(--slide-w);
+      height: var(--slide-h);
+      rotate: 0deg;
+      opacity: 1;
+      filter: blur(0);
+      background-color: var(--color-container);
+      box-shadow:
+        inset 0 0 0 1px var(--color-element),
+        var(--shadow-report-card);
+    }
+  }
+
+  /* 카드 안 요약 리포트 패널도 자리에 따라 색이 다르다 (이웃 #343a40 · 가운데 #1e2126) */
+  @keyframes panel-focus {
+    to {
+      background-color: var(--color-canvas);
+    }
+  }
+
+  @keyframes panel-dim {
+    to {
+      background-color: var(--color-element);
+    }
+  }
+
+  /* 가운데 → 옆자리.
+     회전을 `rotate` 속성이 아니라 `transform` 안에 넣는다 — CSS는 rotate를 transform보다
+     **먼저** 적용해서, 따로 쓰면 이동이 이미 기울어진 좌표계에서 일어나 목표 자리를 벗어난다.
+     (들어오는 쪽은 rotate가 0으로 끝나서 그 영향이 없다.) */
+  @keyframes slide-out {
+    to {
+      transform: translate(var(--slide-x), var(--slide-y))
+        rotate(var(--slide-rotate)) scale(var(--slide-sx), var(--slide-sy));
+      opacity: 0.5;
+      filter: blur(4px);
+    }
+  }
+
+  /* 나가는 카드의 표면 — 가운데 모습에서 이웃 모습으로 */
+  @keyframes surface-dim {
+    to {
+      background-color: var(--color-element);
+      box-shadow: none;
+    }
+  }
+
+  /* 반대쪽 이웃은 화면 밖으로 밀려나며 사라진다 */
+  @keyframes slide-away {
+    to {
+      transform: translateX(var(--slide-x));
+      opacity: 0;
+    }
+  }
+
+  /* 카드 안 내용의 밝기. 이웃 자리는 10%(겉 50% x 내용 20%)이고 가운데는 100%다.
+     **이걸 같이 움직이지 않으면 겉 투명도와 블러만 맞고 내용 밝기가 5배 어긋난 채로
+     도착해, 교체되는 순간 읽히던 글자가 한 프레임에 얼룩이 된다.** */
+  @keyframes body-focus {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes body-dim {
+    to {
+      opacity: 0.2;
+    }
+  }
+}
+
+/* z-index 명명 유틸리티 — @theme의 --z-* 토큰을 z-{name} 클래스로 감싼다.
+   (Tailwind 기본 z-<number>는 그대로 유효; 아래는 시맨틱 레이어 전용) */
+@utility z-base {
+  z-index: var(--z-base);
+}
+@utility z-raised {
+  z-index: var(--z-raised);
+}
+@utility z-dropdown {
+  z-index: var(--z-dropdown);
+}
+@utility z-sticky {
+  z-index: var(--z-sticky);
+}
+@utility z-overlay {
+  z-index: var(--z-overlay);
+}
+@utility z-modal {
+  z-index: var(--z-modal);
+}
+@utility z-popover {
+  z-index: var(--z-popover);
+}
+@utility z-toast {
+  z-index: var(--z-toast);
+}
+
+/* 얇은 커스텀 스크롤바 — Figma가 스크롤 영역에 그려둔 막대(폭 4px · gray-400 · pill · 트랙 투명).
+   OS 기본 스크롤바는 두껍고 각져서 디자인과 어긋난다. */
+@utility scrollbar-slim {
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-gray-400);
+    border-radius: var(--radius-full);
+  }
+  /* Chrome 121+는 scrollbar-width가 지정되면 ::-webkit-scrollbar를 통째로 무시한다.
+     그래서 표준 속성은 webkit 의사요소가 없는 브라우저(Firefox)에만 준다. */
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-gray-400) transparent;
+  }
+}
+
+/* duration 명명 유틸리티 — @theme의 --duration-* 토큰을 duration-{name} 클래스로 감싼다. */
+@utility duration-fast {
+  transition-duration: var(--duration-fast);
+}
+@utility duration-normal {
+  transition-duration: var(--duration-normal);
+}
+@utility duration-slow {
+  transition-duration: var(--duration-slow);
+}
+
+/* Tailwind v4 preflight는 button의 커서를 `default`로 둔다(v3까지는 pointer였다).
+   그대로 두면 앱의 모든 버튼이 클릭 가능해 보이지 않아 조작 대상을 알 수 없다.
+   비활성 버튼은 각 컴포넌트의 `disabled:cursor-not-allowed`가 계속 이긴다. */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}
+
+/* 내용이 빈 툴팁은 감춘다 — 그래프가 없는 빈 곳에 커서가 있을 때 formatter가 ''를
+   돌려주는데, ECharts는 배경·패딩을 인라인으로 넣어 빈 상자가 그대로 보인다. */
+.uns-chart-tooltip:empty {
+  display: none;
+}
+
+/* ECharts 차트 툴팁 — Figma 290:1004.
+   툴팁 DOM은 ECharts가 만들기 때문에 Tailwind 유틸리티를 붙일 수 없어 여기서 정의한다.
+   ⚠️ 배경·패딩·radius는 ECharts가 **인라인 스타일**로 넣어 여기서 덮을 수 없다.
+   그쪽은 buildRisingStacksOption의 tooltip 옵션이 담당하고, 이 규칙은 꼬리와 글자만 맡는다. */
+
+/* 가운데 정렬 + 꼬리 높이만큼 위로.
+   ⚠️ `transform`이 아니라 `translate` 속성이어야 한다 — ECharts가 툴팁 좌표를
+   `transform: translate(x,y)` 인라인으로 넣기 때문에 transform으로 쓰면 덮인다.
+   `translate`는 별도 속성이라 ECharts의 transform과 합성된다.
+   또 JS에서 크기를 재서 빼는 방식은 쓸 수 없다: position 콜백 시점의 DOM은 아직
+   **직전 내용** 크기라 이름 길이가 바뀌면 가로 중앙이 최대 13px 어긋났다. */
+.uns-chart-tooltip {
+  translate: -50% calc(-100% - 10.5px);
+}
+
+/* 아래를 가리키는 꼬리 12.12 × 10.5 (Figma 290:1002).
+   색은 옵션의 TOOLTIP_BG(gray-200)와 반드시 같아야 한다. */
+.uns-chart-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border-inline: 6.06px solid transparent;
+  border-top: 10.5px solid var(--color-gray-200);
+}
+
+/* 위쪽 공간이 모자라 커서 아래로 뒤집힌 경우 — 꼬리도 위를 가리킨다 */
+.uns-chart-tooltip--below {
+  translate: -50% 10.5px;
+}
+
+.uns-chart-tooltip--below::after {
+  top: auto;
+  bottom: 100%;
+  border-top: 0;
+  border-bottom: 10.5px solid var(--color-gray-200);
+}
+
+.uns-chart-tooltip__row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1, 4px);
+}
+
+.uns-chart-tooltip__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+}
+
+.uns-chart-tooltip__name {
+  font-size: var(--text-body-xs);
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--color-gray-1000);
+}
+
+.uns-chart-tooltip__date {
+  display: block;
+  font-size: var(--text-body-xs);
+  line-height: 1.5;
+  color: var(--color-gray-500);
 }
 
 html,
