@@ -11,11 +11,6 @@
 export type PersonalHistory =
   'NO_EXPERIENCE' | 'ENTRY_LEVEL' | 'JUNIOR' | 'MIDDLE' | 'SENIOR'
 
-/** 안내 문구를 돌려주는 응답. */
-export interface MessageResponse {
-  message: string
-}
-
 /**
  * POST /user/signup 요청 본문.
  *

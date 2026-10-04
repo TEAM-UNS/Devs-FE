@@ -49,7 +49,7 @@ async function passMajorStep() {
 describe('OnboardingPage', () => {
   beforeEach(() => {
     mocks.put.mockReset()
-    mocks.put.mockResolvedValue({ message: 'ok' })
+    mocks.put.mockResolvedValue(undefined)
     mocks.trackEvent.mockReset()
   })
 

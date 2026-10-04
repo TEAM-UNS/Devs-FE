@@ -45,7 +45,8 @@ export interface PopularTechStackDto {
  * `major_id`를 빼면 전체 공고를 집계한다.
  */
 export interface PopularTechStacksResponse {
-  major: string
+  /** `major_id`를 빼고 부르면 null */
+  major: string | null
   techStacks: PopularTechStackDto[]
 }
 
@@ -59,7 +60,8 @@ export interface CompanySizeTechStackDto {
 /** GET /dashboard/company-size-tech-stacks 응답 (200). */
 export interface CompanySizeTechStacksResponse {
   companySize: CompanySize
-  category: string
+  /** `major_id`를 빼고 부르면 null */
+  category: string | null
   techStacks: CompanySizeTechStackDto[]
 }
 
@@ -79,6 +81,7 @@ export interface RisingTechStackDto {
 /** GET /dashboard/best-tech-stacks 응답 (200). */
 export interface BestTechStacksResponse {
   period: RisingPeriod
-  majorId: number
+  /** `major_id`를 빼고 부르면 null */
+  majorId: number | null
   techStacks: RisingTechStackDto[]
 }

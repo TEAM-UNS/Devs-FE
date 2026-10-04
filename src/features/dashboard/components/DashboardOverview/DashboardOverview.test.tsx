@@ -86,11 +86,11 @@ describe('DashboardOverview', () => {
     )
   })
 
-  it('필터 칩은 서버가 준 전공 이름으로 그려지고 단일 선택이다', async () => {
+  it('필터 칩은 전공 표기로 그려지고 단일 선택이다', async () => {
     renderWithQuery(<DashboardOverview />)
 
     // 칩은 전공 목록이 도착한 뒤에 늘어난다
-    const backend = await screen.findByRole('button', { name: 'BACKEND' })
+    const backend = await screen.findByRole('button', { name: 'Backend' })
     // 처음에는 '전체'가 선택돼 있다 (major_id를 보내지 않는 상태)
     expect(screen.getByRole('button', { name: '전체' })).toHaveAttribute(
       'aria-pressed',
@@ -99,7 +99,7 @@ describe('DashboardOverview', () => {
 
     await userEvent.click(backend)
 
-    expect(screen.getByRole('button', { name: 'BACKEND' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'Backend' })).toHaveAttribute(
       'aria-pressed',
       'true',
     )
@@ -148,14 +148,14 @@ describe('DashboardOverview', () => {
     renderWithQuery(<DashboardOverview />)
 
     // 처음에는 전체 집계라 major_id를 보내지 않는다
-    await screen.findByRole('button', { name: 'BACKEND' })
+    await screen.findByRole('button', { name: 'Backend' })
     await waitFor(async () => {
       expect(await lastParamsOf('/dashboard/popular-tech-stacks')).toEqual({
         major_id: undefined,
       })
     })
 
-    await userEvent.click(screen.getByRole('button', { name: 'BACKEND' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Backend' }))
     await waitFor(async () => {
       expect(await lastParamsOf('/dashboard/popular-tech-stacks')).toEqual({
         major_id: 1,
