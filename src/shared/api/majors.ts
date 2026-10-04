@@ -28,6 +28,27 @@ export interface MajorsResponse {
   categories: MajorCategoryDto[]
 }
 
+/*
+ * 서버는 `"DATA_AI"` 같은 코드만 주고 표시용 라벨은 주지 않는다
+ * 회원가입 카드와 대시보드 칩이 같은 표기를 쓰도록 여기 한 곳에 둠
+ * 코드 목록은 크롤러(Devs_AI `FIELD_CATALOG`)가 DB에 넣는 8개 기준
+ */
+const MAJOR_LABELS: Record<string, string> = {
+  BACKEND: 'Backend',
+  FRONTEND: 'Frontend',
+  MOBILE: 'Mobile',
+  DATA_AI: 'Data/AI',
+  DEVOPS: 'DevOps',
+  SECURITY: 'Security',
+  GAME: 'Game',
+  EMBEDDED: 'Embedded',
+}
+
+/** 전공 코드를 화면 표기로 바꿈 표기표에 없는 코드가 와도 목록에서 사라지지 않게 원문을 그대로 씀 */
+export function majorLabel(code: string): string {
+  return MAJOR_LABELS[code] ?? code
+}
+
 /** 전공 목록을 조회 (GET /majors — 인증 카테고리와 달리 최상위 경로다) */
 export async function fetchMajors(): Promise<MajorsResponse> {
   return get<MajorsResponse>('/majors')

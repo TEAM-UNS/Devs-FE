@@ -1,15 +1,11 @@
 import type { ComponentType, SVGProps } from 'react'
+import { majorLabel } from '@/shared/api'
 import type { MajorCategoryDto } from '@/shared/api'
 import {
-  AiIcon,
-  AndroidIcon,
   BackendIcon,
-  DatabaseIcon,
-  DesignIcon,
   DevOpsIcon,
   EtcIcon,
   FrontendIcon,
-  IosIcon,
   SecurityIcon,
 } from './majorIcons'
 
@@ -22,40 +18,27 @@ export interface MajorOption {
   Icon: ComponentType<SVGProps<SVGSVGElement>>
 }
 
-type Presentation = Pick<MajorOption, 'label' | 'Icon'>
-
 /**
- * 서버 전공 ENUM(`"BACKEND"`) → 화면 표기.
- *
- * 서버는 표시용 라벨을 주지 않고 ENUM 문자열만 준다. 그런데 디자인은 `iOS`·`DevOps`처럼
- * 대소문자가 정해진 표기와 전공별 아이콘을 쓰므로, 목록은 서버에서 받고 표기만 여기서 잇는다.
- * 아이콘 순서·라벨은 Figma `전공 아이콘` 컴포넌트(130:1412) 기준이다.
+ * 서버 전공 코드 → 카드 아이콘. 라벨은 대시보드와 같이 쓰도록 `majorLabel`에 있다
+ * 아이콘은 Figma `전공 아이콘`(130:1412)에 있는 것만 쓰고, 없는 전공은 기타 아이콘으로 둔다
  */
-const PRESENTATION: Record<string, Presentation> = {
-  BACKEND: { label: 'Backend', Icon: BackendIcon },
-  FRONTEND: { label: 'Frontend', Icon: FrontendIcon },
-  DEVOPS: { label: 'DevOps', Icon: DevOpsIcon },
-  ANDROID: { label: 'Android', Icon: AndroidIcon },
-  IOS: { label: 'iOS', Icon: IosIcon },
-  AI: { label: 'AI', Icon: AiIcon },
-  DATABASE: { label: 'Database', Icon: DatabaseIcon },
-  SECURITY: { label: 'Security', Icon: SecurityIcon },
-  DESIGN: { label: 'Design', Icon: DesignIcon },
-  ETC: { label: 'Etc', Icon: EtcIcon },
+const MAJOR_ICONS: Record<string, MajorOption['Icon']> = {
+  BACKEND: BackendIcon,
+  FRONTEND: FrontendIcon,
+  DEVOPS: DevOpsIcon,
+  SECURITY: SecurityIcon,
 }
 
 /**
  * 서버 전공을 화면용 선택지로 바꾼다.
- * 표기표에 없는 ENUM이 와도 목록에서 사라지지 않도록 원문 라벨 + 기본 아이콘으로 떨어진다.
  *
  * @param category 서버가 준 전공
  * @returns 카드에 그릴 선택지
  */
 export function toMajorOption(category: MajorCategoryDto): MajorOption {
-  const presentation = PRESENTATION[category.major] ?? {
-    label: category.major,
-    Icon: EtcIcon,
+  return {
+    id: String(category.id),
+    label: majorLabel(category.major),
+    Icon: MAJOR_ICONS[category.major] ?? EtcIcon,
   }
-
-  return { id: String(category.id), ...presentation }
 }

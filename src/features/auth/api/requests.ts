@@ -2,7 +2,6 @@ import { post, put } from '@/shared/api'
 import type {
   LoginRequest,
   LoginResponse,
-  MessageResponse,
   OAuthProvider,
   OAuthTokenResponse,
   SendEmailCodeRequest,
@@ -12,9 +11,9 @@ import type {
   VerifyEmailRequest,
 } from '../types'
 
-/** 회원가입한다. (POST /signup) */
-export async function signup(body: SignupRequest): Promise<MessageResponse> {
-  return post<MessageResponse>('/user/signup', body)
+/** 회원가입한다. (POST /user/signup) 201로 본문 없이 온다 */
+export async function signup(body: SignupRequest): Promise<void> {
+  return post<void>('/user/signup', body)
 }
 
 /**
@@ -26,17 +25,13 @@ export async function login(body: LoginRequest): Promise<LoginResponse> {
 }
 
 /** 이메일로 인증코드를 발송한다. (POST /email/send) */
-export async function sendEmailCode(
-  body: SendEmailCodeRequest,
-): Promise<MessageResponse> {
-  return post<MessageResponse>('/user/email/send', body)
+export async function sendEmailCode(body: SendEmailCodeRequest): Promise<void> {
+  return post<void>('/user/email/send', body)
 }
 
 /** 이메일 인증코드를 검증한다. (POST /user/email/verify) */
-export async function verifyEmail(
-  body: VerifyEmailRequest,
-): Promise<MessageResponse> {
-  return post<MessageResponse>('/user/email/verify', body)
+export async function verifyEmail(body: VerifyEmailRequest): Promise<void> {
+  return post<void>('/user/email/verify', body)
 }
 
 /**
@@ -62,15 +57,13 @@ export async function exchangeOAuthToken(
  * 회원가입은 `POST /user/signup` 한 번에 다 보내지만 온보딩은 전공과 기술 스택이
  * 엔드포인트부터 나뉘어 있어, 둘을 각각 부른다.
  */
-export async function updateMajor(
-  body: UpdateMajorRequest,
-): Promise<MessageResponse> {
-  return put<MessageResponse>('/user/major', body)
+export async function updateMajor(body: UpdateMajorRequest): Promise<void> {
+  return put<void>('/user/major', body)
 }
 
 /** 기술 스택을 저장한다. (PUT /user/tech-stack) */
 export async function updateTechStack(
   body: UpdateTechStackRequest,
-): Promise<MessageResponse> {
-  return put<MessageResponse>('/user/tech-stack', body)
+): Promise<void> {
+  return put<void>('/user/tech-stack', body)
 }

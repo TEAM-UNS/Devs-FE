@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { majorQueries } from '@/shared/api'
+import { majorLabel, majorQueries } from '@/shared/api'
 import { dashboardQueries } from '../../api'
 import type { CompanySize, RisingPeriod } from '../../types'
 import {
@@ -46,14 +46,19 @@ export function DashboardOverview() {
   const companies = useQuery(dashboardQueries.companySize(companySize, majorId))
   const rising = useQuery(dashboardQueries.rising(period, majorId))
 
-  // 칩 라벨은 서버가 준 전공 이름을 그대로 쓴다. '전체'는 major_id를 안 보내는 경우다.
+  // 칩 라벨은 회원가입과 같은 전공 표기를 쓴다. '전체'는 major_id를 안 보내는 경우다.
   const majorList = majors.data?.categories ?? []
-  const filters = [ALL_MAJORS_LABEL, ...majorList.map((major) => major.major)]
-  const selectedFilter =
-    majorList.find((major) => major.id === majorId)?.major ?? ALL_MAJORS_LABEL
+  const filters = [
+    ALL_MAJORS_LABEL,
+    ...majorList.map((major) => majorLabel(major.major)),
+  ]
+  const selected = majorList.find((major) => major.id === majorId)
+  const selectedFilter = selected
+    ? majorLabel(selected.major)
+    : ALL_MAJORS_LABEL
 
   const selectFilter = (label: string) => {
-    setMajorId(majorList.find((major) => major.major === label)?.id)
+    setMajorId(majorList.find((major) => majorLabel(major.major) === label)?.id)
   }
 
   const stepCompanySize = (direction: -1 | 1) => {

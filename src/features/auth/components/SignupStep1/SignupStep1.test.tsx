@@ -8,8 +8,8 @@ import { SignupStep1 } from './SignupStep1'
 // 이 컴포넌트는 발송·검증 API를 부른다. jsdom엔 서버가 없으므로 성공 응답으로 대체하고,
 // 화면 전환(코드 입력 열림·타이머·토스트)만 검증한다.
 vi.mock('../../api', () => ({
-  sendEmailCode: vi.fn(() => Promise.resolve({ message: 'sent' })),
-  verifyEmail: vi.fn(() => Promise.resolve({ message: 'verified' })),
+  sendEmailCode: vi.fn(() => Promise.resolve()),
+  verifyEmail: vi.fn(() => Promise.resolve()),
 }))
 
 const noop = () => {}

@@ -10,8 +10,8 @@ vi.mock('@/shared/analytics', () => ({ trackEvent }))
 
 // 1단계가 발송·검증 API를 부른다. 여기서 보는 건 단계 전환이므로 성공 응답으로 대체한다.
 vi.mock('@/features/auth/api', () => ({
-  sendEmailCode: vi.fn(() => Promise.resolve({ message: 'sent' })),
-  verifyEmail: vi.fn(() => Promise.resolve({ message: 'verified' })),
+  sendEmailCode: vi.fn(() => Promise.resolve()),
+  verifyEmail: vi.fn(() => Promise.resolve()),
   signup: vi.fn(),
 }))
 
