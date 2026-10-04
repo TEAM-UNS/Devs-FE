@@ -47,6 +47,20 @@ describe('ReportSubscriptionCard', () => {
     )
   })
 
+  it('비활성 상태에서는 키보드로도 분야를 바꿀 수 없다', async () => {
+    const user = userEvent.setup()
+    renderCard()
+
+    await user.click(allToggle())
+
+    const chip = screen.getByRole('button', { name: '프론트엔드' })
+    chip.focus()
+    await user.keyboard('{Enter}')
+
+    // 포인터만 막으면 키보드로 빠져나간다
+    expect(chip).toHaveAttribute('aria-pressed', 'true')
+  })
+
   it('둘 다 끌 수 있다 — 구독하지 않는 상태다', async () => {
     const user = userEvent.setup()
     renderCard()

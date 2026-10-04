@@ -32,6 +32,10 @@ export function ReportSubscriptionCard({
   const isFieldMode = mode === 'fields'
 
   const toggleField = (field: string) => {
+    /* 분야별 구독이 꺼져 있으면 무시한다. 흐리게 두고 포인터만 막으면 키보드로는
+       그대로 눌려서 선택이 바뀐다 */
+    if (!isFieldMode) return
+
     setFields((current) =>
       current.includes(field)
         ? current.filter((item) => item !== field)

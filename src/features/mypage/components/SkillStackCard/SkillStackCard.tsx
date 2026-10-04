@@ -22,6 +22,7 @@ export function SkillStackCard({ skills }: SkillStackCardProps) {
         {/* TODO: 보유 기술 스택 수정 화면이 생기면 연결한다 */}
         <button
           type="button"
+          disabled
           aria-label="보유 기술 스택 수정"
           className="flex size-6 items-center justify-center text-gray-400 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary-500"
         >

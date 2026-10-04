@@ -40,6 +40,7 @@ export function CareerGoalCard({ goals }: CareerGoalCardProps) {
             {/* TODO: 각 수정 화면이 생기면 연결한다 */}
             <button
               type="button"
+              disabled
               aria-label={`${goal.label} 수정`}
               className="flex size-6 shrink-0 items-center justify-center text-gray-400 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary-500"
             >
