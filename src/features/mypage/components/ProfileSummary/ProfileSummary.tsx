@@ -6,6 +6,7 @@ interface ProfileSummaryProps {
   readonly email: string
   readonly career: string
   readonly majors: string
+  readonly onLogout: () => void
 }
 
 /* 경력·전공 알약. Figma 659:3988 — 높이 40, 좌우 여백 20, radius 6, container 배경 */
@@ -23,6 +24,7 @@ export function ProfileSummary({
   email,
   career,
   majors,
+  onLogout,
 }: ProfileSummaryProps) {
   return (
     <section className="flex flex-col gap-4">
@@ -32,8 +34,12 @@ export function ProfileSummary({
           <p className="text-body-md text-gray-300">{email}</p>
         </div>
 
-        {/* TODO: 토큰을 지우는 로그아웃 동작은 라우트 가드와 함께 정한다 */}
-        <Button variant="outline" size="sm" className="h-11 rounded-full px-6">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-11 rounded-full px-6"
+          onClick={onLogout}
+        >
           로그아웃
         </Button>
       </div>

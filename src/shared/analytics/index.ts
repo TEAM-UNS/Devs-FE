@@ -1,1 +1,1 @@
-export { initAmplitude, trackEvent } from './amplitude'
+export { initAmplitude, resetAnalytics, trackEvent } from './amplitude'
