@@ -1,20 +1,16 @@
-import { useNavigate } from 'react-router-dom'
 import heroScreen from '@/assets/landing/hero-screen.webp'
 import glowTopRight from '@/assets/landing/glow-1.svg'
 import glowLeft from '@/assets/landing/glow-2.svg'
 import glassLeft from '@/assets/landing/glass-left.webp'
 import glassRight from '@/assets/landing/glass-right.webp'
-import { Button } from '@/shared/components/Button'
-import { ROUTES } from '@/shared/constants'
 import { HERO_DESCRIPTION, HERO_TITLE } from '../../constants/content'
+import { CtaLink } from '../CtaLink'
 
 /**
  * 첫 화면 — 카피·CTA와 맥북 속 대시보드
  * 맥북 아래쪽은 섹션 높이(1000)에서 잘리고 위로 깔린 그라데이션에 묻히는 게 디자인이다
  */
 export function HeroSection() {
-  const navigate = useNavigate()
-
   return (
     <section className="relative h-[1000px] overflow-hidden bg-black">
       {/* 배경 원은 Figma에서 회전된 채 놓여 있어 회전값까지 그대로 옮긴다 */}
@@ -32,9 +28,8 @@ export function HeroSection() {
           className="size-[1044px] max-w-none rotate-[-140.81deg]"
         />
       </div>
-      {/* 유리 구슬은 Figma 배경 블러가 뒤 화면을 흐린 결과라 원만 내보내면 검게 나온다
-          히어로 전체를 내보낸 뒤 원 자리를 잘라 쓴다. 가장자리 테두리가 잘리지 않게
-          사방 8px 여유를 두고 잘라서, 위치·크기도 Figma 원보다 8px씩 크다 */}
+      {/* 유리 구슬은 원만 내보내면 검게 나와서 히어로 전체 export에서 잘라 썼다
+          테두리가 안 잘리게 사방 8px 여유를 둬서 Figma 원보다 8px씩 크다 */}
       <img
         src={glassLeft}
         alt=""
@@ -72,10 +67,12 @@ export function HeroSection() {
         <p className="text-body-lg text-gray-400">{HERO_DESCRIPTION}</p>
       </div>
       <div className="absolute top-[295px] left-1/2 flex -translate-x-1/2 gap-3">
-        <Button variant="outline" onClick={() => navigate(ROUTES.login)}>
+        <CtaLink cta="login" location="hero" variant="outline">
           로그인
-        </Button>
-        <Button onClick={() => navigate(ROUTES.signup)}>무료로 시작하기</Button>
+        </CtaLink>
+        <CtaLink cta="signup" location="hero">
+          무료로 시작하기
+        </CtaLink>
       </div>
     </section>
   )
