@@ -30,7 +30,7 @@ function renderPage() {
     <MemoryRouter initialEntries={['/onboarding']}>
       <Routes>
         <Route path="/onboarding" element={<OnboardingPage />} />
-        <Route path="/" element={<p>대시보드</p>} />
+        <Route path="/dashboard" element={<p>대시보드</p>} />
       </Routes>
     </MemoryRouter>,
   )
