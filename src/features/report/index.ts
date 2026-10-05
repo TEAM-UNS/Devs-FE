@@ -1,2 +1,2 @@
 export { WeeklyReport } from './components/WeeklyReport'
-export type { JobFilter, WeekRange } from './types'
+export type { MajorOption, WeekRange } from './types'

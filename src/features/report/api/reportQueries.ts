@@ -12,12 +12,16 @@ import {
 export const reportQueries = {
   all: () => ['report'] as const,
 
-  popularTechStack: (majorId: number, period: ReportPeriod, baseDate: string) =>
+  popularTechStack: (
+    majorId: number | undefined,
+    period: ReportPeriod,
+    baseDate: string,
+  ) =>
     queryOptions({
       queryKey: [
         ...reportQueries.all(),
         'popular-tech-stack',
-        majorId,
+        majorId ?? null,
         period,
         baseDate,
       ] as const,
