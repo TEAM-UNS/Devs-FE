@@ -18,14 +18,20 @@ interface AppSidebarProps {
 
 // 아래 상수는 모듈 스코프 — 렌더마다 새로 만들지 않는다.
 
+// disabled: 아직 완성되지 않은 메뉴. 보이되 눌리지 않게 막는다 (#63)
 const NAV_ITEMS = [
   { to: ROUTES.home, label: '메인페이지', Icon: HomeIcon },
   { to: ROUTES.weeklyReport, label: '주간리포트', Icon: ClipboardListIcon },
-  { to: ROUTES.stackCompare, label: '기업 스택 비교', Icon: LayersIcon },
-  { to: ROUTES.roadmap, label: '로드맵', Icon: RouteIcon },
-  { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon },
+  {
+    to: ROUTES.stackCompare,
+    label: '기업 스택 비교',
+    Icon: LayersIcon,
+    disabled: true,
+  },
+  { to: ROUTES.roadmap, label: '로드맵', Icon: RouteIcon, disabled: true },
+  { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon, disabled: true },
   { to: ROUTES.myPage, label: '마이페이지', Icon: UserIcon },
-] as const
+]
 
 // 항목 골격. 활성 항목만 좌측 2px 보더가 붙어 내용이 2px 안쪽으로 밀린다 — Figma 274:1470 렌더 그대로.
 // TODO: hover 상태는 Figma에 스펙이 없어 비워 뒀다. 디자이너 확정 후 hover: 색을 넣는다.
@@ -53,22 +59,34 @@ export function AppSidebar({ roadmapProgress }: AppSidebarProps) {
         </div>
         <nav aria-label="주요 메뉴">
           <ul className="flex flex-col gap-1.5">
-            {NAV_ITEMS.map(({ to, label, Icon }) => (
+            {NAV_ITEMS.map(({ to, label, Icon, disabled }) => (
               <li key={to}>
-                <NavLink
-                  to={to}
-                  end
-                  className={({ isActive }) =>
-                    cn(
-                      ITEM_BASE,
-                      FOCUS_RING,
-                      isActive ? ITEM_ACTIVE : ITEM_IDLE,
-                    )
-                  }
-                >
-                  <Icon className="size-5 shrink-0" />
-                  {label}
-                </NavLink>
+                {/* 막힌 메뉴는 링크가 아니라 글자로만 둔다. 링크로 두고 클릭만 막으면
+                    키보드·새 탭 열기로는 여전히 404 화면에 닿는다 */}
+                {disabled ? (
+                  <span
+                    aria-disabled="true"
+                    className={cn(ITEM_BASE, ITEM_IDLE, 'cursor-not-allowed')}
+                  >
+                    <Icon className="size-5 shrink-0" />
+                    {label}
+                  </span>
+                ) : (
+                  <NavLink
+                    to={to}
+                    end
+                    className={({ isActive }) =>
+                      cn(
+                        ITEM_BASE,
+                        FOCUS_RING,
+                        isActive ? ITEM_ACTIVE : ITEM_IDLE,
+                      )
+                    }
+                  >
+                    <Icon className="size-5 shrink-0" />
+                    {label}
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>
