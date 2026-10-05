@@ -2,7 +2,11 @@ import type { TrendDirection } from '@/shared/components/TrendMark'
 
 export type * from './reportApi'
 
-export type JobFilter = 'ALL' | 'FE' | 'BE' | 'SECURITY'
+/** 전공 필터 칩 하나. `value`가 `null`이면 '전체'(전공 필터 없음) */
+export interface MajorOption {
+  value: number | null
+  label: string
+}
 
 export interface WeekRange {
   label: string

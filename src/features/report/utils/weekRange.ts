@@ -65,3 +65,16 @@ export function weekRangeAt(offset: number, now: Date = new Date()): WeekRange {
     baseDate: formatDate(monday, '-'),
   }
 }
+
+/**
+ * `2026-09-07` 같은 날짜가 기준 시각의 주로부터 몇 주 떨어져 있는지 반환 (과거면 음수)
+ * `new Date('2026-09-07')`은 UTC 자정으로 읽혀 한국에서는 맞지만 서쪽 시간대에서 하루 밀리므로
+ * 로컬 성분으로 만든다
+ */
+export function weekOffsetOf(date: string, now: Date = new Date()): number {
+  const [year, month, day] = date.split('-').map(Number)
+  const target = startOfWeek(new Date(year, month - 1, day))
+
+  // 서머타임이 있는 시간대에서는 한 주가 정확히 7일 ms가 아니라 반올림한다
+  return Math.round((target.getTime() - startOfWeek(now).getTime()) / WEEK_MS)
+}

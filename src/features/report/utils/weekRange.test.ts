@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { weekRangeAt } from './weekRange'
+import { weekOffsetOf, weekRangeAt } from './weekRange'
 
 /* 기준 시각을 인자로 넣으므로 가짜 타이머가 필요 없다.
    기준이 보는 사람의 로컬 달력이라 날짜도 로컬 성분으로 만든다 — `'...Z'` 표기로 쓰면
@@ -44,5 +44,20 @@ describe('weekRangeAt', () => {
 
     expect(weekRangeAt(0, monday).start).toBe('2026.09.07')
     expect(weekRangeAt(0, sunday).start).toBe('2026.09.07')
+  })
+})
+
+describe('weekOffsetOf', () => {
+  const wednesday = new Date(2026, 8, 9, 12)
+
+  it('같은 주의 날짜는 0, 지난 주의 아무 날짜는 -1', () => {
+    expect(weekOffsetOf('2026-09-07', wednesday)).toBe(0)
+    expect(weekOffsetOf('2026-09-13', wednesday)).toBe(0)
+    expect(weekOffsetOf('2026-09-06', wednesday)).toBe(-1)
+    expect(weekOffsetOf('2026-08-31', wednesday)).toBe(-1)
+  })
+
+  it('달·해를 넘어가도 주 단위로 센다', () => {
+    expect(weekOffsetOf('2025-12-31', wednesday)).toBe(-36)
   })
 })
