@@ -1,6 +1,9 @@
 import { ArrowIcon } from '@/shared/components/icons'
+import { useToastStore } from '@/shared/stores/useToastStore'
 import { cn } from '@/shared/utils/cn'
 import type { CareerGoal } from '../../types'
+
+const NOT_READY_MESSAGE = '아직 제공되지 않는 기능입니다'
 
 interface CareerGoalCardProps {
   readonly goals: CareerGoal[]
@@ -13,6 +16,8 @@ interface CareerGoalCardProps {
  * @returns 목표 세 줄이 담긴 카드
  */
 export function CareerGoalCard({ goals }: CareerGoalCardProps) {
+  const showToast = useToastStore((state) => state.show)
+
   return (
     <section className="rounded-sm bg-container px-8 py-6">
       <h2 className="text-body-lg font-semibold text-gray-1000">
@@ -37,10 +42,12 @@ export function CareerGoalCard({ goals }: CareerGoalCardProps) {
               </p>
             </div>
 
-            {/* TODO: 각 수정 화면이 생기면 연결한다 */}
+            {/* 수정 화면이 아직 없어 누르면 안내만 띄운다. 화면이 생기면 이동으로 바꾼다 */}
             <button
               type="button"
-              disabled
+              onClick={() =>
+                showToast({ type: 'info', title: NOT_READY_MESSAGE })
+              }
               aria-label={`${goal.label} 수정`}
               className="flex size-6 shrink-0 items-center justify-center text-gray-400 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary-500"
             >
