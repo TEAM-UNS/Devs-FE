@@ -31,10 +31,10 @@ describe('AppSidebar', () => {
     }
   })
 
-  it('화면이 없는 메뉴는 링크가 아니라 비활성 항목이다', () => {
+  it('미완성 메뉴는 링크가 아니라 비활성 항목이다', () => {
     renderSidebar()
 
-    for (const label of ['기업 스택 비교', '로드맵']) {
+    for (const label of ['기업 스택 비교', '로드맵', 'AI 챗봇']) {
       expect(
         screen.queryByRole('link', { name: label }),
       ).not.toBeInTheDocument()

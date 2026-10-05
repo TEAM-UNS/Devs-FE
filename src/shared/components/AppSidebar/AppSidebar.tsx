@@ -18,7 +18,7 @@ interface AppSidebarProps {
 
 // 아래 상수는 모듈 스코프 — 렌더마다 새로 만들지 않는다.
 
-// disabled: 아직 화면이 없는 메뉴. 보이되 눌리지 않게 막는다 (#63)
+// disabled: 아직 완성되지 않은 메뉴. 보이되 눌리지 않게 막는다 (#63)
 const NAV_ITEMS = [
   { to: ROUTES.home, label: '메인페이지', Icon: HomeIcon },
   { to: ROUTES.weeklyReport, label: '주간리포트', Icon: ClipboardListIcon },
@@ -29,7 +29,7 @@ const NAV_ITEMS = [
     disabled: true,
   },
   { to: ROUTES.roadmap, label: '로드맵', Icon: RouteIcon, disabled: true },
-  { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon },
+  { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon, disabled: true },
   { to: ROUTES.myPage, label: '마이페이지', Icon: UserIcon },
 ]
 
