@@ -21,13 +21,4 @@ export const MOCK_PROFILE: MyProfile = {
   skills: ['React', 'Vue.js', 'Next.js', 'TypeScript', 'Node.js'],
   subscriptionMode: 'fields',
   subscribedFields: ['프론트엔드', '데이터/AI'],
-  careerGoals: [
-    { id: 'job', label: '목표직무', value: 'Frontend' },
-    {
-      id: 'company',
-      label: '목표 기업',
-      value: '몰코코 (Moloco), 카카오 (Kakao)',
-    },
-    { id: 'stack', label: '관심 스택', value: 'React, Vue.js, Next.js' },
-  ],
 }

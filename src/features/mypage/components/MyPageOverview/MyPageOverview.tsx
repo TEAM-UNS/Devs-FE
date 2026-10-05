@@ -21,7 +21,7 @@ export function MyPageOverview() {
   // TODO: 로딩·에러 화면은 따로 정한다. 그 전까지는 응답이 오기 전엔 아무것도 그리지 않는다
   if (!data) return null
 
-  // 구독·커리어 목표는 서버에 아직 없어 목데이터를 그대로 쓴다 (백엔드에 추가 요청)
+  // 리포트 구독은 서버에 아직 없어 목데이터를 그대로 쓴다 (백엔드에 추가 요청)
   const profile = { ...MOCK_PROFILE, ...toMyProfile(data) }
 
   return (
@@ -43,7 +43,7 @@ export function MyPageOverview() {
             defaultMode={profile.subscriptionMode}
             defaultFields={profile.subscribedFields}
           />
-          <CareerGoalCard goals={profile.careerGoals} />
+          <CareerGoalCard />
         </div>
       </div>
     </div>
