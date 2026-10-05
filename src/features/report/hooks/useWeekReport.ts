@@ -28,9 +28,7 @@ export function useWeekReport(
 
   const popular = useQuery({
     ...reportQueries.popularTechStack(major, 'WEEK', baseDate),
-    // 서버가 아직 major_id를 필수로 받아 '전체'로는 부르지 않는다(선택값으로 바꾸도록 요청함)
-    // 서버가 바뀌면 `major !== undefined` 조건만 지우면 된다
-    enabled: enabled && major !== undefined,
+    enabled,
   })
   const increase = useQuery({
     ...reportQueries.maxIncrease(baseDate, major),

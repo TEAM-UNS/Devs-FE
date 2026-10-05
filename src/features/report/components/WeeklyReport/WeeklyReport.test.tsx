@@ -182,13 +182,15 @@ describe('WeeklyReport', () => {
     expect(search()).toBe('')
   })
 
-  it('전체에서는 인기 기술 스택을 부르지 않고, 전공을 고르면 major_id로 부른다', async () => {
+  it('전체에서는 major_id 없이, 전공을 고르면 major_id로 인기 기술 스택을 부른다', async () => {
     renderReport()
 
-    // 다른 구역은 도착해도 순위 목록은 빈 상태다
     await currentCard().findByText('Next.js')
-    expect(await requestsTo('/report/popular-tech-stack')).toEqual([])
-    expect(currentCard().queryByText('TypeScript')).not.toBeInTheDocument()
+    expect(await requestsTo('/report/popular-tech-stack')).toContainEqual({
+      major_id: undefined,
+      period: 'WEEK',
+      base_date: '2026-07-06',
+    })
 
     await userEvent.click(screen.getByRole('button', { name: '프론트엔드' }))
 
