@@ -24,7 +24,7 @@ function FaqItem({ question, answer }: Faq) {
         Q. {question}
         <ChevronDownIcon
           className={cn(
-            'size-6 shrink-0 text-gray-300 transition-transform duration-normal ease-standard',
+            'size-6 shrink-0 text-gray-300 motion-safe:transition-transform motion-safe:duration-normal motion-safe:ease-standard',
             open && 'rotate-180',
           )}
         />
@@ -34,7 +34,7 @@ function FaqItem({ question, answer }: Faq) {
         id={panelId}
         inert={!open}
         className={cn(
-          'grid transition-[grid-template-rows] duration-normal ease-standard',
+          'grid motion-safe:transition-[grid-template-rows] motion-safe:duration-normal motion-safe:ease-standard',
           open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
         )}
       >

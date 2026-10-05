@@ -17,7 +17,8 @@ export function useInView<T extends Element>(threshold = 0.3) {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return
+        // 관찰을 시작할 때 오는 첫 콜백은 조금만 걸쳐도 isIntersecting이 true라 비율도 본다
+        if (!entry.isIntersecting || entry.intersectionRatio < threshold) return
         setInView(true)
         observer.disconnect()
       },

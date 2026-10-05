@@ -31,7 +31,7 @@ function LogoRow({ direction }: LogoRowProps) {
           className="group relative size-16 shrink-0 overflow-hidden rounded-sm"
         >
           <img src={logo} alt="" className="size-full object-cover" />
-          <div className="absolute inset-0 bg-black/45 transition-opacity duration-fast ease-standard group-hover:opacity-0" />
+          <div className="absolute inset-0 bg-black/45 group-hover:opacity-0 motion-safe:transition-opacity motion-safe:duration-fast motion-safe:ease-standard" />
         </li>
       ))}
     </ul>
