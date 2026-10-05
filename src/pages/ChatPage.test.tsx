@@ -36,7 +36,7 @@ describe('ChatPage', () => {
 
     expect(screen.getByRole('link', { name: '메인페이지' })).toHaveAttribute(
       'href',
-      '/',
+      '/dashboard',
     )
     expect(screen.getByText('최근 대화가 없습니다.')).toBeInTheDocument()
     expect(

@@ -33,7 +33,7 @@ function renderCallback() {
       <MemoryRouter initialEntries={['/oauth/callback']}>
         <Routes>
           <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
-          <Route path="/" element={<p>대시보드</p>} />
+          <Route path="/dashboard" element={<p>대시보드</p>} />
           <Route path="/onboarding" element={<p>온보딩</p>} />
           <Route path="/login" element={<p>로그인 화면</p>} />
         </Routes>

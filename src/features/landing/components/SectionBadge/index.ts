@@ -1,0 +1,1 @@
+export { SectionBadge } from './SectionBadge'

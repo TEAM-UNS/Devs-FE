@@ -26,14 +26,26 @@ describe('AppSidebar', () => {
     renderSidebar()
 
     expect(screen.getByAltText('UNS')).toBeInTheDocument()
-    const links = screen.getAllByRole('link')
-    expect(links.map((el) => el.textContent)).toEqual(NAV_LABELS)
+    for (const label of NAV_LABELS) {
+      expect(screen.getByText(label)).toBeInTheDocument()
+    }
+  })
+
+  it('미완성 메뉴는 링크가 아니라 비활성 항목이다', () => {
+    renderSidebar()
+
+    for (const label of ['기업 스택 비교', '로드맵', 'AI 챗봇']) {
+      expect(
+        screen.queryByRole('link', { name: label }),
+      ).not.toBeInTheDocument()
+      expect(screen.getByText(label)).toHaveAttribute('aria-disabled', 'true')
+    }
   })
 
   it('현재 경로의 항목만 aria-current를 갖는다', () => {
-    renderSidebar('/roadmap')
+    renderSidebar('/weekly-report')
 
-    expect(screen.getByRole('link', { name: '로드맵' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '주간리포트' })).toHaveAttribute(
       'aria-current',
       'page',
     )

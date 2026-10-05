@@ -326,6 +326,58 @@
       opacity: 0.2;
     }
   }
+
+  /* ── 랜딩 페이지 ─────────────────────────────────────────────
+     device-rise: 히어로 맥북이 아래에서 올라온다
+     (Figma 818:7676 주석 "들어오면 위로 올라오는 애니메이션 (약 1.5초, 약간의 튕기는 느낌)").
+     끝에서 살짝 넘쳤다 돌아오도록 overshoot 곡선을 쓴다 */
+  --animate-device-rise: device-rise 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  @keyframes device-rise {
+    from {
+      opacity: 0;
+      transform: translateY(120px);
+    }
+  }
+
+  /* fade-up: 화면에 들어온 카드가 떠오르며 나타난다
+     (Figma 818:7701 주석 "01,03,02 순으로 하나씩 생성+떠오르는 느낌").
+     순서는 카드마다 --fade-delay로 준다 (토큰은 아래 @theme inline 블록) */
+  /* `to`를 비우면 요소 원래 값(진입 전 숨겨 둔 opacity 0)으로 끝나서 끝값을 적는다 */
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* marquee: 기업 로고 띠가 끊김 없이 흐른다
+     (Figma 818:7811 주석 "왼오, 오왼 천천히 움직이는 슬라이드").
+     트랙에 로고 묶음을 두 번 이어 붙이고 절반만큼 옮겨서 이음매가 안 보이게 한다 */
+  --animate-marquee-left: marquee 40s linear infinite reverse;
+  --animate-marquee-right: marquee 40s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
+
+/* 요소마다 다른 값을 받는 애니메이션 토큰
+   일반 @theme 값은 :root에서 한 번 계산돼서 안에 든 var(--fade-delay)가 요소 값을 못 읽는다
+   inline으로 두면 값이 유틸리티에 그대로 풀려 들어가 요소에서 계산된다
+   animation-delay를 따로 거는 방식은 이 축약형이 덮어써서 쓸 수 없다 */
+@theme inline {
+  --animate-fade-up: fade-up 600ms var(--ease-decelerate) var(--fade-delay, 0ms)
+    both;
 }
 
 /* z-index 명명 유틸리티 — @theme의 --z-* 토큰을 z-{name} 클래스로 감싼다.
