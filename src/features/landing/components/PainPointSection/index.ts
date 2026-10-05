@@ -1,0 +1,1 @@
+export { PainPointSection } from './PainPointSection'

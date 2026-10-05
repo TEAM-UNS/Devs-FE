@@ -4,6 +4,7 @@ import type { RouteObject } from 'react-router-dom'
 import { RouteFallback } from '@/shared/components/RouteFallback'
 import { RootLayout } from './RootLayout'
 
+const LandingPage = lazy(() => import('@/pages/LandingPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const WeeklyReportPage = lazy(() => import('@/pages/WeeklyReportPage'))
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
@@ -41,6 +42,14 @@ function OAuthCallbackRoute() {
   )
 }
 
+function LandingRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <LandingPage />
+    </Suspense>
+  )
+}
+
 function OnboardingRoute() {
   return (
     <Suspense fallback={authFallback}>
@@ -68,11 +77,15 @@ export const routes: RouteObject[] = [
     path: '/onboarding',
     element: <OnboardingRoute />,
   },
+  /* 랜딩은 비로그인 방문자용이라 가드(RootLayout) 밖에 둔다 */
   {
     path: '/',
+    element: <LandingRoute />,
+  },
+  {
     element: <RootLayout />,
     children: [
-      { index: true, element: <DashboardPage /> },
+      { path: 'dashboard', element: <DashboardPage /> },
       { path: 'weekly-report', element: <WeeklyReportPage /> },
       { path: 'chat', element: <ChatPage /> },
       { path: 'my', element: <MyPage /> },
