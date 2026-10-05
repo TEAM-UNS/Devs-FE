@@ -1,0 +1,1 @@
+export { MajorFilters } from './MajorFilters'

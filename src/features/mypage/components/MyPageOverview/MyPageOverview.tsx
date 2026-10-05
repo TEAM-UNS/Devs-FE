@@ -1,4 +1,8 @@
+import { useQuery } from '@tanstack/react-query'
+import { userQueries } from '@/shared/api'
+import { useLogout } from '@/shared/hooks/useLogout'
 import { MOCK_PROFILE } from '../../fixtures/mockProfile'
+import { toMyProfile } from '../../utils/toMyProfile'
 import { CareerGoalCard } from '../CareerGoalCard'
 import { ProfileSummary } from '../ProfileSummary'
 import { ReportSubscriptionCard } from '../ReportSubscriptionCard'
@@ -11,8 +15,14 @@ import { SkillStackCard } from '../SkillStackCard'
  * @returns 프로필과 설정 카드가 배치된 마이페이지 화면
  */
 export function MyPageOverview() {
-  // TODO: API 연동 시 목데이터를 서버 응답으로 바꾼다
-  const profile = MOCK_PROFILE
+  const { data } = useQuery(userQueries.me())
+  const logout = useLogout()
+
+  // TODO: 로딩·에러 화면은 따로 정한다. 그 전까지는 응답이 오기 전엔 아무것도 그리지 않는다
+  if (!data) return null
+
+  // 리포트 구독은 서버에 아직 없어 목데이터를 그대로 쓴다 (백엔드에 추가 요청)
+  const profile = { ...MOCK_PROFILE, ...toMyProfile(data) }
 
   return (
     <div className="mx-auto flex max-w-[1120px] flex-col gap-9">
@@ -21,6 +31,7 @@ export function MyPageOverview() {
         email={profile.email}
         career={profile.career}
         majors={profile.majors}
+        onLogout={logout}
       />
 
       <div className="flex flex-col gap-6">
@@ -32,7 +43,7 @@ export function MyPageOverview() {
             defaultMode={profile.subscriptionMode}
             defaultFields={profile.subscribedFields}
           />
-          <CareerGoalCard goals={profile.careerGoals} />
+          <CareerGoalCard />
         </div>
       </div>
     </div>

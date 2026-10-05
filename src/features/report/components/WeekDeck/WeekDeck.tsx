@@ -17,7 +17,7 @@ interface WeekDeckProps {
    * 연달아 넘길 수 있어야 하기 때문이다.
    */
   header: ReactNode
-  /** 직군 필터 칩 행. 카드만 움직이므로 함께 이동하지 않는다 */
+  /** 전공 필터 칩 행. 카드만 움직이므로 함께 이동하지 않는다 */
   filters: ReactNode
   /** 이번 주차 카드. 넘길 때 옆자리로 나가는 것은 이것뿐이다 */
   children: ReactNode
@@ -166,7 +166,7 @@ const OUTGOING = [
  * @param previous 왼쪽에 걸칠 이전 주차 카드
  * @param next 오른쪽에 걸칠 다음 주차 카드
  * @param header 주차 네비게이터 (이동하지 않는다)
- * @param filters 직군 필터 칩 행 (이동하지 않는다)
+ * @param filters 전공 필터 칩 행 (이동하지 않는다)
  * @param children 이번 주차 카드 (이것만 이동한다)
  * @param footer 카드 아래 안내 문구 (이동하지 않는다)
  * @param slidingTo 넘기는 중인 방향
