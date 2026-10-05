@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { UserMyQueryResponse } from '../types'
+import type { UserMyQueryResponse } from '@/shared/api'
 import { toMyProfile } from './toMyProfile'
 
 const RESPONSE: UserMyQueryResponse = {

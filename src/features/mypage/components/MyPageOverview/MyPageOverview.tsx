@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { mypageQueries } from '../../api'
+import { userQueries } from '@/shared/api'
 import { MOCK_PROFILE } from '../../fixtures/mockProfile'
 import { toMyProfile } from '../../utils/toMyProfile'
 import { CareerGoalCard } from '../CareerGoalCard'
@@ -14,7 +14,7 @@ import { SkillStackCard } from '../SkillStackCard'
  * @returns 프로필과 설정 카드가 배치된 마이페이지 화면
  */
 export function MyPageOverview() {
-  const { data } = useQuery(mypageQueries.profile())
+  const { data } = useQuery(userQueries.me())
 
   // TODO: 로딩·에러 화면은 따로 정한다. 그 전까지는 응답이 오기 전엔 아무것도 그리지 않는다
   if (!data) return null

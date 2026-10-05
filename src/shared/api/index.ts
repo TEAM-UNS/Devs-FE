@@ -4,3 +4,9 @@ export { errorMessage } from './errorMessage'
 export { getAccessToken, setTokens } from './tokenStorage'
 export { majorLabel, majorQueries } from './majors'
 export type { TechStackDto, MajorCategoryDto, MajorsResponse } from './majors'
+export { userQueries } from './user'
+export type {
+  UserMajorDto,
+  UserMyQueryResponse,
+  UserTechStackDto,
+} from './user'

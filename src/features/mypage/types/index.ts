@@ -1,6 +1,3 @@
-// mypageApi는 타입만 담고 전부 공개 대상이라 통째로 내보낸다
-export type * from './mypageApi'
-
 /** 리포트 구독 방식. 전체·분야별은 동시에 켤 수 없고, 둘 다 끌 수도 있다 */
 export type SubscriptionMode = 'all' | 'fields' | 'none'
 

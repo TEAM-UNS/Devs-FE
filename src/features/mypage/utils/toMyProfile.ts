@@ -1,4 +1,5 @@
-import type { MyProfile, UserMyQueryResponse } from '../types'
+import type { UserMyQueryResponse } from '@/shared/api'
+import type { MyProfile } from '../types'
 
 type PersonalHistory = UserMyQueryResponse['personalHistory']
 
