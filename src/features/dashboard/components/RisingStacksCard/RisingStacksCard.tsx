@@ -95,16 +95,15 @@ export function RisingStacksCard({
       <div className="flex min-h-0 flex-1 flex-col gap-1.5">
         {/* 툴팁은 박스 밖으로 나갈 수 있어야 하므로 overflow-clip을 걸지 않는다 */}
         <div className="relative min-h-0 flex-1 rounded-sm bg-canvas">
-          {hasData ? (
-            <div
-              ref={chartRef}
-              className="size-full"
-              onMouseMoveCapture={handleMouseMoveCapture}
-              onMouseLeave={handleMouseLeave}
-            />
-          ) : (
-            <EmptyMessage className="absolute inset-0" />
-          )}
+          {/* 차트 div는 데이터가 없어도 항상 둔다. useEChart는 마운트 때 한 번만
+              인스턴스를 만들어서, 로딩 중에 div가 없으면 데이터가 와도 그려지지 않는다(#61) */}
+          <div
+            ref={chartRef}
+            className={cn('size-full', !hasData && 'invisible')}
+            onMouseMoveCapture={handleMouseMoveCapture}
+            onMouseLeave={handleMouseLeave}
+          />
+          {!hasData && <EmptyMessage className="absolute inset-0" />}
         </div>
         <ul className="flex items-center gap-2">
           {series.map(({ id, label }, index) => (
