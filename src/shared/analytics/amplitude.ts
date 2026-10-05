@@ -30,3 +30,11 @@ export function initAmplitude() {
 export function trackEvent(name: string, properties?: Record<string, unknown>) {
   amplitude.track(name, properties)
 }
+
+/**
+ * 로그아웃할 때 기기 식별을 새로 시작한다
+ * 그대로 두면 같은 브라우저로 다음에 로그인한 사람의 행동이 이전 사람과 한 사용자로 묶인다
+ */
+export function resetAnalytics() {
+  amplitude.reset()
+}

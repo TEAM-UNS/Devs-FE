@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Chip } from '@/shared/components/Chip'
 import { cn } from '@/shared/utils/cn'
-import { XCircleIcon } from '@/shared/components/icons'
+import { InfoCircleIcon } from '@/shared/components/icons'
 import { Toggle } from '@/shared/components/Toggle'
 import { SUBSCRIPTION_FIELDS } from '../../fixtures/mockProfile'
 import type { SubscriptionMode } from '../../types'
@@ -107,7 +107,7 @@ export function ReportSubscriptionCard({
       </div>
 
       <p className="mt-6 flex items-center gap-1.5 text-body-xs text-gray-300">
-        <XCircleIcon className="size-4 shrink-0" />
+        <InfoCircleIcon className="size-4 shrink-0" />
         구독 중인 리포트는 주 1회 이메일로 발송됩니다
       </p>
     </section>

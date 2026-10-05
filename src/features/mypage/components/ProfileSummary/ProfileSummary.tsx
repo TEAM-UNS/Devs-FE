@@ -1,11 +1,11 @@
-import { Button } from '@/shared/components/Button'
-import { ArrowIcon } from '@/shared/components/icons'
+import { ArrowIcon, LogoutIcon } from '@/shared/components/icons'
 
 interface ProfileSummaryProps {
   readonly name: string
   readonly email: string
   readonly career: string
   readonly majors: string
+  readonly onLogout: () => void
 }
 
 /* 경력·전공 알약. Figma 659:3988 — 높이 40, 좌우 여백 20, radius 6, container 배경 */
@@ -23,6 +23,7 @@ export function ProfileSummary({
   email,
   career,
   majors,
+  onLogout,
 }: ProfileSummaryProps) {
   return (
     <section className="flex flex-col gap-4">
@@ -32,10 +33,15 @@ export function ProfileSummary({
           <p className="text-body-md text-gray-300">{email}</p>
         </div>
 
-        {/* TODO: 토큰을 지우는 로그아웃 동작은 라우트 가드와 함께 정한다 */}
-        <Button variant="outline" size="sm" className="h-11 rounded-full px-6">
+        {/* Figma `버튼-라운드`(659:4894) — 공용 Button과 모양이 달라 따로 그린다 */}
+        <button
+          type="button"
+          onClick={onLogout}
+          className="flex items-center gap-1.5 rounded-full bg-container px-5 py-2.5 text-body-md text-gray-400 focus-visible:outline-2 focus-visible:outline-primary-500"
+        >
+          <LogoutIcon className="size-6 shrink-0" />
           로그아웃
-        </Button>
+        </button>
       </div>
 
       <div className="flex items-center gap-3">
