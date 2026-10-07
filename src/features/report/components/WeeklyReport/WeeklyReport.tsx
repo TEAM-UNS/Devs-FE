@@ -3,19 +3,21 @@ import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { trackEvent } from '@/shared/analytics'
 import { userQueries } from '@/shared/api'
-import { reportQueries } from '../../api'
 import { useWeekReport } from '../../hooks/useWeekReport'
 import type { MajorOption } from '../../types'
-import { parseReportParams, REPORT_PARAMS } from '../../utils/reportParams'
+import {
+  LATEST_WEEK,
+  parseReportParams,
+  REPORT_PARAMS,
+} from '../../utils/reportParams'
 import { weekOffsetOf } from '../../utils/weekRange'
 import { MajorFilters } from '../MajorFilters'
 import { ReportCard, ReportCardBody } from '../ReportCard'
 import { WeekDeck } from '../WeekDeck'
 import { WeekNavigator } from '../WeekNavigator'
 
-/* 가장 오래된 공고 날짜를 아직 모를 때(로딩·실패) 쓰는 과거 하한. 응답 전에 화살표를
-   잠가 두면 첫 화면에서 '이전'이 깜빡 비활성으로 보여서, 전에 쓰던 8주를 임시로 허용한다 */
-const FALLBACK_MIN_OFFSET = -8
+/* 볼 수 있는 가장 오래된 주의 월요일. 그 전은 크롤링 초기라 데이터가 부실하다 */
+const OLDEST_WEEK_START = '2026-06-01'
 
 /* 이동이 끝나기를 기다리는 최대 시간(ms). --duration-slow(400) + 여유.
    애니메이션이 돌지 않는 환경(모션 최소화·테스트)에서는 animationend가 오지 않는다.
@@ -24,14 +26,14 @@ const SLIDE_TIMEOUT = 600
 
 const ALL_MAJORS: MajorOption = { value: null, label: '전체' }
 
-/** URL 쿼리에서 한 값만 바꾼 새 쿼리. 기본값(이번 주·전체)이면 키를 지워 주소를 짧게 둔다 */
+/** URL 쿼리에서 한 값만 바꾼 새 쿼리. 기본값(지난주·전체)이면 키를 지워 주소를 짧게 둔다 */
 function withParam(
   current: URLSearchParams,
   key: string,
   value: number | null,
 ): URLSearchParams {
   const next = new URLSearchParams(current)
-  if (value === null || (key === REPORT_PARAMS.week && value === 0)) {
+  if (value === null || (key === REPORT_PARAMS.week && value === LATEST_WEEK)) {
     next.delete(key)
   } else {
     next.set(key, String(value))
@@ -57,24 +59,13 @@ export function WeeklyReport() {
      URL이 따라오면 비운다 */
   const [pendingWeek, setPendingWeek] = useState<number | null>(null)
 
-  const earliest = useQuery(reportQueries.earliestPostingDate())
   const me = useQuery(userQueries.me())
 
-  /* 0이 이번 주다. 미래 주차는 집계가 없어 갈 수 없고, 과거는 가장 오래된 공고가 있는 주까지다.
-     공고가 하나도 없으면(null) 이번 주에 머문다 */
-  const earliestDate = earliest.data?.earliestPostingDate
-  const minOffset =
-    earliestDate === undefined
-      ? undefined
-      : earliestDate === null
-        ? 0
-        : Math.min(0, weekOffsetOf(earliestDate))
-  const lowest = minOffset ?? FALLBACK_MIN_OFFSET
+  /* 0이 이번 주다. 볼 수 있는 건 지난주(LATEST_WEEK)부터 6월 첫 주까지다 */
+  const oldest = weekOffsetOf(OLDEST_WEEK_START)
 
   const params = parseReportParams(searchParams)
-  // 하한을 아직 모르면 URL 값을 그대로 믿는다 — 응답 뒤에 다른 주차로 튀지 않게
-  const urlWeek =
-    minOffset !== undefined && params.week < minOffset ? 0 : params.week
+  const urlWeek = params.week < oldest ? LATEST_WEEK : params.week
   const weekOffset = pendingWeek ?? urlWeek
 
   const majors = me.data?.majors
@@ -97,15 +88,15 @@ export function WeeklyReport() {
     if (pendingWeek !== null && urlWeek === pendingWeek) setPendingWeek(null)
   }, [pendingWeek, urlWeek])
 
-  const canPrevious = weekOffset > lowest
-  const canNext = weekOffset < 0
+  const canPrevious = weekOffset > oldest
+  const canNext = weekOffset < LATEST_WEEK
 
   const handleStep = (direction: -1 | 1) => {
     // 이동 중에는 새 입력을 무시한다 — 큐에 쌓으면 어디로 가는지 알 수 없어진다.
     if (slidingTo) return
 
     const offset = weekOffset + direction
-    if (offset > 0 || offset < lowest) return
+    if (offset > LATEST_WEEK || offset < oldest) return
 
     // 사용자들이 주간 리포트를 보러 다시 방문하는지 또 과거 리포트를 보는 확인하기 위함 이벤트 수집
     trackEvent('Report Week Changed', {
@@ -148,13 +139,17 @@ export function WeeklyReport() {
   }
 
   const { collectedCount, ...report } = useWeekReport(weekOffset, majorId)
-  // 갈 수 없는 주차(미래·하한 너머)의 이웃 카드는 요청하지 않고 빈 카드로 둔다
+  // 갈 수 없는 주차(이번 주·하한 너머)의 이웃 카드는 요청하지 않고 빈 카드로 둔다
   const previous = useWeekReport(
     weekOffset - 1,
     majorId,
-    weekOffset - 1 >= lowest,
+    weekOffset - 1 >= oldest,
   )
-  const next = useWeekReport(weekOffset + 1, majorId, weekOffset + 1 <= 0)
+  const next = useWeekReport(
+    weekOffset + 1,
+    majorId,
+    weekOffset + 1 <= LATEST_WEEK,
+  )
 
   /* 헤더는 **도착할 주차**를 먼저 보여준다. 이동이 끝난 뒤에 바꾸면 카드는 이미 새 주차인데
      글자만 400ms 늦게 툭 바뀌어 따로 노는 것처럼 보인다.
@@ -189,7 +184,7 @@ export function WeeklyReport() {
         }
         footer={
           <p className="text-center text-body-sm text-gray-200">
-            이번 주 수집된 {collectedCount.toLocaleString()}개의 공고를 분석한
+            이 주에 수집된 {collectedCount.toLocaleString()}개의 공고를 분석한
             결과입니다.
           </p>
         }
