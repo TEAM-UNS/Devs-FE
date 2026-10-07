@@ -11,7 +11,10 @@ import OnboardingPage from './OnboardingPage'
    나열하지 않은 경로는 거부해, 요청 함수의 경로가 틀리면 테스트가 잡아낸다. */
 const mocks = vi.hoisted(() => ({ put: vi.fn(), trackEvent: vi.fn() }))
 
-vi.mock('@/shared/analytics', () => ({ trackEvent: mocks.trackEvent }))
+vi.mock('@/shared/analytics', () => ({
+  trackEvent: mocks.trackEvent,
+  trackPageView: vi.fn(),
+}))
 
 vi.mock('@/shared/api/http', () => ({
   get: vi.fn((path: string) =>

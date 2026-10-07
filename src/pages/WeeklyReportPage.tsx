@@ -1,4 +1,5 @@
 import { WeeklyReport } from '@/features/report'
+import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
  * 주간 리포트 페이지. pages는 feature를 조립만 하고 로직은 두지 않는다.
@@ -7,5 +8,10 @@ import { WeeklyReport } from '@/features/report'
  * @returns 주차별 채용 공고 분석 결과 화면
  */
 export default function WeeklyReportPage() {
-  return <WeeklyReport />
+  return (
+    <>
+      <PageTitle name="주간리포트" />
+      <WeeklyReport />
+    </>
+  )
 }

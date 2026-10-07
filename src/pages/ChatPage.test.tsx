@@ -10,7 +10,7 @@ const { requestMockChatReply, trackEvent } = vi.hoisted(() => ({
   trackEvent: vi.fn(),
 }))
 
-vi.mock('@/shared/analytics', () => ({ trackEvent }))
+vi.mock('@/shared/analytics', () => ({ trackEvent, trackPageView: vi.fn() }))
 
 vi.mock('@/features/chat/api/mockChat', () => ({
   requestMockChatReply,
