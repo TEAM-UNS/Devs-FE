@@ -14,6 +14,7 @@ import {
   type SignupStep3Input,
   type SignupStep4Input,
 } from '@/features/auth'
+import { PageTitle } from '@/shared/components/PageTitle'
 
 const TOTAL_STEPS = 2
 
@@ -68,6 +69,7 @@ export default function OnboardingPage() {
 
   return (
     <AuthLayout className="max-w-[708px]">
+      <PageTitle name="온보딩" />
       <div className="flex flex-col gap-8">
         <Stepper total={TOTAL_STEPS} current={step} />
 

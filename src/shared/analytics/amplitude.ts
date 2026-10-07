@@ -16,7 +16,17 @@ export function initAmplitude() {
 
   amplitude
     .initAll(apiKey, {
-      analytics: { autocapture: true },
+      analytics: {
+        /* 페이지 조회는 제목이 들어간 뒤 trackPageView로 직접 보낸다
+           객체로 넘기면 클릭·네트워크·웹 바이탈 수집은 기본이 꺼짐이라 true일 때처럼 켜 둔다 */
+        autocapture: {
+          pageViews: false,
+          elementInteractions: true,
+          frustrationInteractions: true,
+          networkTracking: true,
+          webVitals: true,
+        },
+      },
       // 베타 테스트까지는 1로 두고 추후 트래픽이 증가하면 낮춰야함
       sessionReplay: { sampleRate: 1 },
     })

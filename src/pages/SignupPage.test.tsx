@@ -6,7 +6,7 @@ import { renderWithQuery } from '@/test/renderWithQuery'
 import SignupPage from './SignupPage'
 
 const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }))
-vi.mock('@/shared/analytics', () => ({ trackEvent }))
+vi.mock('@/shared/analytics', () => ({ trackEvent, trackPageView: vi.fn() }))
 
 // 1단계가 발송·검증 API를 부른다. 여기서 보는 건 단계 전환이므로 성공 응답으로 대체한다.
 vi.mock('@/features/auth/api', () => ({

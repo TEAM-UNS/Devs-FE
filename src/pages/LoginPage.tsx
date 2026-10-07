@@ -12,6 +12,7 @@ import {
   useLogin,
   type LoginInput,
 } from '@/features/auth'
+import { PageTitle } from '@/shared/components/PageTitle'
 
 // 모듈 스코프 — 렌더마다 새 엘리먼트를 만들지 않는다 (react-perf).
 // 배경은 Figma 프레임을 통째로 export한 이미지다. 큰 구는 벡터지만 작은 유리 원의
@@ -49,6 +50,7 @@ export default function LoginPage() {
 
   return (
     <AuthLayout background={BACKGROUND}>
+      <PageTitle name="로그인" />
       <div className="flex flex-col gap-12">
         <AuthHeader title="다시 만나서 반가워요!" />
 

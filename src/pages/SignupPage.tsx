@@ -22,6 +22,7 @@ import {
   type SignupStep3Input,
   type SignupStep4Input,
 } from '@/features/auth'
+import { PageTitle } from '@/shared/components/PageTitle'
 
 const TOTAL_STEPS = 4
 
@@ -82,6 +83,7 @@ export default function SignupPage() {
 
   return (
     <AuthLayout className={isWideStep ? 'max-w-[708px]' : undefined}>
+      <PageTitle name="회원가입" />
       <div className="flex flex-col gap-8">
         <Stepper total={TOTAL_STEPS} current={step} />
 

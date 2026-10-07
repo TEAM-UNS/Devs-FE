@@ -9,7 +9,10 @@ import OAuthCallbackPage from './OAuthCallbackPage'
    경로·withCredentials까지 이 테스트가 지키게 한다. */
 const mocks = vi.hoisted(() => ({ post: vi.fn(), trackEvent: vi.fn() }))
 
-vi.mock('@/shared/analytics', () => ({ trackEvent: mocks.trackEvent }))
+vi.mock('@/shared/analytics', () => ({
+  trackEvent: mocks.trackEvent,
+  trackPageView: vi.fn(),
+}))
 
 vi.mock('@/shared/api/http', () => ({
   get: vi.fn(),
