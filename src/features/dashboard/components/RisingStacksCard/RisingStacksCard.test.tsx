@@ -51,8 +51,10 @@ describe('RisingStacksCard', () => {
     )
 
     expect(init).toHaveBeenCalledTimes(1)
+    // 기본 병합이면 기간·전공을 바꿀 때 이전 기술의 선이 남아 겹친다
     expect(chart.setOption).toHaveBeenLastCalledWith(
       expect.objectContaining({ series: expect.any(Array) }),
+      { replaceMerge: ['series'] },
     )
   })
 })

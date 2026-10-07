@@ -5,7 +5,7 @@ import type {
   TooltipComponentOption,
 } from 'echarts/components'
 import { GridComponent, TooltipComponent } from 'echarts/components'
-import type { ComposeOption, ECharts } from 'echarts/core'
+import type { ComposeOption, ECharts, SetOptionOpts } from 'echarts/core'
 // `use`를 그대로 쓰면 React 19의 use() 훅과 이름이 겹쳐 rules-of-hooks가 에러를 낸다.
 import { init, use as registerECharts } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -40,8 +40,13 @@ export type DashboardChartOption = ComposeOption<
 /**
  * ECharts 인스턴스의 생성·갱신·리사이즈·정리를 담당한다.
  * 반환된 ref를 크기가 정해진 컨테이너에 걸어 쓴다.
+ *
+ * @param setOptionOpts 갱신 방식. 시리즈 목록 자체가 바뀌는 차트는 replaceMerge를 넘긴다
  */
-export function useEChart(option: DashboardChartOption) {
+export function useEChart(
+  option: DashboardChartOption,
+  setOptionOpts?: SetOptionOpts,
+) {
   const containerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<ECharts | null>(null)
 
@@ -82,8 +87,8 @@ export function useEChart(option: DashboardChartOption) {
   useEffect(() => {
     // notMerge를 쓰지 않는다: 기본 병합이라야 필터가 바뀔 때 막대가 새 값으로
     // 애니메이션되며 이동한다. notMerge면 매번 처음부터 다시 그려져 전환이 끊긴다.
-    chartRef.current?.setOption(option)
-  }, [option])
+    chartRef.current?.setOption(option, setOptionOpts)
+  }, [option, setOptionOpts])
 
   return containerRef
 }
