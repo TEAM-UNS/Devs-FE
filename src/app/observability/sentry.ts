@@ -20,3 +20,18 @@ export function initSentry() {
     tracesSampleRate: 0.2,
   })
 }
+
+const captureRenderError = Sentry.reactErrorHandler()
+
+/**
+ * createRoot 에러 훅. 라우터가 자체 에러 경계로 페이지 렌더링 에러를 먼저 잡아서
+ * 바깥 ErrorBoundary나 전역 핸들러로는 Sentry까지 오지 않는다
+ * React 19는 어느 경계가 잡든 이 훅을 부르므로 여기서 보고한다
+ */
+export function reportRenderError(
+  ...[error, errorInfo]: Parameters<typeof captureRenderError>
+) {
+  captureRenderError(error, errorInfo)
+  // 훅을 넘기면 React 기본 콘솔 출력이 사라져 다시 남긴다
+  console.error(error)
+}
