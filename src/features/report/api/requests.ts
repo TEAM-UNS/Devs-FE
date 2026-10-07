@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { get } from '@/shared/api'
 import type {
-  EarliestPostingDateResponse,
   PopularTechStackResponse,
   ReportPeriod,
   TechMentionsResponse,
@@ -77,9 +76,4 @@ export async function fetchWeeklyCollectedCount(
   return get<WeeklyCollectedCountResponse>('/report/weekly-collected-count', {
     base_date: baseDate,
   })
-}
-
-/** 가장 오래된 공고 게시일 조회 */
-export async function fetchEarliestPostingDate(): Promise<EarliestPostingDateResponse> {
-  return get<EarliestPostingDateResponse>('/report/earliest-posting-date')
 }
