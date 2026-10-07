@@ -25,6 +25,10 @@ interface RisingStacksCardProps {
 
 const CHECK_ICON = <CheckIcon className="size-full" />
 
+// 기간·전공이 바뀌면 기술 목록 자체가 바뀐다. 기본 병합은 새 옵션에 없는 시리즈를
+// 지우지 않아 이전 선이 남아 겹친다 → 시리즈는 통째로 교체하고 같은 id만 이어 그린다
+const REPLACE_SERIES = { replaceMerge: ['series'] }
+
 /** 급상승 기술 스택 카드 — 기간 토글 + ECharts 영역 그래프 + 범례. */
 export function RisingStacksCard({
   periods,
@@ -45,6 +49,7 @@ export function RisingStacksCard({
 
   const chartRef = useEChart(
     buildRisingStacksOption(series, axisLabels, cursor),
+    REPLACE_SERIES,
   )
 
   // ⚠️ 반드시 캡처 단계여야 한다. 버블 단계로 두면 zrender가 canvas에서 먼저 툴팁을

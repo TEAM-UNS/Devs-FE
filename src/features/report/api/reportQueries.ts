@@ -1,7 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
 import type { ReportPeriod } from '../types'
 import {
-  fetchEarliestPostingDate,
   fetchMaxDecrease,
   fetchMaxIncrease,
   fetchPopularTechStack,
@@ -69,11 +68,5 @@ export const reportQueries = {
         baseDate,
       ] as const,
       queryFn: () => fetchWeeklyCollectedCount(baseDate),
-    }),
-
-  earliestPostingDate: () =>
-    queryOptions({
-      queryKey: [...reportQueries.all(), 'earliest-posting-date'] as const,
-      queryFn: fetchEarliestPostingDate,
     }),
 }

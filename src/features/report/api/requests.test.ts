@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { get } from '@/shared/api/http'
 import { reportQueries } from './reportQueries'
 import {
-  fetchEarliestPostingDate,
   fetchMaxDecrease,
   fetchMaxIncrease,
   fetchPopularTechStack,
@@ -65,12 +64,6 @@ describe('주간 리포트 요청', () => {
       period: 'WEEK',
       base_date: '2026-09-07',
     })
-  })
-
-  it('가장 오래된 공고 날짜는 파라미터 없이 부른다', async () => {
-    await fetchEarliestPostingDate()
-
-    expect(get).toHaveBeenCalledWith('/report/earliest-posting-date')
   })
 
   it('전공을 안 넘기면 major_id를 undefined로 둬 쿼리스트링에서 빠진다', async () => {

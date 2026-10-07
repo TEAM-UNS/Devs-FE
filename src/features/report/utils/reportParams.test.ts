@@ -8,14 +8,14 @@ describe('parseReportParams', () => {
     expect(parse('week=-3&major=2')).toEqual({ week: -3, major: 2 })
   })
 
-  it('값이 없으면 이번 주·전체', () => {
-    expect(parse('')).toEqual({ week: 0, major: null })
+  it('값이 없으면 지난주·전체', () => {
+    expect(parse('')).toEqual({ week: -1, major: null })
   })
 
-  it.each(['abc', '1.5', '-1e2', '', '3'])(
-    '잘못된 주차(%s)는 이번 주로 돌린다 — 미래 주차도 포함',
+  it.each(['abc', '1.5', '-1e2', '', '3', '0', '-0'])(
+    '잘못된 주차(%s)는 지난주로 돌린다 — 이번 주·미래 주차도 포함',
     (week) => {
-      expect(parse(`week=${week}`).week).toBe(0)
+      expect(parse(`week=${week}`).week).toBe(-1)
     },
   )
 

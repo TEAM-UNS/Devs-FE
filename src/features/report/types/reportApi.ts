@@ -40,8 +40,3 @@ export interface TechMentionsResponse {
 export interface WeeklyCollectedCountResponse {
   count: number
 }
-
-export interface EarliestPostingDateResponse {
-  /** 공고가 없으면 `null` */
-  earliestPostingDate: string | null
-}
