@@ -1,4 +1,5 @@
 import { MyPageOverview } from '@/features/mypage'
+import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
  * 마이페이지. pages는 feature를 조립만 하고 로직은 두지 않는다.
@@ -7,5 +8,10 @@ import { MyPageOverview } from '@/features/mypage'
  * @returns 프로필·구독·커리어 목표가 배치된 마이페이지 화면
  */
 export default function MyPage() {
-  return <MyPageOverview />
+  return (
+    <>
+      <PageTitle name="마이페이지" />
+      <MyPageOverview />
+    </>
+  )
 }

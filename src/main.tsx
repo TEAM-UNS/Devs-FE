@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client'
 import 'pretendard/dist/web/variable/pretendardvariable.css'
 import './index.css'
 import { App } from '@/app/App'
-import { initSentry } from '@/app/observability/sentry'
+import { initSentry, reportRenderError } from '@/app/observability/sentry'
 import { reportWebVitals } from '@/app/observability/reportWebVitals'
 import { initAmplitude } from '@/shared/analytics'
 
@@ -20,7 +20,10 @@ if (import.meta.env.DEV) {
 initSentry()
 initAmplitude()
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root')!, {
+  onCaughtError: reportRenderError,
+  onUncaughtError: reportRenderError,
+}).render(
   <StrictMode>
     <App />
   </StrictMode>,

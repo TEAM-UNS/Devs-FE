@@ -1,4 +1,5 @@
 import { DashboardOverview } from '@/features/dashboard'
+import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
  * 메인페이지(대시보드). pages는 feature를 조립만 하고 로직은 두지 않는다.
@@ -7,5 +8,10 @@ import { DashboardOverview } from '@/features/dashboard'
  * @returns KPI 카드와 차트 카드가 배치된 대시보드 화면
  */
 export default function DashboardPage() {
-  return <DashboardOverview />
+  return (
+    <>
+      <PageTitle name="메인페이지" />
+      <DashboardOverview />
+    </>
+  )
 }

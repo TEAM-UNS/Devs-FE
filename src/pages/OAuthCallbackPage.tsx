@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { trackEvent } from '@/shared/analytics'
 import { ROUTES } from '@/shared/constants'
 import { takeOAuthProvider, useOAuthLogin } from '@/features/auth'
+import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
  * OAuth 콜백 — 서버가 provider 인가를 마치고 브라우저를 여기로 돌려보낸다.
@@ -62,6 +63,7 @@ export default function OAuthCallbackPage() {
       role="status"
       aria-live="polite"
     >
+      <PageTitle name="로그인" />
       <span className="text-body-md text-gray-300">로그인 중…</span>
     </div>
   )
