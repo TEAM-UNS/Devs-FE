@@ -1,6 +1,7 @@
 import assistantDot from '@/assets/chat/assistant-dot.svg'
 import messageTail from '@/assets/chat/message-tail.svg'
 import type { ChatMessage } from '../../types/chat'
+import { ChatMarkdown } from '../ChatMarkdown'
 import { ChatSpinner } from '../ChatSpinner'
 
 interface ChatConversationProps {
@@ -45,7 +46,10 @@ export function ChatConversation({
   return (
     <div
       ref={scrollContainerRef}
-      className="scrollbar-slim flex min-h-0 w-full flex-1 flex-col gap-6 overflow-y-auto"
+      /* 스피너는 답변 점과 중심을 맞추려고 왼쪽으로 14px 나간다. 스크롤 영역은 넘치는 그림을 잘라서
+         경계만 14px 바깥으로 빼고(-ml-3.5) 내용은 원래 자리에 둔다(pl-3.5).
+         w-full이면 오른쪽 끝도 같이 당겨져 폭은 부모 flex의 stretch에 맡긴다 */
+      className="scrollbar-slim -ml-3.5 flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto pl-3.5"
       aria-live="polite"
       onScroll={handleScroll}
     >
@@ -64,9 +68,7 @@ export function ChatConversation({
             <div className="flex py-1.5">
               <img src={assistantDot} alt="" className="size-2 shrink-0" />
             </div>
-            <p className="text-body-md whitespace-pre-line text-gray-1000">
-              {message.content}
-            </p>
+            <ChatMarkdown content={message.content} />
           </div>
         ),
       )}

@@ -9,10 +9,10 @@ import type { ChatThread } from '../../types/chat'
 
 interface ChatHistorySidebarProps {
   readonly threads: readonly ChatThread[]
-  readonly activeThreadId?: string
-  readonly onThreadSelect: (threadId: string) => void
+  readonly activeThreadId?: number
+  readonly onThreadSelect: (threadId: number) => void
   readonly onThreadDelete: (
-    threadId: string,
+    threadId: number,
     trigger: HTMLButtonElement,
   ) => void
   readonly onNewChat: () => void
@@ -22,8 +22,8 @@ interface ChatHistorySidebarProps {
 interface ChatHistoryItemProps {
   readonly thread: ChatThread
   readonly selected: boolean
-  readonly onSelect: (threadId: string) => void
-  readonly onDelete: (threadId: string, trigger: HTMLButtonElement) => void
+  readonly onSelect: (threadId: number) => void
+  readonly onDelete: (threadId: number, trigger: HTMLButtonElement) => void
 }
 
 function ChatHistoryItem({

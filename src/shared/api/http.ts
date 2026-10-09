@@ -26,8 +26,11 @@ const OAUTH_TOKEN_PREFIX = '/user/oauth/'
 const isPublic = (path: string) =>
   PUBLIC_PATHS.has(path) || path.startsWith(OAUTH_TOKEN_PREFIX)
 
+/* axios를 쓰지 않는 요청(챗봇 SSE의 fetch)도 같은 서버로 가야 해서 내보낸다 */
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? '',
+  baseURL: API_BASE_URL,
   timeout: 10_000,
 })
 
@@ -64,7 +67,14 @@ async function refreshAccessToken(): Promise<boolean> {
   }
 }
 
-function refreshOnce(): Promise<boolean> {
+/**
+ * 동시에 여러 401이 나도 리슈 요청은 한 번만 보낸다
+ * 챗봇 SSE는 fetch라 인터셉터를 거치지 않아서 직접 부른다. 같은 함수를 공유해야
+ * axios 요청과 동시에 401이 나도 재발급이 한 번만 간다
+ *
+ * @returns 새 accessToken을 저장했으면 true
+ */
+export function refreshOnce(): Promise<boolean> {
   refreshInFlight ??= refreshAccessToken().finally(() => {
     refreshInFlight = null
   })

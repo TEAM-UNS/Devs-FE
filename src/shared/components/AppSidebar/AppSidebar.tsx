@@ -29,7 +29,7 @@ const NAV_ITEMS = [
     disabled: true,
   },
   { to: ROUTES.roadmap, label: '로드맵', Icon: RouteIcon, disabled: true },
-  { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon, disabled: true },
+  { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon },
   { to: ROUTES.myPage, label: '마이페이지', Icon: UserIcon },
 ]
 

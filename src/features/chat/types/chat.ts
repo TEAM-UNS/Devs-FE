@@ -4,8 +4,8 @@ export type ChatMessage = {
   readonly content: string
 }
 
+/** 사이드바에 보이는 대화 하나 */
 export type ChatThread = {
-  readonly id: string
+  readonly id: number
   readonly title: string
-  readonly messages: readonly ChatMessage[]
 }
