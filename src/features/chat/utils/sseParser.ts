@@ -3,11 +3,10 @@ import type { ChatStreamEvent } from '../types/chatApi'
 /** SSE에서 이벤트 하나의 끝을 뜻하는 빈 줄 */
 const EVENT_BOUNDARY = '\n\n'
 
-/** 채팅 화면에서 쓰는 이벤트. 여기 없는 이벤트(graph 등)는 건너뛴다 */
+/** 채팅 화면에서 쓰는 이벤트. 여기 없는 이벤트(graph·tool_start 등)는 건너뛴다 */
 const CHAT_EVENTS: readonly string[] = [
   'session',
   'title',
-  'tool_start',
   'token',
   'done',
   'error',

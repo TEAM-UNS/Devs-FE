@@ -10,6 +10,8 @@ const SUGGESTED_QUESTIONS = [
 interface ChatIntroProps {
   readonly question: string
   readonly error?: string
+  /** 다른 대화의 답변을 받는 중이면 막는다 */
+  readonly disabled?: boolean
   readonly onQuestionChange: (value: string) => void
   readonly onQuestionSubmit: () => void
   readonly onSuggestionSelect: (question: string) => void
@@ -17,11 +19,13 @@ interface ChatIntroProps {
 
 interface SuggestedQuestionButtonProps {
   readonly question: string
+  readonly disabled: boolean
   readonly onSelect: (question: string) => void
 }
 
 function SuggestedQuestionButton({
   question,
+  disabled,
   onSelect,
 }: SuggestedQuestionButtonProps) {
   function handleClick() {
@@ -32,7 +36,8 @@ function SuggestedQuestionButton({
     <button
       type="button"
       onClick={handleClick}
-      className="h-8 rounded-full border border-element bg-container px-5 text-body-sm text-gray-400 focus-visible:outline-2 focus-visible:outline-primary-500"
+      disabled={disabled}
+      className="h-8 rounded-full border border-element bg-container px-5 text-body-sm text-gray-400 focus-visible:outline-2 focus-visible:outline-primary-500 disabled:cursor-not-allowed disabled:opacity-40"
     >
       {question}
     </button>
@@ -43,6 +48,7 @@ function SuggestedQuestionButton({
 export function ChatIntro({
   question,
   error,
+  disabled = false,
   onQuestionChange,
   onQuestionSubmit,
   onSuggestionSelect,
@@ -55,6 +61,7 @@ export function ChatIntro({
         <div className="flex w-full flex-col gap-4">
           <ChatComposer
             value={question}
+            disabled={disabled}
             error={error}
             onChange={onQuestionChange}
             onSubmit={onQuestionSubmit}
@@ -65,6 +72,7 @@ export function ChatIntro({
               <SuggestedQuestionButton
                 key={question}
                 question={question}
+                disabled={disabled}
                 onSelect={onSuggestionSelect}
               />
             ))}

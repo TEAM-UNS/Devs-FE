@@ -70,13 +70,6 @@ describe('parseEventBlock — 블록 하나를 이벤트 객체로', () => {
   it.each<ChatStreamEvent>([
     { event: 'session', data: { session_id: 42, is_new: true } },
     { event: 'title', data: { title: 'React 관련 요구 기술' } },
-    {
-      event: 'tool_start',
-      data: {
-        tool: 'get_related_skills',
-        label: '기술 연관 관계를 분석하고 있어요',
-      },
-    },
     { event: 'done', data: { message_id: 1042 } },
   ])('$event 이벤트를 읽는다', (expected) => {
     const block = `event:${expected.event}\ndata:${JSON.stringify(expected.data)}`
@@ -101,10 +94,11 @@ describe('parseEventBlock — 블록 하나를 이벤트 객체로', () => {
     expect(parseEventBlock(': keep-alive')).toBeNull()
   })
 
-  it('채팅에서 쓰지 않는 이벤트(graph)는 건너뛴다', () => {
-    expect(
-      parseEventBlock('event:graph\ndata:{"id":"g_01","type":"bar","data":[]}'),
-    ).toBeNull()
+  it.each([
+    'event:graph\ndata:{"id":"g_01","type":"bar","data":[]}',
+    'event:tool_start\ndata:{"tool":"get_related_skills","label":"분석하고 있어요"}',
+  ])('채팅에서 쓰지 않는 이벤트는 건너뛴다 (%s)', (block) => {
+    expect(parseEventBlock(block)).toBeNull()
   })
 
   it('AI 서버의 error 이벤트는 JSON 그대로 읽는다', () => {

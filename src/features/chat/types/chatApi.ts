@@ -1,12 +1,10 @@
 /* 서버 응답 타입. Swagger에 required가 없어 null 여부는 백엔드 엔티티로 확인했다 */
 
-import type { ZodNumber } from 'zod'
-
 /** 대화 기록에서 사용하는 역할 */
 export type ChatRole = 'user' | 'assistant'
 
 export interface ChatSessionDto {
-  id: ZodNumber
+  id: number
   title: string | null
   lastMessageAt: string
 }
@@ -45,8 +43,6 @@ export type ChatStreamEvent =
   | { event: 'session'; data: { session_id: number; is_new: boolean } }
   /** 새 대화일 때만 답변 도중 아무 때나 도착한다 */
   | { event: 'title'; data: { title: string } }
-  /** label은 "기술 연관 관계를 분석하고 있어요" 같은 진행 문구 */
-  | { event: 'tool_start'; data: { tool: string; label: string } }
   /** 답변 텍스트 조각 이어 붙이면 마크다운 답변이 된다 */
   | { event: 'token'; data: { text: string } }
   /** 정상 종료 tools_used·usage 등도 오지만 화면에서 쓰는 것만 둔다 */
