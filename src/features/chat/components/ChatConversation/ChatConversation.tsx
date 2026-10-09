@@ -1,6 +1,7 @@
 import assistantDot from '@/assets/chat/assistant-dot.svg'
 import messageTail from '@/assets/chat/message-tail.svg'
 import type { ChatMessage } from '../../types/chat'
+import { ChatMarkdown } from '../ChatMarkdown'
 import { ChatSpinner } from '../ChatSpinner'
 
 interface ChatConversationProps {
@@ -64,9 +65,7 @@ export function ChatConversation({
             <div className="flex py-1.5">
               <img src={assistantDot} alt="" className="size-2 shrink-0" />
             </div>
-            <p className="text-body-md whitespace-pre-line text-gray-1000">
-              {message.content}
-            </p>
+            <ChatMarkdown content={message.content} />
           </div>
         ),
       )}
