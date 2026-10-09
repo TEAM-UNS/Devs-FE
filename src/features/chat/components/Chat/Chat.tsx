@@ -52,7 +52,12 @@ const isNotFound = (error: unknown) =>
 export function Chat() {
   const queryClient = useQueryClient()
   const [searchParams, setSearchParams] = useSearchParams()
-  const activeSessionId = parseSessionId(searchParams.get(SESSION_PARAM))
+  const urlSessionId = parseSessionId(searchParams.get(SESSION_PARAM))
+  /* 새 대화가 생기면 주소를 바꾸는데, 라우터는 주소 변경을 transition으로 늦게 반영한다.
+     그 사이 한 프레임 동안 턴의 대화 id와 주소가 어긋나 인트로가 끼어들고 스피너가 끊겨 보여서,
+     주소가 따라올 때까지 새 id를 먼저 쓴다 (주간 리포트의 pendingWeek과 같은 이유) */
+  const [pendingSessionId, setPendingSessionId] = useState<number>()
+  const activeSessionId = pendingSessionId ?? urlSessionId
 
   const [question, setQuestion] = useState('')
   const [draftError, setDraftError] = useState<string>()
@@ -76,6 +81,12 @@ export function Chat() {
     ...chatQueries.messages(activeSessionId ?? 0),
     enabled: activeSessionId !== undefined && !isTurnSession,
   })
+
+  useEffect(() => {
+    if (pendingSessionId !== undefined && urlSessionId === pendingSessionId) {
+      setPendingSessionId(undefined)
+    }
+  }, [pendingSessionId, urlSessionId])
 
   // 페이지를 떠나면 받던 답변도 끊는다. 서버는 거기까지 쓴 답변을 저장한다
   useEffect(() => () => abortRef.current?.abort(), [])
@@ -161,6 +172,7 @@ export function Chat() {
           setTurn((current) => current && { ...current, sessionId })
           if (event.data.is_new) {
             // 새 대화가 생겼으니 주소와 사이드바에 바로 보이게 한다
+            setPendingSessionId(sessionId)
             openSession(sessionId, { replace: true })
             void refreshSessions()
           }
