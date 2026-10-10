@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
@@ -17,21 +17,35 @@ const DEFAULT_VALUES: SignupStep2Input = {
 const NEXT_ICON = <ArrowIcon className="size-full rotate-180" />
 
 interface SignupStep2Props {
+  /** 새로고침 뒤 복원한 이름. 비밀번호는 저장하지 않아 다시 받는다 */
+  defaultName?: string
+  /** 이름이 바뀔 때마다 호출. 비밀번호는 저장하지 않아 넘기지 않는다 */
+  onChange?: (data: Pick<SignupStep2Input, 'name'>) => void
   /** 검증 통과 시 호출 */
   onNext: (data: SignupStep2Input) => void
 }
 
 /** 회원가입 2단계 — 이름·비밀번호 설정 (비밀번호 표시 토글 포함). */
-export function SignupStep2({ onNext }: SignupStep2Props) {
+export function SignupStep2({
+  defaultName = '',
+  onChange,
+  onNext,
+}: SignupStep2Props) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isValid },
   } = useForm<SignupStep2Input>({
     resolver: RESOLVER,
     mode: 'onChange',
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: { ...DEFAULT_VALUES, name: defaultName },
   })
+
+  const name = watch('name')
+  useEffect(() => {
+    onChange?.({ name })
+  }, [name, onChange])
 
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)

@@ -128,4 +128,25 @@ describe('SignupStep3', () => {
       }),
     )
   })
+
+  it('복원한 선택으로 시작하고, 바뀔 때마다 알린다', async () => {
+    const onChange = vi.fn()
+    renderWithQuery(
+      <SignupStep3
+        initialValues={{ majors: [BACKEND.id], careerType: 'none' }}
+        onChange={onChange}
+        onNext={noop}
+      />,
+    )
+
+    expect(
+      await screen.findByRole('button', { name: BACKEND.label }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: '다음' })).toBeEnabled()
+
+    await userEvent.click(screen.getByRole('button', { name: FRONTEND.label }))
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ majors: [BACKEND.id, FRONTEND.id] }),
+    )
+  })
 })
