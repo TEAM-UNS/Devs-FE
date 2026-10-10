@@ -19,7 +19,9 @@ import {
 const RESOLVER = zodResolver(signupStep1Schema)
 const DEFAULT_VALUES: SignupStep1Input = { email: '', code: '' }
 const NEXT_ICON = <ArrowIcon className="size-full rotate-180" />
-const CODE_TTL = 180 // 인증 코드 유효시간 3:00 (초) — Figma 타이머 표기 기준
+/* 인증 코드 유효시간(초). 서버 코드 만료·재전송 제한이 5분이라 맞춘다
+   Figma 표기(3:00)를 따르면 3~5분 사이에 재전송을 눌렀을 때 서버가 요청 제한으로 막는다 */
+const CODE_TTL = 300
 
 const SENT_MESSAGE = '이메일이 전송되었어요! 메일함을 확인해주세요.'
 

@@ -51,14 +51,14 @@ describe('SignupStep1', () => {
     expect(screen.getByLabelText('이메일 인증')).toBeDisabled()
   })
 
-  it('발송이 성공하면 코드 입력이 열리고 타이머(3:00)가 뜬다', async () => {
+  it('발송이 성공하면 코드 입력이 열리고 타이머(5:00)가 뜬다', async () => {
     renderWithQuery(<SignupStep1 onNext={noop} />)
 
     await userEvent.type(screen.getByLabelText('이메일'), 'user@uns.dev')
     await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
 
     // 응답이 온 뒤에 열리므로 findBy로 기다린다
-    expect(await screen.findByText('3:00')).toBeInTheDocument()
+    expect(await screen.findByText('5:00')).toBeInTheDocument()
     expect(screen.getByLabelText('이메일 인증')).toBeEnabled()
     // 전송 후에는 재전송을 막는다 (Figma 120:1684 이후 인증 버튼 비활성)
     expect(screen.getByRole('button', { name: '이메일 인증' })).toBeDisabled()
@@ -77,7 +77,7 @@ describe('SignupStep1', () => {
     const emailInput = screen.getByLabelText('이메일')
     await userEvent.type(emailInput, 'user@uns.dev')
     await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
-    await screen.findByText('3:00')
+    await screen.findByText('5:00')
 
     const codeInput = screen.getByLabelText('이메일 인증')
     await userEvent.type(codeInput, '123456')
@@ -119,7 +119,7 @@ describe('SignupStep1', () => {
 
     await userEvent.type(screen.getByLabelText('이메일'), 'user@uns.dev')
     await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
-    await screen.findByText('3:00')
+    await screen.findByText('5:00')
     // 코드 입력 전에는 여전히 비활성
     expect(nextButton).toBeDisabled()
 
