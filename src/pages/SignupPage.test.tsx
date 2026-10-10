@@ -28,7 +28,7 @@ function renderPage() {
 async function passStep1() {
   await userEvent.type(screen.getByLabelText('이메일'), 'user@uns.dev')
   await userEvent.click(screen.getByRole('button', { name: '이메일 인증' }))
-  await screen.findByText('3:00')
+  await screen.findByText('5:00')
   await userEvent.type(screen.getByLabelText('이메일 인증'), '123456')
   await userEvent.click(screen.getByRole('button', { name: /다음/ }))
   await screen.findByLabelText('이름')
