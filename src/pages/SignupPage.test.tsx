@@ -1,7 +1,7 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderWithQuery } from '@/test/renderWithQuery'
 import SignupPage from './SignupPage'
 
@@ -35,6 +35,11 @@ async function passStep1() {
 }
 
 describe('SignupPage', () => {
+  // 1단계를 통과하면 가입 정보가 sessionStorage에 남는다. 테스트끼리 섞이지 않게 비운다
+  beforeEach(() => {
+    sessionStorage.clear()
+  })
+
   it('진행 표시·헤더·1단계 폼·소셜 로그인·로그인 링크를 렌더링한다', () => {
     renderPage()
 
@@ -96,5 +101,63 @@ describe('SignupPage', () => {
     ).not.toBeInTheDocument()
     // 로그인 링크는 전 단계 공통으로 유지된다
     expect(screen.getByRole('link', { name: '로그인' })).toBeInTheDocument()
+  })
+
+  it('새로고침하면 인증을 마친 2단계부터 이름을 채운 채 다시 시작하고, 비밀번호는 남기지 않는다', async () => {
+    const { unmount } = renderPage()
+    await passStep1()
+    await userEvent.type(screen.getByLabelText('이름'), '홍길동')
+    await userEvent.type(screen.getByLabelText('비밀번호'), 'secure7Pass')
+    await userEvent.type(screen.getByLabelText('비밀번호 확인'), 'secure7Pass')
+    await userEvent.click(screen.getByRole('button', { name: /다음/ }))
+    await waitFor(() =>
+      expect(screen.getByRole('progressbar')).toHaveAttribute(
+        'aria-valuenow',
+        '3',
+      ),
+    )
+
+    // 새로고침: 화면을 내렸다가 다시 그린다
+    unmount()
+    renderPage()
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute(
+      'aria-valuenow',
+      '2',
+    )
+    expect(screen.getByLabelText('이름')).toHaveValue('홍길동')
+    expect(screen.getByLabelText('비밀번호')).toHaveValue('')
+    expect(JSON.stringify(sessionStorage)).not.toContain('secure7Pass')
+  })
+
+  it('인증한 지 30분이 지난 값은 서버가 거절하니 버리고 1단계부터 시작한다', () => {
+    sessionStorage.setItem(
+      'signup-draft',
+      JSON.stringify({
+        email: 'user@uns.dev',
+        name: '홍길동',
+        verifiedAt: Date.now() - 31 * 60 * 1000,
+      }),
+    )
+    renderPage()
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute(
+      'aria-valuenow',
+      '1',
+    )
+  })
+
+  it('인증 전이라도 입력하던 이메일은 새로고침 뒤 1단계에 남는다', async () => {
+    const { unmount } = renderPage()
+    await userEvent.type(screen.getByLabelText('이메일'), 'user@uns.dev')
+
+    unmount()
+    renderPage()
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute(
+      'aria-valuenow',
+      '1',
+    )
+    expect(screen.getByLabelText('이메일')).toHaveValue('user@uns.dev')
   })
 })
