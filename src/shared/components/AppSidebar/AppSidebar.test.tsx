@@ -34,12 +34,21 @@ describe('AppSidebar', () => {
   it('미완성 메뉴는 링크가 아니라 비활성 항목이다', () => {
     renderSidebar()
 
-    for (const label of ['기업 스택 비교', '로드맵', 'AI 챗봇']) {
+    for (const label of ['기업 스택 비교', '로드맵']) {
       expect(
         screen.queryByRole('link', { name: label }),
       ).not.toBeInTheDocument()
       expect(screen.getByText(label)).toHaveAttribute('aria-disabled', 'true')
     }
+  })
+
+  it('AI 챗봇은 챗봇 화면으로 가는 링크다', () => {
+    renderSidebar()
+
+    expect(screen.getByRole('link', { name: 'AI 챗봇' })).toHaveAttribute(
+      'href',
+      '/chat',
+    )
   })
 
   it('현재 경로의 항목만 aria-current를 갖는다', () => {

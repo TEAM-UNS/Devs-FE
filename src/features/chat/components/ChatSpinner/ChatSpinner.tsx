@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import spinner01 from '@/assets/chat/spinner-01.svg'
 import spinner02 from '@/assets/chat/spinner-02.svg'
 import spinner03 from '@/assets/chat/spinner-03.svg'
 import spinner04 from '@/assets/chat/spinner-04.svg'
@@ -13,8 +12,9 @@ import spinner11 from '@/assets/chat/spinner-11.svg'
 import spinner12 from '@/assets/chat/spinner-12.svg'
 import spinner13 from '@/assets/chat/spinner-13.svg'
 
+/* 1번 프레임(가운데 큰 점)은 회전 동작과 이어지지 않아, 반복에 넣으면 한 바퀴마다 툭 튀어 보인다.
+   2~13번은 위쪽 점에서 시작해 같은 모양으로 끝나 매끄럽게 반복된다 */
 const SPINNER_FRAMES = [
-  spinner01,
   spinner02,
   spinner03,
   spinner04,
