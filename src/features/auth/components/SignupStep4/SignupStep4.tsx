@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { majorQueries } from '@/shared/api'
 import { Button } from '@/shared/components/Button'
@@ -32,6 +32,10 @@ type Selection = SignupStep4Input['techStacks']
 interface SignupStep4Props {
   /** 3단계에서 고른 전공 id 목록 — 이 전공들의 기술 스택만 노출한다 */
   majors?: string[]
+  /** 새로고침 뒤 복원한 선택. 처음 그릴 때만 읽는다 */
+  initialValues?: Partial<SignupStep4Input>
+  /** 선택이 바뀔 때마다 호출 */
+  onChange?: (data: SignupStep4Input) => void
   /** 검증 통과 시 호출 (마지막 단계) */
   onSubmit: (data: SignupStep4Input) => void
   /** 제출 중이면 버튼을 잠근다 */
@@ -46,11 +50,24 @@ interface SignupStep4Props {
  */
 export function SignupStep4({
   majors,
+  initialValues,
+  onChange,
   onSubmit,
   pending,
   submitLabel = '회원가입',
 }: SignupStep4Props) {
-  const [techStacks, setTechStacks] = useState<Selection>({})
+  /* 복원한 선택 중 지금 고른 전공의 것만 남긴다. 새로고침 뒤 3단계에서 전공을 바꿨다면
+     빠진 전공의 기술 스택이 화면에 안 보인 채 제출에 섞인다 */
+  const [techStacks, setTechStacks] = useState<Selection>(() =>
+    Object.fromEntries(
+      Object.entries(initialValues?.techStacks ?? {}).filter(([majorId]) =>
+        majors?.includes(majorId),
+      ),
+    ),
+  )
+  useEffect(() => {
+    onChange?.({ techStacks })
+  }, [techStacks, onChange])
   // 기본은 전부 펼침. 접힌 것만 담으면 노출 그룹이 바뀌어도 초기화가 필요 없다.
   const [closed, setClosed] = useState<string[]>([])
 

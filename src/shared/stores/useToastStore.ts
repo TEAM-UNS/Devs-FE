@@ -19,7 +19,7 @@ interface ToastState {
   dismiss: (id: number) => void
 }
 
-/* 같은 문구가 연달아 떠도 각각 다른 항목이어야 해서, 내용이 아닌 증가 카운터로 key를 만든다. */
+/* 같은 문구가 사라졌다가 다시 뜨면 새 항목이어야 해서(타이머가 새로 돈다), 내용이 아닌 증가 카운터로 key를 만든다. */
 let nextId = 0
 
 /**
@@ -32,7 +32,15 @@ let nextId = 0
 export const useToastStore = create<ToastState>((set) => ({
   toasts: [],
   show: (toast) =>
-    set((state) => ({ toasts: [...state.toasts, { ...toast, id: nextId++ }] })),
+    set((state) =>
+      /* 같은 종류·문구가 이미 떠 있으면 쌓지 않는다. 서버가 죽으면 한 화면의 요청 여러 개가
+         같은 문구로 한꺼번에 실패해서, 똑같은 토스트가 화면을 덮는다 (#29) */
+      state.toasts.some(
+        ({ type, title }) => type === toast.type && title === toast.title,
+      )
+        ? state
+        : { toasts: [...state.toasts, { ...toast, id: nextId++ }] },
+    ),
   dismiss: (id) =>
     set((state) => ({
       toasts: state.toasts.filter((toast) => toast.id !== id),

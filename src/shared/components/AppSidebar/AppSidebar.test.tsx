@@ -25,7 +25,7 @@ describe('AppSidebar', () => {
   it('로고와 네비게이션 6개를 렌더링한다', () => {
     renderSidebar()
 
-    expect(screen.getByAltText('UNS')).toBeInTheDocument()
+    expect(screen.getByAltText('Devs')).toBeInTheDocument()
     for (const label of NAV_LABELS) {
       expect(screen.getByText(label)).toBeInTheDocument()
     }

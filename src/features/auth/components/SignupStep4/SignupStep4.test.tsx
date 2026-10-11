@@ -112,4 +112,36 @@ describe('SignupStep4', () => {
     await userEvent.click(tag)
     expect(submit).toBeDisabled()
   })
+
+  /* 새로고침 뒤 3단계에서 전공을 바꾸면, 빠진 전공의 기술 스택이 화면엔 안 보인 채 제출에 섞일 수 있다 */
+  it('복원한 선택 중 지금 고른 전공의 기술 스택만 남겨 전달한다', async () => {
+    const onSubmit = vi.fn()
+    const onChange = vi.fn()
+    const restored = {
+      techStacks: {
+        [frontend.id]: [frontendTags[0].id],
+        [backend.id]: [String(backendCategory.techStacks[0].id)],
+      },
+    }
+    renderWithQuery(
+      <SignupStep4
+        majors={ONLY_FRONTEND}
+        initialValues={restored}
+        onChange={onChange}
+        onSubmit={onSubmit}
+      />,
+    )
+
+    expect(
+      await screen.findByRole('button', { name: frontendTags[0].label }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(onChange).toHaveBeenLastCalledWith({
+      techStacks: { [frontend.id]: [frontendTags[0].id] },
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: '회원가입' }))
+    expect(onSubmit).toHaveBeenCalledWith({
+      techStacks: { [frontend.id]: [frontendTags[0].id] },
+    })
+  })
 })

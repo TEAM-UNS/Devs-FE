@@ -327,6 +327,28 @@
     }
   }
 
+  /* ── 토스트 ──────────────────────────────────────────────────
+     toast-in: 위에서 내려오며 살짝 지나쳤다 돌아온다. Figma에 스펙이 없어, 랜딩 device-rise와
+     같은 overshoot 곡선으로 앱 안의 움직임을 맞췄다
+     toast-out: 위로 살짝 올라가며 흐려진다. 길이는 ToastViewport의 TOAST_EXIT_DURATION과 같아야 한다 */
+  --animate-toast-in: toast-in var(--duration-slow)
+    cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-toast-out: toast-out 200ms var(--ease-accelerate) both;
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(-24px);
+    }
+  }
+
+  @keyframes toast-out {
+    to {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+  }
+
   /* ── 랜딩 페이지 ─────────────────────────────────────────────
      device-rise: 히어로 맥북이 아래에서 올라온다
      (Figma 818:7676 주석 "들어오면 위로 올라오는 애니메이션 (약 1.5초, 약간의 튕기는 느낌)").

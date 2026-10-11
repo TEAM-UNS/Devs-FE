@@ -1,4 +1,4 @@
-export { UNSLogo } from './UnsLogo'
+export { DevsLogo } from './DevsLogo'
 export { ArrowIcon } from './ArrowIcon'
 export { GoogleIcon } from './GoogleIcon'
 export { GithubIcon } from './GithubIcon'

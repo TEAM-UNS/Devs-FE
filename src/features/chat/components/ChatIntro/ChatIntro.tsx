@@ -1,4 +1,4 @@
-import devsLogo from '@/assets/chat/devs-logo.svg'
+import { DevsLogo } from '@/shared/components/icons'
 import { ChatComposer } from '../ChatComposer'
 
 const SUGGESTED_QUESTIONS = [
@@ -56,7 +56,7 @@ export function ChatIntro({
   return (
     <section className="flex min-w-0 flex-1 items-center justify-center bg-canvas px-4 md:px-10">
       <div className="flex w-full max-w-[700px] -translate-y-[30px] flex-col items-center gap-12">
-        <img src={devsLogo} alt="Devs" className="h-8 w-[168px]" />
+        <DevsLogo className="h-8" />
 
         <div className="flex w-full flex-col gap-4">
           <ChatComposer

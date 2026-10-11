@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Toast, type ToastType } from '@/shared/components/Toast'
 import { CheckCircleIcon, XCircleIcon } from '@/shared/components/icons'
@@ -6,6 +6,8 @@ import { useToastStore, type ToastItem } from '@/shared/stores/useToastStore'
 
 // 노출 시간 — Figma에 스펙이 없어 읽을 만큼만 둔다.
 const TOAST_DURATION = 3000
+// 퇴장 애니메이션 길이 — index.css의 toast-out과 같아야 한다
+const TOAST_EXIT_DURATION = 200
 
 // 배치 — Figma는 화면 상단 36px 중앙에 pill(sm)로 띄운다.
 const VIEWPORT =
@@ -22,17 +24,32 @@ interface ToastRowProps {
   item: ToastItem
 }
 
-/** 토스트 한 장 — 자기 수명(자동 사라짐)만 관리한다. */
+/** 토스트 한 장 — 자기 수명(등장·자동 사라짐)만 관리한다. */
 function ToastRow({ item }: ToastRowProps) {
   const dismiss = useToastStore((state) => state.dismiss)
+  // 바로 지우면 퇴장 애니메이션을 그릴 틈이 없어서, 먼저 사라지는 중으로 바꾸고 끝난 뒤 지운다
+  const [leaving, setLeaving] = useState(false)
 
   useEffect(() => {
-    const timer = setTimeout(() => dismiss(item.id), TOAST_DURATION)
+    const timer = setTimeout(() => setLeaving(true), TOAST_DURATION)
     return () => clearTimeout(timer)
-  }, [dismiss, item.id])
+  }, [])
+
+  useEffect(() => {
+    if (!leaving) return
+    /* animationend 대신 시간으로 지운다. 동작 줄이기 설정이면 애니메이션이 돌지 않아
+       그 신호가 오지 않고, 토스트가 영영 남는다 */
+    const timer = setTimeout(() => dismiss(item.id), TOAST_EXIT_DURATION)
+    return () => clearTimeout(timer)
+  }, [leaving, dismiss, item.id])
 
   return (
     <Toast
+      className={
+        leaving
+          ? 'motion-safe:animate-toast-out'
+          : 'motion-safe:animate-toast-in'
+      }
       type={item.type}
       size="sm"
       title={item.title}

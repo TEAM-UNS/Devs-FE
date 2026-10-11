@@ -19,7 +19,9 @@ import {
 const RESOLVER = zodResolver(signupStep1Schema)
 const DEFAULT_VALUES: SignupStep1Input = { email: '', code: '' }
 const NEXT_ICON = <ArrowIcon className="size-full rotate-180" />
-const CODE_TTL = 180 // 인증 코드 유효시간 3:00 (초) — Figma 타이머 표기 기준
+/* 인증 코드 유효시간(초). 서버 코드 만료·재전송 제한이 5분이라 맞춘다
+   Figma 표기(3:00)를 따르면 3~5분 사이에 재전송을 눌렀을 때 서버가 요청 제한으로 막는다 */
+const CODE_TTL = 300
 
 const SENT_MESSAGE = '이메일이 전송되었어요! 메일함을 확인해주세요.'
 
@@ -31,12 +33,20 @@ function formatTimer(seconds: number): string {
 }
 
 interface SignupStep1Props {
+  /** 새로고침 뒤 복원한 이메일 */
+  defaultEmail?: string
+  /** 이메일이 바뀔 때마다 호출. 인증 코드는 저장하지 않아 넘기지 않는다 */
+  onChange?: (data: Pick<SignupStep1Input, 'email'>) => void
   /** 검증 통과 시 호출 */
   onNext: (data: SignupStep1Input) => void
 }
 
 /** 회원가입 1단계 — 이메일 인증. 코드 전송 후 6자리 입력 시 '다음' 활성화. */
-export function SignupStep1({ onNext }: SignupStep1Props) {
+export function SignupStep1({
+  defaultEmail = '',
+  onChange,
+  onNext,
+}: SignupStep1Props) {
   const {
     register,
     handleSubmit,
@@ -46,7 +56,7 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
   } = useForm<SignupStep1Input>({
     resolver: RESOLVER,
     mode: 'onChange',
-    defaultValues: DEFAULT_VALUES,
+    defaultValues: { ...DEFAULT_VALUES, email: defaultEmail },
   })
 
   const emailId = useId()
@@ -62,6 +72,10 @@ export function SignupStep1({ onNext }: SignupStep1Props) {
 
   const email = watch('email')
   const emailValid = emailOnlySchema.safeParse(email).success
+
+  useEffect(() => {
+    onChange?.({ email })
+  }, [email, onChange])
 
   // 코드가 살아 있는 조건: 보낸 이메일 그대로 + 유효시간 남음.
   // 둘 중 하나만 깨져도 입력을 닫고 재전송을 연다.
