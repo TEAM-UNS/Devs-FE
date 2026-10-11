@@ -1,4 +1,4 @@
-import devsLogo from '@/assets/landing/logo-header.svg'
+import { DevsLogo } from '@/shared/components/icons'
 import { CtaLink } from '../CtaLink'
 
 /** 랜딩 상단 바 — 로고와 로그인·회원가입 진입 */
@@ -7,7 +7,7 @@ export function LandingHeader() {
   // CSS backdrop-blur는 투명도와 상관없이 그대로 흐려서 뒤의 구슬 테두리가 지워지므로 뺀다
   return (
     <header className="absolute inset-x-0 top-0 z-raised flex h-16 items-center justify-between px-12">
-      <img src={devsLogo} alt="Devs" className="h-5 w-[105px]" />
+      <DevsLogo />
       <nav className="flex items-center">
         <CtaLink
           cta="login"

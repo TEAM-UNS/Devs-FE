@@ -43,7 +43,7 @@ describe('SignupPage', () => {
   it('진행 표시·헤더·1단계 폼·소셜 로그인·로그인 링크를 렌더링한다', () => {
     renderPage()
 
-    expect(screen.getByText('UNS에 오신 것을 환영해요!')).toBeInTheDocument()
+    expect(screen.getByText('Devs에 오신 것을 환영해요!')).toBeInTheDocument()
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
     // 1단계(이메일 인증) 폼
     expect(screen.getByLabelText('이메일')).toBeInTheDocument()

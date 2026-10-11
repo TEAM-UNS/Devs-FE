@@ -1,5 +1,5 @@
+import { DevsLogo } from '@/shared/components/icons'
 import githubIcon from '@/assets/landing/footer-github.webp'
-import devsLogo from '@/assets/landing/logo-footer.svg'
 import {
   CONTACT_EMAIL,
   GITHUB_URL,
@@ -14,7 +14,7 @@ export function LandingFooter() {
   return (
     <footer className="mt-[85px] flex flex-col gap-5 bg-black p-12">
       <div className="flex items-center justify-between">
-        <img src={devsLogo} alt="Devs" className="h-8 w-[168px]" />
+        <DevsLogo className="h-8" />
         <a
           href={GITHUB_URL}
           target="_blank"

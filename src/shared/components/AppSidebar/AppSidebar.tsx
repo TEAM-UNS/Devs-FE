@@ -5,7 +5,7 @@ import {
   HomeIcon,
   LayersIcon,
   RouteIcon,
-  UNSLogo,
+  DevsLogo,
   UserIcon,
 } from '@/shared/components/icons'
 import { ROUTES } from '@/shared/constants'
@@ -50,7 +50,8 @@ export function AppSidebar({ roadmapProgress }: AppSidebarProps) {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
           <div className="px-5">
-            <UNSLogo className="h-6" />
+            {/* Figma 사이드바 데브스로고 105×20 */}
+            <DevsLogo />
           </div>
           {/* 구분선은 좌우 20px 안쪽까지만 그어진다 (Figma: x20→x220). */}
           <div className="px-5">
