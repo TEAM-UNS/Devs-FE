@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { majorQueries } from '@/shared/api'
 import { Button } from '@/shared/components/Button'
@@ -18,6 +18,10 @@ const NEXT_ICON = <ArrowIcon className="size-full rotate-180" />
 type CareerType = SignupStep3Input['careerType']
 
 interface SignupStep3Props {
+  /** 새로고침 뒤 복원한 선택. 처음 그릴 때만 읽는다 */
+  initialValues?: Partial<SignupStep3Input>
+  /** 선택이 바뀔 때마다 호출 */
+  onChange?: (data: Partial<SignupStep3Input>) => void
   /** 검증 통과 시 호출 */
   onNext: (data: SignupStep3Input) => void
 }
@@ -26,10 +30,22 @@ interface SignupStep3Props {
  * 회원가입 3단계 — 전공(다중선택)·경력 선택.
  * 커스텀 선택 컨트롤(카드·세그먼트·Dropdown)이라 로컬 상태 + Zod safeParse로 검증한다.
  */
-export function SignupStep3({ onNext }: SignupStep3Props) {
-  const [majors, setMajors] = useState<string[]>([])
-  const [careerType, setCareerType] = useState<CareerType | undefined>()
-  const [careerLevel, setCareerLevel] = useState<string | undefined>()
+export function SignupStep3({
+  initialValues,
+  onChange,
+  onNext,
+}: SignupStep3Props) {
+  const [majors, setMajors] = useState<string[]>(initialValues?.majors ?? [])
+  const [careerType, setCareerType] = useState<CareerType | undefined>(
+    initialValues?.careerType,
+  )
+  const [careerLevel, setCareerLevel] = useState<string | undefined>(
+    initialValues?.careerLevel,
+  )
+
+  useEffect(() => {
+    onChange?.({ majors, careerType, careerLevel })
+  }, [majors, careerType, careerLevel, onChange])
 
   const majorList = useQuery(majorQueries.list())
   // 선택지는 서버 목록에서 오고, 라벨·아이콘만 표기표에서 잇는다.
