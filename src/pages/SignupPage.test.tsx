@@ -160,4 +160,31 @@ describe('SignupPage', () => {
     )
     expect(screen.getByLabelText('이메일')).toHaveValue('user@uns.dev')
   })
+
+  /* 쿠키·사이트 데이터를 차단한 브라우저는 저장소에 접근만 해도 SecurityError를 던진다.
+     저장은 편의 기능이라 복원 없이 가입을 계속할 수 있어야 한다 */
+  it('저장소를 쓸 수 없는 브라우저에서도 회원가입을 진행할 수 있다', async () => {
+    const denied = () => {
+      throw new DOMException('Access is denied', 'SecurityError')
+    }
+    const getItem = vi
+      .spyOn(Storage.prototype, 'getItem')
+      .mockImplementation(denied)
+    const setItem = vi
+      .spyOn(Storage.prototype, 'setItem')
+      .mockImplementation(denied)
+
+    try {
+      renderPage()
+      await passStep1()
+
+      expect(screen.getByRole('progressbar')).toHaveAttribute(
+        'aria-valuenow',
+        '2',
+      )
+    } finally {
+      getItem.mockRestore()
+      setItem.mockRestore()
+    }
+  })
 })

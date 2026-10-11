@@ -40,35 +40,37 @@ const STORAGE_KEY = 'signup-draft'
 /* 서버가 이메일 인증을 30분만 기억한다. 그보다 오래된 값은 가입이 거절돼 버린다 */
 const VERIFIED_TTL_MS = 30 * 60 * 1000
 
-/** 새로고침 뒤 저장해 둔 가입 정보. 없거나 인증한 지 30분이 지났으면 빈 값 */
+/* 저장소는 쿠키·사이트 데이터를 차단한 브라우저에서 접근만 해도 에러를 던진다(SecurityError).
+   저장은 편의 기능이라, 실패하면 복원 없이 가입을 계속한다 */
+
+/** 새로고침 뒤 저장해 둔 가입 정보. 없거나, 읽을 수 없거나, 인증한 지 30분이 지났으면 빈 값 */
 function loadDraft(): SignupDraft {
-  const saved: SignupDraft | null = JSON.parse(
-    sessionStorage.getItem(STORAGE_KEY) ?? 'null',
-  )
-  if (!saved) return {}
-  if (saved.verifiedAt && Date.now() - saved.verifiedAt > VERIFIED_TTL_MS) {
+  try {
+    const saved: SignupDraft | null = JSON.parse(
+      sessionStorage.getItem(STORAGE_KEY) ?? 'null',
+    )
+    if (!saved) return {}
+    if (saved.verifiedAt && Date.now() - saved.verifiedAt > VERIFIED_TTL_MS) {
+      return {}
+    }
+    return saved
+  } catch {
     return {}
   }
-  return saved
 }
 
-/** 회원가입 페이지 — 4단계 위저드. */
-export default function SignupPage() {
-  const [draft, setDraft] = useState<SignupDraft>(loadDraft)
-  // 비밀번호는 저장하지 않아서, 인증까지 마쳤으면 2단계에서 비밀번호를 다시 받는다
-  const [step, setStep] = useState(draft.verifiedAt ? 2 : 1)
-
-  // 값이 바뀔 때마다 저장한다. 남길 값만 골라 비밀번호·인증 코드는 담지 않는다
-  useEffect(() => {
-    const {
-      email,
-      verifiedAt,
-      name,
-      majors,
-      careerType,
-      careerLevel,
-      techStacks,
-    } = draft
+function saveDraft(draft: SignupDraft) {
+  // 남길 값만 고른다. 비밀번호·인증 코드는 담지 않는다
+  const {
+    email,
+    verifiedAt,
+    name,
+    majors,
+    careerType,
+    careerLevel,
+    techStacks,
+  } = draft
+  try {
     sessionStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
@@ -81,6 +83,28 @@ export default function SignupPage() {
         techStacks,
       }),
     )
+  } catch {
+    // 저장소를 쓸 수 없으면 복원만 포기한다
+  }
+}
+
+function clearDraft() {
+  try {
+    sessionStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // 지우지 못해도 가입은 끝났다. 로그인 화면 이동을 막지 않는다
+  }
+}
+
+/** 회원가입 페이지 — 4단계 위저드. */
+export default function SignupPage() {
+  const [draft, setDraft] = useState<SignupDraft>(loadDraft)
+  // 비밀번호는 저장하지 않아서, 인증까지 마쳤으면 2단계에서 비밀번호를 다시 받는다
+  const [step, setStep] = useState(draft.verifiedAt ? 2 : 1)
+
+  // 값이 바뀔 때마다 저장한다
+  useEffect(() => {
+    saveDraft(draft)
   }, [draft])
 
   /* 단계가 입력이 바뀔 때마다 부른다. 단계는 이 함수를 effect 의존성에 넣으므로 렌더마다
@@ -130,7 +154,7 @@ export default function SignupPage() {
         onSuccess: () => {
           // 서버가 받아준 뒤라 실패한 시도와 섞이지 않는다
           trackEvent('Signed Up')
-          sessionStorage.removeItem(STORAGE_KEY)
+          clearDraft()
           showToast({ type: 'success', title: SIGNUP_DONE_MESSAGE })
           navigate(ROUTES.login)
         },
