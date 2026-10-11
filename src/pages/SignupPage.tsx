@@ -88,7 +88,7 @@ export default function SignupPage() {
         <Stepper total={TOTAL_STEPS} current={step} />
 
         <div className="flex flex-col gap-12">
-          <AuthHeader title="UNS에 오신 것을 환영해요!" />
+          <AuthHeader title="Devs에 오신 것을 환영해요!" />
 
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-6">
