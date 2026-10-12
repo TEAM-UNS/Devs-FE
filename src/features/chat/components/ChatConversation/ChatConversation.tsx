@@ -64,7 +64,7 @@ export function ChatConversation({
             </div>
           </div>
         ) : (
-          <div key={message.id} className="flex max-w-[624px] gap-4">
+          <div key={message.id} className="flex w-full gap-4">
             <div className="flex py-1.5">
               <img src={assistantDot} alt="" className="size-2 shrink-0" />
             </div>
