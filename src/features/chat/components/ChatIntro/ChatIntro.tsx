@@ -55,7 +55,7 @@ export function ChatIntro({
 }: ChatIntroProps) {
   return (
     <section className="flex min-w-0 flex-1 items-center justify-center bg-canvas px-4 md:px-10">
-      <div className="flex w-full max-w-[700px] -translate-y-[30px] flex-col items-center gap-12">
+      <div className="flex w-[800px] max-w-full -translate-y-[30px] flex-col items-center gap-12">
         <DevsLogo className="h-8" />
 
         <div className="flex w-full flex-col gap-4">
