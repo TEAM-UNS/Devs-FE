@@ -304,12 +304,12 @@ export function Chat() {
       </div>
       {showsConversation ? (
         <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-hidden p-10">
-          <ChatConversation
-            threadId={String(activeSessionId ?? 'new')}
-            messages={messages}
-            pending={pending}
-          />
-          <div className="mx-auto w-full max-w-[700px]">
+          <div className="mx-auto flex min-h-0 w-[800px] max-w-full flex-1 flex-col gap-4">
+            <ChatConversation
+              threadId={String(activeSessionId ?? 'new')}
+              messages={messages}
+              pending={pending}
+            />
             <ChatComposer
               value={question}
               disabled={turn !== undefined}

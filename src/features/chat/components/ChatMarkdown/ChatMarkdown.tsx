@@ -63,7 +63,7 @@ interface ChatMarkdownProps {
  */
 export function ChatMarkdown({ content }: ChatMarkdownProps) {
   return (
-    <div className="flex min-w-0 flex-col gap-3 text-body-md text-gray-1000">
+    <div className="flex min-w-0 flex-1 flex-col gap-3 text-body-md text-gray-1000">
       <Markdown remarkPlugins={REMARK_PLUGINS} components={COMPONENTS}>
         {content}
       </Markdown>
