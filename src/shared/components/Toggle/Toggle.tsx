@@ -17,7 +17,7 @@ interface ToggleProps extends Omit<
    on  트랙 #aa5ef1→primary-400 · 노브 #f8f3fe→primary-900 · 그림자 #bc72f499
    비활성 트랙 #25292d→container · 노브 #343a40→element */
 const TRACK_BASE = [
-  'relative block h-6 w-12 rounded-full',
+  'block h-6 w-12 rounded-full',
   'transition-colors duration-fast ease-standard',
   'peer-focus-visible:ring-2 peer-focus-visible:ring-primary-500',
   'peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-canvas',
@@ -56,7 +56,7 @@ export function Toggle({ label, className, disabled, ...props }: ToggleProps) {
   return (
     <label
       className={cn(
-        'inline-flex shrink-0',
+        'relative inline-flex shrink-0',
         disabled ? 'cursor-not-allowed' : 'cursor-pointer',
         className,
       )}
@@ -72,11 +72,11 @@ export function Toggle({ label, className, disabled, ...props }: ToggleProps) {
       <span
         aria-hidden="true"
         className={cn(TRACK_BASE, disabled ? TRACK_DISABLED : TRACK_ENABLED)}
-      >
-        <span
-          className={cn(KNOB_BASE, disabled ? KNOB_DISABLED : KNOB_ENABLED)}
-        />
-      </span>
+      />
+      <span
+        aria-hidden="true"
+        className={cn(KNOB_BASE, disabled ? KNOB_DISABLED : KNOB_ENABLED)}
+      />
     </label>
   )
 }
