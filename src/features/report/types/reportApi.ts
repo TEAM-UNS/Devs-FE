@@ -40,3 +40,8 @@ export interface TechMentionsResponse {
 export interface WeeklyCollectedCountResponse {
   count: number
 }
+
+export interface LlmReportResponse {
+  /** 요약이 아직 생성 중이면 null */
+  llmReport: string | null
+}

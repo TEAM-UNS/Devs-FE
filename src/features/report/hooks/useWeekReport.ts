@@ -46,6 +46,10 @@ export function useWeekReport(
     ...reportQueries.weeklyCollectedCount(baseDate),
     enabled,
   })
+  const summary = useQuery({
+    ...reportQueries.llmReport(baseDate, major),
+    enabled,
+  })
 
   return {
     week,
@@ -53,7 +57,6 @@ export function useWeekReport(
     ranks: toStackRanks(popular.data),
     highlights: toTrendHighlights(increase.data, decrease.data),
     mentions: toMentionBars(mentions.data),
-    // AI 요약은 리포트 id로만 조회되는데 주차로 id를 찾을 방법이 없어 비워 둔다
-    summary: [],
+    summary: summary.data?.llmReport ? [summary.data.llmReport] : [],
   }
 }
