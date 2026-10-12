@@ -1,6 +1,7 @@
 import { queryOptions } from '@tanstack/react-query'
 import type { ReportPeriod } from '../types'
 import {
+  fetchLlmReport,
   fetchMaxDecrease,
   fetchMaxIncrease,
   fetchPopularTechStack,
@@ -10,6 +11,17 @@ import {
 
 export const reportQueries = {
   all: () => ['report'] as const,
+
+  llmReport: (baseDate: string, majorId?: number) =>
+    queryOptions({
+      queryKey: [
+        ...reportQueries.all(),
+        'llm',
+        baseDate,
+        majorId ?? null,
+      ] as const,
+      queryFn: () => fetchLlmReport(baseDate, majorId),
+    }),
 
   popularTechStack: (
     majorId: number | undefined,

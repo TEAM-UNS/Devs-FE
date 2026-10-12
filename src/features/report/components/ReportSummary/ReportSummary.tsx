@@ -32,10 +32,10 @@ export function ReportSummary({ week, paragraphs }: ReportSummaryProps) {
         </p>
       ) : (
         <>
-          <h2 className="text-body-lg font-semibold text-gray-1000">
+          <h2 className="shrink-0 text-body-lg font-semibold text-gray-1000">
             [AI 리포트] {weekName} 요약
           </h2>
-          <p className="line-clamp-5 whitespace-pre-line text-body-sm text-gray-600">
+          <p className="scrollbar-slim min-h-0 flex-1 overflow-y-auto whitespace-pre-line wrap-anywhere text-body-sm text-gray-600">
             {paragraphs.join('\n')}
           </p>
         </>

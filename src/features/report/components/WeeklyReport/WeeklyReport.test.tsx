@@ -19,6 +19,9 @@ const notFound = () =>
 let maxIncrease: () => Promise<unknown> = () =>
   Promise.resolve({ skillId: 1, skillName: 'Next.js', changeRate: 74.2 })
 
+let llmReport: () => Promise<unknown> = () =>
+  Promise.resolve({ llmReport: '이번 주에는 TypeScript 수요가 증가했습니다' })
+
 /* 경로를 하나도 빠짐없이 나열하고 나머지는 거부한다 — 남는 경로에 아무 응답이나 주면
    요청 경로가 틀려도 통과한다 */
 vi.mock('@/shared/api/http', () => ({
@@ -67,6 +70,8 @@ vi.mock('@/shared/api/http', () => ({
         })
       case '/report/weekly-collected-count':
         return Promise.resolve({ count: 19283 })
+      case '/report/llm':
+        return llmReport()
       default:
         return Promise.reject(new Error(`요청하지 않아야 할 경로: ${path}`))
     }
@@ -120,6 +125,10 @@ describe('WeeklyReport', () => {
     vi.setSystemTime(new Date(2026, 6, 8, 12))
     maxIncrease = () =>
       Promise.resolve({ skillId: 1, skillName: 'Next.js', changeRate: 74.2 })
+    llmReport = () =>
+      Promise.resolve({
+        llmReport: '이번 주에는 TypeScript 수요가 증가했습니다',
+      })
     useToastStore.setState({ toasts: [] })
     const { get } = await import('@/shared/api/http')
     vi.mocked(get).mockClear()
@@ -159,6 +168,57 @@ describe('WeeklyReport', () => {
       ),
     )
   })
+
+  it('AI 요약을 표시하고 선택한 주차·전공으로 조회한다', async () => {
+    renderReport()
+
+    expect(
+      await currentCard().findByText(
+        '이번 주에는 TypeScript 수요가 증가했습니다',
+      ),
+    ).toBeInTheDocument()
+    expect(await requestsTo('/report/llm')).toContainEqual({
+      base_date: '2026-06-29',
+      major_id: undefined,
+    })
+
+    llmReport = () => Promise.resolve({ llmReport: '프론트엔드 요약' })
+    await userEvent.click(screen.getByRole('button', { name: '프론트엔드' }))
+
+    expect(
+      await currentCard().findByText('프론트엔드 요약'),
+    ).toBeInTheDocument()
+    expect(await requestsTo('/report/llm')).toContainEqual({
+      base_date: '2026-06-29',
+      major_id: 2,
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: '이전 주차' }))
+    await waitFor(async () =>
+      expect(await requestsTo('/report/llm')).toContainEqual({
+        base_date: '2026-06-22',
+        major_id: 2,
+      }),
+    )
+  })
+
+  it.each(['생성 중', '404', '대기 중'])(
+    'AI 요약이 %s이면 빈 상태를 표시하고 다른 구역은 먼저 보인다',
+    async (state) => {
+      llmReport = () => {
+        if (state === '404') return Promise.reject(notFound())
+        if (state === '대기 중') return new Promise(() => {})
+        return Promise.resolve({ llmReport: null })
+      }
+      renderReport()
+
+      expect(await currentCard().findByText('Next.js')).toBeInTheDocument()
+      expect(
+        currentCard().getByText('2026년 6월 5주차 요약 리포트가 없습니다.'),
+      ).toBeInTheDocument()
+      expect(useToastStore.getState().toasts).toEqual([])
+    },
+  )
 
   it('전공 필터는 처음에 전체가 선택돼 있고 하나만 선택되며 URL에 남는다', async () => {
     renderReport()

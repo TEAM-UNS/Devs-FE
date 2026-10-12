@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { get } from '@/shared/api/http'
 import { reportQueries } from './reportQueries'
 import {
+  fetchLlmReport,
   fetchMaxDecrease,
   fetchMaxIncrease,
   fetchPopularTechStack,
@@ -20,6 +21,12 @@ beforeEach(() => {
 
 describe('주간 리포트 요청', () => {
   it.each([
+    {
+      name: 'AI 요약',
+      call: () => fetchLlmReport('2026-09-07', 2),
+      path: '/report/llm',
+      params: { base_date: '2026-09-07', major_id: 2 },
+    },
     {
       name: '가장 많이 찾은 기술 스택 — 경로가 단수다',
       call: () => fetchPopularTechStack(2, 'WEEK', '2026-09-07'),
@@ -82,12 +89,13 @@ const httpError = (status: number) =>
     status,
   } as AxiosResponse)
 
-describe('최대 상승·하락의 404', () => {
+describe('리포트 데이터의 404', () => {
   it.each([
     { name: '최대 상승', call: () => fetchMaxIncrease('2026-09-07') },
     { name: '최대 하락', call: () => fetchMaxDecrease('2026-09-07') },
+    { name: 'AI 요약', call: () => fetchLlmReport('2026-09-07') },
   ])(
-    '$name — 404는 해당 기술이 없다는 뜻이라 null로 돌려준다',
+    '$name — 404는 해당 데이터가 없다는 뜻이라 null로 돌려준다',
     async ({ call }) => {
       vi.mocked(get).mockRejectedValueOnce(httpError(404))
 
@@ -101,9 +109,24 @@ describe('최대 상승·하락의 404', () => {
 
     await expect(fetchMaxIncrease('2026-09-07')).rejects.toBe(error)
   })
+
+  it('AI 요약의 서버 오류도 그대로 던진다', async () => {
+    const error = httpError(500)
+    vi.mocked(get).mockRejectedValueOnce(error)
+
+    await expect(fetchLlmReport('2026-09-07')).rejects.toBe(error)
+  })
 })
 
 describe('reportQueries', () => {
+  it('AI 요약은 주차와 전공별로 캐시를 구분한다', () => {
+    const base = reportQueries.llmReport('2026-09-07', 2).queryKey
+
+    expect(reportQueries.llmReport('2026-08-31', 2).queryKey).not.toEqual(base)
+    expect(reportQueries.llmReport('2026-09-07', 1).queryKey).not.toEqual(base)
+    expect(reportQueries.llmReport('2026-09-07').queryKey).not.toEqual(base)
+  })
+
   it('주차와 전공이 다르면 다른 캐시 키를 쓴다', () => {
     const base = reportQueries.techMentions('2026-09-07', 2).queryKey
 
