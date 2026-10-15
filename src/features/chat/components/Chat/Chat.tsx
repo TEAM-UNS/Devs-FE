@@ -32,6 +32,8 @@ interface ChatTurn {
   readonly sessionId?: number
   readonly question: string
   readonly answer: string
+  /** AI가 지금 쓰는 도구 문구. 다음 글자가 오면 지운다 */
+  readonly toolLabel?: string
 }
 
 /** 턴이 실패했을 때 어느 대화에 띄울 문구인지. 새 대화에서 실패하면 sessionId가 없다 */
@@ -181,12 +183,18 @@ export function Chat() {
           if (sessionId !== undefined)
             setSessionTitle(sessionId, event.data.title)
           break
+        case 'tool_start':
+          setTurn(
+            (current) => current && { ...current, toolLabel: event.data.label },
+          )
+          break
         case 'token':
           setTurn(
             (current) =>
               current && {
                 ...current,
                 answer: current.answer + event.data.text,
+                toolLabel: undefined,
               },
           )
           break
@@ -281,10 +289,13 @@ export function Chat() {
         ]
       : []),
   ]
-  /* 첫 글자가 오기 전, 또는 기록을 불러오는 동안 답변 스피너를 보여준다
+  /* 첫 글자가 오기 전, 답변 도중 도구를 쓰는 동안, 기록을 불러오는 동안 답변 스피너를 보여준다
      답변을 보여주는 동안엔 기록 로딩을 보지 않는다. 새 대화는 기록 캐시가 비어 있어
      답변이 끝나고 기록을 다시 받는 동안 isLoading이 켜지고 스피너가 잠깐 다시 보인다 */
-  const pending = showsTurn ? !turn.answer : history.isLoading
+  const toolLabel = showsTurn ? turn.toolLabel : undefined
+  const pending = showsTurn
+    ? !turn.answer || toolLabel !== undefined
+    : history.isLoading
   // 둘 다 undefined(새 대화 화면, 에러 없음)일 때 같다고 보지 않도록 turnError부터 확인한다
   const activeError =
     turnError && turnError.sessionId === activeSessionId
@@ -311,6 +322,7 @@ export function Chat() {
               threadId={String(activeSessionId ?? 'new')}
               messages={messages}
               pending={pending}
+              pendingLabel={toolLabel}
             />
             <ChatComposer
               value={question}

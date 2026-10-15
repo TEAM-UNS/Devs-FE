@@ -207,4 +207,21 @@ describe('ChatConversation', () => {
       screen.queryByRole('button', { name: '최신 메시지로 이동' }),
     ).not.toBeInTheDocument()
   })
+
+  it('shows the tool label next to the spinner', () => {
+    Element.prototype.scrollIntoView = vi.fn()
+    render(
+      <ChatConversation
+        threadId="thread-1"
+        messages={[MESSAGE, ANSWER]}
+        pending={true}
+        pendingLabel="기술 연관 관계를 분석하고 있어요"
+      />,
+    )
+
+    expect(screen.getByRole('status')).toBeInTheDocument()
+    expect(
+      screen.getByText('기술 연관 관계를 분석하고 있어요'),
+    ).toBeInTheDocument()
+  })
 })
