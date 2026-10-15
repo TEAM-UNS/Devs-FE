@@ -5,7 +5,7 @@ export { errorMessage } from './errorMessage'
 export { clearTokens, getAccessToken, setTokens } from './tokenStorage'
 export { majorLabel, majorQueries } from './majors'
 export type { TechStackDto, MajorCategoryDto, MajorsResponse } from './majors'
-export { userQueries } from './user'
+export { logout, userQueries } from './user'
 export type {
   UserMajorDto,
   UserMyQueryResponse,
