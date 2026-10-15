@@ -6,6 +6,8 @@ interface ProfileSummaryProps {
   readonly career: string
   readonly majors: string
   readonly onLogout: () => void
+  /** 로그아웃 요청 중에는 두 번 누르지 않게 막는다 */
+  readonly isLoggingOut?: boolean
 }
 
 /* 경력·전공 알약. Figma 659:3988 — 높이 40, 좌우 여백 20, radius 6, container 배경 */
@@ -24,6 +26,7 @@ export function ProfileSummary({
   career,
   majors,
   onLogout,
+  isLoggingOut = false,
 }: ProfileSummaryProps) {
   return (
     <section className="flex flex-col gap-4">
@@ -37,7 +40,8 @@ export function ProfileSummary({
         <button
           type="button"
           onClick={onLogout}
-          className="flex items-center gap-1.5 rounded-full bg-container px-5 py-2.5 text-body-md text-gray-400 focus-visible:outline-2 focus-visible:outline-primary-500"
+          disabled={isLoggingOut}
+          className="flex items-center gap-1.5 rounded-full bg-container px-5 py-2.5 text-body-md text-gray-400 focus-visible:outline-2 focus-visible:outline-primary-500 disabled:cursor-wait"
         >
           <LogoutIcon className="size-6 shrink-0" />
           로그아웃

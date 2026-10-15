@@ -31,7 +31,8 @@ export function MyPageOverview() {
         email={profile.email}
         career={profile.career}
         majors={profile.majors}
-        onLogout={logout}
+        onLogout={() => logout.mutate()}
+        isLoggingOut={logout.isPending}
       />
 
       <div className="flex flex-col gap-6">
