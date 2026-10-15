@@ -10,6 +10,8 @@ interface ChatConversationProps {
   readonly threadId: string
   readonly messages: readonly ChatMessage[]
   readonly pending: boolean
+  /** 스피너 옆에 띄울 AI 도구 문구 */
+  readonly pendingLabel?: string
 }
 
 // 마지막 메시지에서 조금 벗어난 정도는 맨 아래로 본다
@@ -20,6 +22,7 @@ export function ChatConversation({
   threadId,
   messages,
   pending,
+  pendingLabel,
 }: ChatConversationProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -98,8 +101,11 @@ export function ChatConversation({
           ),
         )}
         {pending && (
-          <div className="-ml-3.5 -mt-8.5">
+          <div className="-ml-3.5 -mt-8.5 flex items-center">
             <ChatSpinner />
+            {pendingLabel && (
+              <p className="text-body-sm text-gray-400">{pendingLabel}</p>
+            )}
           </div>
         )}
         <div ref={bottomRef} aria-hidden="true" />

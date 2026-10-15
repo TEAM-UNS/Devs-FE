@@ -43,6 +43,8 @@ export type ChatStreamEvent =
   | { event: 'session'; data: { session_id: number; is_new: boolean } }
   /** 새 대화일 때만 답변 도중 아무 때나 도착한다 */
   | { event: 'title'; data: { title: string } }
+  /** AI가 도구(데이터 조회)를 쓰기 시작했다. label은 화면에 그대로 띄울 문구 */
+  | { event: 'tool_start'; data: { tool: string; label: string } }
   /** 답변 텍스트 조각 이어 붙이면 마크다운 답변이 된다 */
   | { event: 'token'; data: { text: string } }
   /** 정상 종료 tools_used·usage 등도 오지만 화면에서 쓰는 것만 둔다 */
