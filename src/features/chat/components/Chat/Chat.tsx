@@ -281,8 +281,10 @@ export function Chat() {
         ]
       : []),
   ]
-  // 첫 글자가 오기 전, 또는 기록을 불러오는 동안 답변 스피너를 보여준다
-  const pending = (showsTurn && !turn.answer) || history.isLoading
+  /* 첫 글자가 오기 전, 또는 기록을 불러오는 동안 답변 스피너를 보여준다
+     답변을 보여주는 동안엔 기록 로딩을 보지 않는다. 새 대화는 기록 캐시가 비어 있어
+     답변이 끝나고 기록을 다시 받는 동안 isLoading이 켜지고 스피너가 잠깐 다시 보인다 */
+  const pending = showsTurn ? !turn.answer : history.isLoading
   // 둘 다 undefined(새 대화 화면, 에러 없음)일 때 같다고 보지 않도록 turnError부터 확인한다
   const activeError =
     turnError && turnError.sessionId === activeSessionId
