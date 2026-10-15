@@ -94,11 +94,21 @@ describe('parseEventBlock — 블록 하나를 이벤트 객체로', () => {
     expect(parseEventBlock(': keep-alive')).toBeNull()
   })
 
-  it.each([
-    'event:graph\ndata:{"id":"g_01","type":"bar","data":[]}',
-    'event:tool_start\ndata:{"tool":"get_related_skills","label":"분석하고 있어요"}',
-  ])('채팅에서 쓰지 않는 이벤트는 건너뛴다 (%s)', (block) => {
-    expect(parseEventBlock(block)).toBeNull()
+  it('채팅에서 쓰지 않는 이벤트는 건너뛴다', () => {
+    expect(
+      parseEventBlock('event:graph\ndata:{"id":"g_01","type":"bar","data":[]}'),
+    ).toBeNull()
+  })
+
+  it('tool_start 이벤트의 도구 문구를 읽는다', () => {
+    expect(
+      parseEventBlock(
+        'event:tool_start\ndata:{"tool":"get_related_skills","label":"분석하고 있어요"}',
+      ),
+    ).toEqual({
+      event: 'tool_start',
+      data: { tool: 'get_related_skills', label: '분석하고 있어요' },
+    })
   })
 
   it('AI 서버의 error 이벤트는 JSON 그대로 읽는다', () => {
