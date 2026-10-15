@@ -33,6 +33,8 @@ export function ChatConversation({
 
   function scrollToBottom(behavior: ScrollBehavior = 'auto') {
     shouldFollowBottomRef.current = true
+    // 이미 맨 아래거나 스크롤할 내용이 없으면 스크롤 이벤트가 안 나서 버튼을 여기서 숨긴다
+    setShowsScrollButton(false)
     bottomRef.current?.scrollIntoView?.({ block: 'end', behavior })
   }
 

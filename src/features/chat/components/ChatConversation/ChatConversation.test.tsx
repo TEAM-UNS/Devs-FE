@@ -183,4 +183,28 @@ describe('ChatConversation', () => {
       behavior: 'auto',
     })
   })
+
+  it('hides the button after switching to a thread without scroll movement', () => {
+    Element.prototype.scrollIntoView = vi.fn()
+    const { container, rerender } = render(
+      <ChatConversation
+        threadId="thread-1"
+        messages={[MESSAGE, ANSWER]}
+        pending={false}
+      />,
+    )
+    scrollUp(container)
+
+    rerender(
+      <ChatConversation
+        threadId="thread-2"
+        messages={[MESSAGE]}
+        pending={false}
+      />,
+    )
+
+    expect(
+      screen.queryByRole('button', { name: '최신 메시지로 이동' }),
+    ).not.toBeInTheDocument()
+  })
 })
