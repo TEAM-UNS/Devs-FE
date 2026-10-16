@@ -1,7 +1,8 @@
 import type { WeekRange } from '../../types'
 
 interface ReportSummaryProps {
-  week: WeekRange
+  /** 응답 전에는 없다 */
+  week?: WeekRange
   paragraphs: readonly string[]
 }
 
@@ -14,7 +15,8 @@ const SURFACE = 'flex h-48 rounded-sm bg-canvas p-6'
  * @param paragraphs 요약 문단들
  */
 export function ReportSummary({ week, paragraphs }: ReportSummaryProps) {
-  const weekName = `${week.start.slice(0, 4)}년 ${week.label}`
+  // 연도도 서버 값을 쓴다. 해가 바뀌는 주는 목요일이 속한 해로 센다
+  const weekName = week ? `${week.year}년 ${week.label}` : ''
 
   return (
     <section

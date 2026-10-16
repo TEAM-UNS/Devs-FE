@@ -8,6 +8,7 @@ import {
   fetchMaxIncrease,
   fetchPopularTechStack,
   fetchTechMentions,
+  fetchWeekRange,
   fetchWeeklyCollectedCount,
 } from './requests'
 
@@ -56,6 +57,12 @@ describe('주간 리포트 요청', () => {
       call: () => fetchWeeklyCollectedCount('2026-09-07'),
       path: '/report/weekly-collected-count',
       params: { base_date: '2026-09-07' },
+    },
+    {
+      name: '주차 범위 — 그 주 아무 날이나 보내면 서버가 월요일로 맞춘다',
+      call: () => fetchWeekRange('2026-09-09'),
+      path: '/report/week-range',
+      params: { base_date: '2026-09-09' },
     },
   ])('$name', async ({ call, path, params }) => {
     await call()

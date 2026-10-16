@@ -24,8 +24,22 @@ let llmReport: () => Promise<unknown> = () =>
 
 /* 경로를 하나도 빠짐없이 나열하고 나머지는 거부한다 — 남는 경로에 아무 응답이나 주면
    요청 경로가 틀려도 통과한다 */
+/* 테스트가 요청하는 기준일과 서버가 줄 주차. 시계를 2026-07-08(수)로 고정해서 오늘에서 7일씩 뺀 이 날짜들만 쓴다
+   06-29 주는 목요일(07-02)이 7월이라 서버가 7월 1주차로 준다 */
+const WEEK_RANGES: Record<string, object> = {
+  '2026-07-01': week(7, 1, '2026-06-29', '2026-07-05'),
+  '2026-06-24': week(6, 4, '2026-06-22', '2026-06-28'),
+  '2026-06-17': week(6, 3, '2026-06-15', '2026-06-21'),
+  '2026-06-10': week(6, 2, '2026-06-08', '2026-06-14'),
+  '2026-06-03': week(6, 1, '2026-06-01', '2026-06-07'),
+}
+
+function week(month: number, week: number, startDate: string, endDate: string) {
+  return { year: 2026, month, week, startDate, endDate }
+}
+
 vi.mock('@/shared/api/http', () => ({
-  get: vi.fn((path: string) => {
+  get: vi.fn((path: string, params: { base_date: string }) => {
     switch (path) {
       case '/user/my':
         return Promise.resolve({
@@ -42,7 +56,7 @@ vi.mock('@/shared/api/http', () => ({
         return Promise.resolve({
           majorId: 2,
           period: 'WEEK',
-          baseDate: '2026-07-06',
+          baseDate: '2026-07-08',
           items: [
             {
               rank: 1,
@@ -72,6 +86,10 @@ vi.mock('@/shared/api/http', () => ({
         return Promise.resolve({ count: 19283 })
       case '/report/llm':
         return llmReport()
+      case '/report/week-range':
+        return WEEK_RANGES[params.base_date]
+          ? Promise.resolve(WEEK_RANGES[params.base_date])
+          : Promise.reject(new Error(`표에 없는 기준일: ${params.base_date}`))
       default:
         return Promise.reject(new Error(`요청하지 않아야 할 경로: ${path}`))
     }
@@ -141,10 +159,13 @@ describe('WeeklyReport', () => {
   it('주차·날짜 범위·전공 필터·푸터 문구를 렌더링한다', async () => {
     renderReport()
 
+    // 06-29(월) ~ 07-05(일)은 목요일(07-02)이 7월이라 서버가 7월 1주차로 준다
     expect(
-      screen.getByRole('heading', { name: '6월 5주차' }),
+      await screen.findByRole('heading', { name: '7월 1주차' }),
     ).toBeInTheDocument()
-    expect(screen.getByText('2026.06.29 ~ 2026.07.05')).toBeInTheDocument()
+    expect(
+      await screen.findByText('2026.06.29 ~ 2026.07.05'),
+    ).toBeInTheDocument()
 
     // 칩은 '전체' + 내 전공(GET /user/my)이다
     for (const label of ['전체', '프론트엔드', '백엔드']) {
@@ -159,12 +180,12 @@ describe('WeeklyReport', () => {
     ).toBeInTheDocument()
   })
 
-  it('기본 주차는 지난주이고 그 주 월요일을 base_date로 보낸다', async () => {
+  it('기본 주차는 지난주이고 오늘에서 7일 전을 base_date로 보낸다 — 월요일로 맞추는 건 서버 몫', async () => {
     renderReport()
 
     await waitFor(async () =>
       expect(await requestsTo('/report/weekly-collected-count')).toContainEqual(
-        { base_date: '2026-06-29' },
+        { base_date: '2026-07-01' },
       ),
     )
   })
@@ -178,7 +199,7 @@ describe('WeeklyReport', () => {
       ),
     ).toBeInTheDocument()
     expect(await requestsTo('/report/llm')).toContainEqual({
-      base_date: '2026-06-29',
+      base_date: '2026-07-01',
       major_id: undefined,
     })
 
@@ -189,14 +210,14 @@ describe('WeeklyReport', () => {
       await currentCard().findByText('프론트엔드 요약'),
     ).toBeInTheDocument()
     expect(await requestsTo('/report/llm')).toContainEqual({
-      base_date: '2026-06-29',
+      base_date: '2026-07-01',
       major_id: 2,
     })
 
     await userEvent.click(screen.getByRole('button', { name: '이전 주차' }))
     await waitFor(async () =>
       expect(await requestsTo('/report/llm')).toContainEqual({
-        base_date: '2026-06-22',
+        base_date: '2026-06-24',
         major_id: 2,
       }),
     )
@@ -214,7 +235,9 @@ describe('WeeklyReport', () => {
 
       expect(await currentCard().findByText('Next.js')).toBeInTheDocument()
       expect(
-        currentCard().getByText('2026년 6월 5주차 요약 리포트가 없습니다.'),
+        await currentCard().findByText(
+          '2026년 7월 1주차 요약 리포트가 없습니다.',
+        ),
       ).toBeInTheDocument()
       expect(useToastStore.getState().toasts).toEqual([])
     },
@@ -245,7 +268,7 @@ describe('WeeklyReport', () => {
     expect(await requestsTo('/report/popular-tech-stack')).toContainEqual({
       major_id: undefined,
       period: 'WEEK',
-      base_date: '2026-06-29',
+      base_date: '2026-07-01',
     })
 
     await userEvent.click(screen.getByRole('button', { name: '프론트엔드' }))
@@ -254,10 +277,10 @@ describe('WeeklyReport', () => {
     expect(await requestsTo('/report/popular-tech-stack')).toContainEqual({
       major_id: 2,
       period: 'WEEK',
-      base_date: '2026-06-29',
+      base_date: '2026-07-01',
     })
     expect(await requestsTo('/report/tech-mentions')).toContainEqual({
-      base_date: '2026-06-29',
+      base_date: '2026-07-01',
       major_id: 2,
     })
   })
@@ -286,18 +309,18 @@ describe('WeeklyReport', () => {
     renderReport('/report?week=-3&major=5')
 
     expect(
-      screen.getByRole('heading', { name: '6월 3주차' }),
+      await screen.findByRole('heading', { name: '6월 3주차' }),
     ).toBeInTheDocument()
     await waitFor(() => expect(selectedChip()).toEqual(['백엔드']))
   })
 
   it.each(['?week=abc', '?week=0', '?week=3', '?week=-6'])(
     '볼 수 없는 주차(%s)는 지난주로 본다',
-    (query) => {
+    async (query) => {
       renderReport(`/report${query}`)
 
       expect(
-        screen.getByRole('heading', { name: '6월 5주차' }),
+        await screen.findByRole('heading', { name: '7월 1주차' }),
       ).toBeInTheDocument()
     },
   )
@@ -314,7 +337,7 @@ describe('WeeklyReport', () => {
 
     await waitFor(async () =>
       expect(await requestsTo('/report/tech-mentions')).toContainEqual({
-        base_date: '2026-06-22',
+        base_date: '2026-06-24',
         major_id: undefined,
       }),
     )
@@ -322,7 +345,7 @@ describe('WeeklyReport', () => {
       (await requestsTo('/report/tech-mentions')).map(
         ({ base_date }) => base_date,
       ),
-    ).not.toContain('2026-07-06')
+    ).not.toContain('2026-07-08')
   })
 
   it('이전 주차로 넘기면 주차와 날짜가 함께 바뀐다', async () => {
@@ -380,7 +403,7 @@ describe('WeeklyReport', () => {
     await settled()
 
     expect(
-      screen.getByRole('heading', { name: '6월 3주차' }),
+      await screen.findByRole('heading', { name: '6월 3주차' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '이전 주차' })).toHaveFocus()
   })
@@ -399,16 +422,17 @@ describe('WeeklyReport', () => {
     ).toBeInTheDocument()
   })
 
-  it('조금만 밀거나 세로로 더 많이 움직이면 넘어가지 않는다', () => {
+  it('조금만 밀거나 세로로 더 많이 움직이면 넘어가지 않는다', async () => {
     const { container } = renderReport()
     const deck = container.querySelector('div.touch-pan-y') as HTMLElement
+    await screen.findByRole('heading', { name: '7월 1주차' })
 
     // 임계값(60px) 미만
     fireEvent.pointerDown(deck, { clientX: 200, clientY: 300 })
     fireEvent.pointerMove(deck, { clientX: 240, clientY: 300 })
     fireEvent.pointerUp(deck, { clientX: 240, clientY: 300 })
     expect(
-      screen.getByRole('heading', { name: '6월 5주차' }),
+      screen.getByRole('heading', { name: '7월 1주차' }),
     ).toBeInTheDocument()
 
     // 세로 이동이 더 크면 세로 스크롤로 본다
@@ -416,7 +440,7 @@ describe('WeeklyReport', () => {
     fireEvent.pointerMove(deck, { clientX: 300, clientY: 500 })
     fireEvent.pointerUp(deck, { clientX: 300, clientY: 500 })
     expect(
-      screen.getByRole('heading', { name: '6월 5주차' }),
+      screen.getByRole('heading', { name: '7월 1주차' }),
     ).toBeInTheDocument()
   })
 
@@ -434,7 +458,7 @@ describe('WeeklyReport', () => {
     }
 
     expect(
-      screen.getByRole('heading', { name: '6월 1주차' }),
+      await screen.findByRole('heading', { name: '6월 1주차' }),
     ).toBeInTheDocument()
     expect(previous).toBeDisabled()
     expect(screen.getByRole('button', { name: '다음 주차' })).toBeEnabled()
