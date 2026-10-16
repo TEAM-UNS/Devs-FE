@@ -45,3 +45,12 @@ export interface LlmReportResponse {
   /** 요약이 아직 생성 중이면 null */
   llmReport: string | null
 }
+
+/** GET /report/week-range — 기준일이 속한 주. 몇 월 몇 주차는 그 주 목요일 기준으로 서버가 정한다 */
+export interface ReportWeekRangeResponse {
+  year: number
+  month: number
+  week: number
+  startDate: string
+  endDate: string
+}

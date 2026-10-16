@@ -2,7 +2,8 @@ import { ArrowIcon } from '@/shared/components/icons'
 import type { WeekRange } from '../../types'
 
 interface WeekNavigatorProps {
-  week: WeekRange
+  /** 응답 전에는 없다. 그동안 라벨·날짜 자리는 비워 둔다 */
+  week?: WeekRange
   /** 이전/다음 주차로 이동. 넘기지 않으면 화살표는 표시만 된다 */
   onStep?: (direction: -1 | 1) => void
   /** 더 과거로 갈 수 있는지 (기본 true) */
@@ -53,13 +54,13 @@ export function WeekNavigator({
         >
           <ArrowIcon className="size-full" />
         </button>
-        {/* key: 라벨이 바뀔 때마다 다시 그려 페이드가 재생된다.
+        {/* key: 라벨이 바뀔 때마다 다시 그려 페이드가 재생된다. 응답 전에 비어도 한 줄 높이(min-h-lh)를 지켜 헤더가 튀지 않는다.
             버튼은 밖에 있어 다시 마운트되지 않으므로 포커스는 유지된다. */}
         <h1
-          key={week.label}
-          className="animate-label-swap text-h2 text-gray-1000 motion-reduce:animate-none"
+          key={week?.label}
+          className="min-h-lh animate-label-swap text-h2 text-gray-1000 motion-reduce:animate-none"
         >
-          {week.label}
+          {week?.label}
         </h1>
         <button
           type="button"
@@ -74,10 +75,10 @@ export function WeekNavigator({
 
       {/* 날짜는 표기용이라 하나의 문단으로 읽히게 둔다 (Figma는 세 조각이지만 의미는 한 덩어리) */}
       <p
-        key={week.start}
-        className="animate-label-swap text-body-sm text-gray-400 motion-reduce:animate-none"
+        key={week?.start}
+        className="min-h-lh animate-label-swap text-body-sm text-gray-400 motion-reduce:animate-none"
       >
-        {week.start} ~ {week.end}
+        {week && `${week.start} ~ ${week.end}`}
       </p>
     </div>
   )

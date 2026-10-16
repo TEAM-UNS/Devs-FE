@@ -8,12 +8,14 @@ export interface MajorOption {
   label: string
 }
 
+/** 헤더·요약 제목에 쓰는 주차. 서버 week-range 응답으로 만든다 */
 export interface WeekRange {
+  year: number
+  /** `7월 2주차` */
   label: string
+  /** `2026.07.06` */
   start: string
   end: string
-  /** 요청에 보낼 기준일 (예: `2026-07-06`) */
-  baseDate: string
 }
 
 export interface StackRank {
@@ -41,7 +43,8 @@ export interface MentionBar {
 }
 
 export interface WeekReport {
-  week: WeekRange
+  /** week-range 응답 전에는 없다 */
+  week?: WeekRange
   collectedCount: number
   ranks: StackRank[]
   highlights: TrendHighlight[]
