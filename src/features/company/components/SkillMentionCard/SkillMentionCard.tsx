@@ -1,11 +1,11 @@
 import { cn } from '@/shared/utils/cn'
 import { colorOf, shortName } from '../../constants/compare'
-import type { Company, SkillMention } from '../../types'
+import type { ComparedCompany, SkillMention } from '../../types'
 import { CompareSectionCard } from '../CompareSectionCard'
 
 interface SkillMentionCardProps {
   /** 비교하는 기업. 이 순서로 색을 정한다 */
-  readonly companies: readonly Company[]
+  readonly companies: readonly ComparedCompany[]
   readonly mentions: readonly SkillMention[]
 }
 
@@ -23,20 +23,23 @@ export function SkillMentionCard({
 
   const legend = (
     <ul className="flex items-center gap-2">
-      {companies.map((company) => (
-        <li
-          key={company.id}
-          className="flex items-center gap-1.5 text-body-xs text-gray-500"
-        >
-          <span
-            className={cn(
-              'size-1.5 rounded-full',
-              colorOf(companies, company.id),
-            )}
-          />
-          {shortName(company.name)}
-        </li>
-      ))}
+      {/* 이름은 다른 응답에서 오므로, 오기 전에는 색 점만 남지 않게 뺀다 */}
+      {companies
+        .filter(({ name }) => name)
+        .map((company) => (
+          <li
+            key={company.id}
+            className="flex items-center gap-1.5 text-body-xs text-gray-500"
+          >
+            <span
+              className={cn(
+                'size-1.5 rounded-full',
+                colorOf(companies, company.id),
+              )}
+            />
+            {shortName(company.name)}
+          </li>
+        ))}
     </ul>
   )
 

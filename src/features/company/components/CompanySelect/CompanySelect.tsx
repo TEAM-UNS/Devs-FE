@@ -2,17 +2,21 @@ import { Button } from '@/shared/components/Button'
 import { Chip } from '@/shared/components/Chip'
 import { SearchIcon } from '@/shared/components/icons'
 import { MIN_COMPARE } from '../../constants/compare'
-import type { Company } from '../../types'
+import { useReachEnd } from '../../hooks/useReachEnd'
+import type { Company, ComparedCompany } from '../../types'
 import { CompanyCard } from '../CompanyCard'
 
 interface CompanySelectProps {
-  /** 검색어에 맞는 기업 */
+  /** 검색어에 맞는 기업. 지금까지 받은 페이지만큼 */
   readonly companies: readonly Company[]
   /** 고른 기업. 고른 순서대로 칩이 놓인다 */
-  readonly selected: readonly Company[]
+  readonly selected: readonly ComparedCompany[]
+  /** 받을 다음 페이지가 있고 지금 받는 중이 아니면 true */
+  readonly canLoadMore: boolean
+  readonly onLoadMore: () => void
   readonly keyword: string
   readonly onKeywordChange: (keyword: string) => void
-  readonly onToggle: (id: number) => void
+  readonly onToggle: (company: ComparedCompany) => void
   readonly onCompare: () => void
 }
 
@@ -25,10 +29,13 @@ export function CompanySelect({
   selected,
   keyword,
   onKeywordChange,
+  canLoadMore,
+  onLoadMore,
   onToggle,
   onCompare,
 }: CompanySelectProps) {
   const canCompare = selected.length >= MIN_COMPARE
+  const endRef = useReachEnd<HTMLLIElement>(onLoadMore, canLoadMore)
 
   return (
     <div className="flex h-full flex-col items-center gap-8">
@@ -50,14 +57,14 @@ export function CompanySelect({
             className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             aria-label="선택한 기업"
           >
-            {selected.map(({ id, name }) => (
-              <li key={id} className="shrink-0">
+            {selected.map((company) => (
+              <li key={company.id} className="shrink-0">
                 <Chip
                   size="small"
-                  onRemove={() => onToggle(id)}
-                  removeLabel={`${name} 선택 해제`}
+                  onRemove={() => onToggle(company)}
+                  removeLabel={`${company.name} 선택 해제`}
                 >
-                  {name}
+                  {company.name}
                 </Chip>
               </li>
             ))}
@@ -71,10 +78,12 @@ export function CompanySelect({
             <CompanyCard
               company={company}
               selected={selected.some(({ id }) => id === company.id)}
-              onToggle={() => onToggle(company.id)}
+              onToggle={() => onToggle(company)}
             />
           </li>
         ))}
+        {/* 이 줄이 보이면 다음 20개를 받는다 */}
+        <li ref={endRef} aria-hidden="true" className="col-span-3 h-px" />
       </ul>
 
       <Button

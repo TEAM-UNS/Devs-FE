@@ -1,7 +1,7 @@
 import { Button } from '@/shared/components/Button'
 import type {
   CommonSkill,
-  Company,
+  ComparedCompany,
   CompanyMatchRate,
   CompanyPostingCount,
   CompanyTopSkills,
@@ -15,7 +15,7 @@ import { TopSkillsCard } from '../TopSkillsCard'
 
 interface CompanyComparisonProps {
   /** 비교하는 기업. 고른 순서대로 차트 색이 정해진다 */
-  readonly companies: readonly Company[]
+  readonly companies: readonly ComparedCompany[]
   readonly topSkills: readonly CompanyTopSkills[]
   readonly commonSkills: readonly CommonSkill[]
   readonly mentions: readonly SkillMention[]

@@ -1,11 +1,11 @@
 import { cn } from '@/shared/utils/cn'
 import { colorOf, twoDigits } from '../../constants/compare'
-import type { Company, CompanyTopSkills } from '../../types'
+import type { ComparedCompany, CompanyTopSkills } from '../../types'
 import { CompareSectionCard } from '../CompareSectionCard'
 
 interface TopSkillsCardProps {
   /** 비교하는 기업. 이 순서로 색을 정한다 */
-  readonly companies: readonly Company[]
+  readonly companies: readonly ComparedCompany[]
   readonly topSkills: readonly CompanyTopSkills[]
 }
 
