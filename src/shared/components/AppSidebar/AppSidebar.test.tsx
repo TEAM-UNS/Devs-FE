@@ -34,12 +34,18 @@ describe('AppSidebar', () => {
   it('미완성 메뉴는 링크가 아니라 비활성 항목이다', () => {
     renderSidebar()
 
-    for (const label of ['기업 스택 비교', '로드맵']) {
-      expect(
-        screen.queryByRole('link', { name: label }),
-      ).not.toBeInTheDocument()
-      expect(screen.getByText(label)).toHaveAttribute('aria-disabled', 'true')
-    }
+    expect(
+      screen.queryByRole('link', { name: '로드맵' }),
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('로드맵')).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('기업 스택 비교는 비교 화면으로 가는 링크다', () => {
+    renderSidebar()
+
+    expect(
+      screen.getByRole('link', { name: '기업 스택 비교' }),
+    ).toHaveAttribute('href', '/stack-compare')
   })
 
   it('AI 챗봇은 챗봇 화면으로 가는 링크다', () => {

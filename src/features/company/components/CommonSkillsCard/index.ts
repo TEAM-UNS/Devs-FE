@@ -1,0 +1,1 @@
+export { CommonSkillsCard } from './CommonSkillsCard'

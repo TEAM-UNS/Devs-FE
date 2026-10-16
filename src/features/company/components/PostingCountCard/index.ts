@@ -1,0 +1,1 @@
+export { PostingCountCard } from './PostingCountCard'

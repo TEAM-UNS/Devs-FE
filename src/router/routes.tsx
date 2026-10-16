@@ -15,6 +15,10 @@ const OAuthCallbackPage = lazy(() => import('@/pages/OAuthCallbackPage'))
 const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
 const ChatPage = lazy(() => import('@/pages/ChatPage'))
 const MyPage = lazy(() => import('@/pages/MyPage'))
+const StackComparePage = lazy(() => import('@/pages/StackComparePage'))
+const StackCompareResultPage = lazy(
+  () => import('@/pages/StackCompareResultPage'),
+)
 
 const authFallback = <RouteFallback />
 
@@ -89,6 +93,8 @@ export const routes: RouteObject[] = [
       { path: 'weekly-report', element: <WeeklyReportPage /> },
       { path: 'chat', element: <ChatPage /> },
       { path: 'my', element: <MyPage /> },
+      { path: 'stack-compare', element: <StackComparePage /> },
+      { path: 'stack-compare/result', element: <StackCompareResultPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],

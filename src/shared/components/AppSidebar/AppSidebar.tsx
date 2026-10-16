@@ -22,12 +22,7 @@ interface AppSidebarProps {
 const NAV_ITEMS = [
   { to: ROUTES.home, label: '메인페이지', Icon: HomeIcon },
   { to: ROUTES.weeklyReport, label: '주간리포트', Icon: ClipboardListIcon },
-  {
-    to: ROUTES.stackCompare,
-    label: '기업 스택 비교',
-    Icon: LayersIcon,
-    disabled: true,
-  },
+  { to: ROUTES.stackCompare, label: '기업 스택 비교', Icon: LayersIcon },
   { to: ROUTES.roadmap, label: '로드맵', Icon: RouteIcon, disabled: true },
   { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon },
   { to: ROUTES.myPage, label: '마이페이지', Icon: UserIcon },
