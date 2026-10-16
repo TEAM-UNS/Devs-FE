@@ -1,11 +1,11 @@
 import { cn } from '@/shared/utils/cn'
 import { colorOf, MAX_COMPARE, twoDigits } from '../../constants/compare'
-import type { Company, CompanyMatchRate } from '../../types'
+import type { ComparedCompany, CompanyMatchRate } from '../../types'
 import { CompareSectionCard } from '../CompareSectionCard'
 
 interface MatchRateCardProps {
   /** 비교하는 기업. 이 순서로 색을 정한다 */
-  readonly companies: readonly Company[]
+  readonly companies: readonly ComparedCompany[]
   readonly rates: readonly CompanyMatchRate[]
 }
 

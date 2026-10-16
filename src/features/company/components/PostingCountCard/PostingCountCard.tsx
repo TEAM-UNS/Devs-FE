@@ -1,11 +1,11 @@
 import { cn } from '@/shared/utils/cn'
 import { colorOf, shortName } from '../../constants/compare'
-import type { Company, CompanyPostingCount } from '../../types'
+import type { ComparedCompany, CompanyPostingCount } from '../../types'
 import { CompareSectionCard } from '../CompareSectionCard'
 
 interface PostingCountCardProps {
   /** 비교하는 기업. 이 순서로 색을 정한다 */
-  readonly companies: readonly Company[]
+  readonly companies: readonly ComparedCompany[]
   readonly counts: readonly CompanyPostingCount[]
 }
 

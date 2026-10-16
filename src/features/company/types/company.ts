@@ -1,9 +1,13 @@
 /* 화면에서 쓰는 모양. 필드 이름은 Swagger 응답(CompanyResponse 등)과 맞춰 두어 연동 때 그대로 넘길 수 있게 한다 */
 
-/** GET /company 목록의 기업 한 개. 로고는 아직 서버에 없다(백엔드 요청 예정) */
-export interface Company {
+/** 비교에 쓰는 최소 정보. 칩·범례·차트 색에 필요한 만큼만 */
+export interface ComparedCompany {
   id: number
   name: string
+}
+
+/** GET /company 목록의 기업 한 개. 로고는 아직 서버에 없다(백엔드 요청 예정) */
+export interface Company extends ComparedCompany {
   description: string
   logoUrl?: string
 }
