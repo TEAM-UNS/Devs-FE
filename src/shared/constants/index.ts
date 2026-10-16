@@ -3,7 +3,7 @@
  * 도메인 상수는 각 feature 폴더 안에서 관리한다.
  */
 /**
- * 사이드바 네비게이션이 가리키는 경로. `stackCompare`·`roadmap`은 아직 라우트가 없어
+ * 사이드바 네비게이션이 가리키는 경로. `roadmap`은 아직 라우트가 없어
  * 진입 시 NotFoundPage로 떨어진다 (화면 구현 시 routes.tsx에 추가).
  * `/`는 비로그인 방문자가 처음 보는 랜딩이고, 로그인 후 첫 화면(`home`)은 대시보드다
  */
@@ -14,6 +14,7 @@ export const ROUTES = {
   signup: '/signup',
   weeklyReport: '/weekly-report',
   stackCompare: '/stack-compare',
+  stackCompareResult: '/stack-compare/result',
   roadmap: '/roadmap',
   chat: '/chat',
   myPage: '/my',
