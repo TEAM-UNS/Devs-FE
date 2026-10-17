@@ -7,12 +7,13 @@ interface CompanyCardProps {
   readonly onToggle: () => void
 }
 
-/* Figma 셀렉트카드(408:2476). 선택되면 보라 테두리·글로우에 canvas 위로 primary-400 15%를 깐다 */
+/* Figma 셀렉트카드(408:2476). 선택되면 보라 테두리·글로우에 canvas 위로 primary-400 15%를 깐다
+   Figma 테두리는 안쪽에 그려져 크기에 안 들어가서 border 대신 ring-inset을 쓴다 */
 const BASE =
-  'flex w-full flex-col gap-4 rounded-sm border p-5 text-left focus-visible:outline-2 focus-visible:outline-primary-500'
+  'flex w-full flex-col gap-4 rounded-sm p-5 ring-1 ring-inset text-left focus-visible:outline-2 focus-visible:outline-primary-500'
 const SELECTED =
-  'border-primary-400 bg-canvas bg-[linear-gradient(rgb(170_94_241/0.15),rgb(170_94_241/0.15))] drop-shadow-[0_0_4px_rgba(188,114,244,0.6)]'
-const UNSELECTED = 'border-element bg-container'
+  'bg-canvas ring-primary-400 bg-[linear-gradient(rgb(170_94_241/0.15),rgb(170_94_241/0.15))] drop-shadow-[0_0_4px_rgba(188,114,244,0.6)]'
+const UNSELECTED = 'bg-container ring-element'
 
 /** 기업 선택 카드 — 로고·이름·소개. 누르면 선택이 바뀐다 */
 export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
@@ -38,7 +39,10 @@ export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
           {company.name}
         </span>
       </span>
-      <span className="text-body-sm text-gray-400">{company.description}</span>
+      {/* Figma 408:3485 — 폭 260px, 3줄까지 보이고 넘치면 말줄임. 짧아도 3줄 높이를 잡아 카드 높이를 맞춘다 */}
+      <span className="line-clamp-3 min-h-[3lh] w-[260px] max-w-full text-body-sm text-gray-400">
+        {company.description}
+      </span>
     </button>
   )
 }
