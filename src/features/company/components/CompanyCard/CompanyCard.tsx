@@ -18,8 +18,9 @@ const UNSELECTED = 'bg-container ring-element'
 
 /** 기업 선택 카드 — 로고·이름·소개. 누르면 선택이 바뀐다 */
 export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
-  // 주소는 있는데 이미지를 못 불러오면 깨진 이미지 대신 빈 칸을 보여준다
-  const [logoFailed, setLogoFailed] = useState(false)
+  /* 주소는 있는데 이미지를 못 불러오면 깨진 이미지 대신 빈 칸을 보여준다
+     실패한 주소를 기억해서, 같은 기업의 로고 주소가 바뀌면 새 주소는 다시 불러온다 */
+  const [failedLogoUrl, setFailedLogoUrl] = useState<string | null>(null)
 
   return (
     <button
@@ -29,11 +30,11 @@ export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
       className={cn(BASE, selected ? SELECTED : UNSELECTED)}
     >
       <span className="flex w-full items-center gap-3">
-        {company.logoUrl && !logoFailed ? (
+        {company.logoUrl && company.logoUrl !== failedLogoUrl ? (
           <img
             src={company.logoUrl}
             alt=""
-            onError={() => setLogoFailed(true)}
+            onError={() => setFailedLogoUrl(company.logoUrl)}
             /* 실제 로고(사람인)는 가로로 길고 배경이 투명한 것이 많다. 잘리거나 어두운 카드에 묻히지
                않게 흰 정사각형 칸 안에 전체를 줄여 넣는다 — Figma는 정사각형 아이콘이라 디자이너 확인 전 임시 */
             className="size-8 shrink-0 rounded-sm bg-white object-contain p-0.5"

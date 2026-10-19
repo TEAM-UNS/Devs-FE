@@ -42,4 +42,24 @@ describe('CompanyCard 로고', () => {
 
     expect(container.querySelector('img')).not.toBeInTheDocument()
   })
+
+  it('실패한 뒤 같은 기업의 로고 주소가 바뀌면 새 주소는 다시 불러온다', () => {
+    const { container, rerender } = renderCard(
+      'https://cdn.example.com/old.png',
+    )
+    fireEvent.error(container.querySelector('img') as HTMLImageElement)
+
+    rerender(
+      <CompanyCard
+        company={company('https://cdn.example.com/new.png')}
+        selected={false}
+        onToggle={vi.fn()}
+      />,
+    )
+
+    expect(container.querySelector('img')).toHaveAttribute(
+      'src',
+      'https://cdn.example.com/new.png',
+    )
+  })
 })
