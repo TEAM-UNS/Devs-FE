@@ -1,5 +1,6 @@
-import type { Company } from '../../types'
+import { useState } from 'react'
 import { cn } from '@/shared/utils/cn'
+import type { Company } from '../../types'
 
 interface CompanyCardProps {
   readonly company: Company
@@ -17,6 +18,9 @@ const UNSELECTED = 'bg-container ring-element'
 
 /** 기업 선택 카드 — 로고·이름·소개. 누르면 선택이 바뀐다 */
 export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
+  // 주소는 있는데 이미지를 못 불러오면 깨진 이미지 대신 빈 칸을 보여준다
+  const [logoFailed, setLogoFailed] = useState(false)
+
   return (
     <button
       type="button"
@@ -25,14 +29,17 @@ export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
       className={cn(BASE, selected ? SELECTED : UNSELECTED)}
     >
       <span className="flex w-full items-center gap-3">
-        {company.logoUrl ? (
+        {company.logoUrl && !logoFailed ? (
           <img
             src={company.logoUrl}
             alt=""
-            className="size-8 shrink-0 rounded-sm object-cover"
+            onError={() => setLogoFailed(true)}
+            /* 실제 로고(사람인)는 가로로 길고 배경이 투명한 것이 많다. 잘리거나 어두운 카드에 묻히지
+               않게 흰 정사각형 칸 안에 전체를 줄여 넣는다 — Figma는 정사각형 아이콘이라 디자이너 확인 전 임시 */
+            className="size-8 shrink-0 rounded-sm bg-white object-contain p-0.5"
           />
         ) : (
-          // 로고가 서버에 생기기 전까지 자리만 잡아 둔다
+          // 로고가 없거나 못 불러오면 자리만 잡아 둔다
           <span className="size-8 shrink-0 rounded-sm bg-element" />
         )}
         <span className="min-w-0 flex-1 truncate text-h3 text-white">
