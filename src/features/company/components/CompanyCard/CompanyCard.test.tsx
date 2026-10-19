@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import type { Company } from '../../types'
 import { CompanyCard } from './CompanyCard'
@@ -62,4 +62,30 @@ describe('CompanyCard 로고', () => {
       'https://cdn.example.com/new.png',
     )
   })
+})
+
+describe('CompanyCard 설명', () => {
+  const renderWithDescription = (description: string | null) =>
+    render(
+      <CompanyCard
+        company={{ ...company(null), description }}
+        selected={false}
+        onToggle={vi.fn()}
+      />,
+    )
+
+  it('설명을 보여준다', () => {
+    renderWithDescription('대표 IT 기업입니다.')
+
+    expect(screen.getByText('대표 IT 기업입니다.')).toBeInTheDocument()
+  })
+
+  it.each([null, '', '   '] satisfies Company['description'][])(
+    '설명이 없으면(%j) 안내 문구를 보여준다',
+    (description) => {
+      renderWithDescription(description)
+
+      expect(screen.getByText('기업 설명이 없습니다.')).toBeInTheDocument()
+    },
+  )
 })

@@ -16,8 +16,11 @@ const SELECTED =
   'bg-canvas ring-primary-400 bg-[linear-gradient(rgb(170_94_241/0.15),rgb(170_94_241/0.15))] drop-shadow-[0_0_4px_rgba(188,114,244,0.6)]'
 const UNSELECTED = 'bg-container ring-element'
 
+const EMPTY_DESCRIPTION = '기업 설명이 없습니다.'
+
 /** 기업 선택 카드 — 로고·이름·소개. 누르면 선택이 바뀐다 */
 export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
+  const description = company.description?.trim()
   /* 주소는 있는데 이미지를 못 불러오면 깨진 이미지 대신 빈 칸을 보여준다
      실패한 주소를 기억해서, 같은 기업의 로고 주소가 바뀌면 새 주소는 다시 불러온다 */
   const [failedLogoUrl, setFailedLogoUrl] = useState<string | null>(null)
@@ -47,9 +50,15 @@ export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
           {company.name}
         </span>
       </span>
-      {/* Figma 408:3485 — 폭 260px, 3줄까지 보이고 넘치면 말줄임. 짧아도 3줄 높이를 잡아 카드 높이를 맞춘다 */}
-      <span className="line-clamp-3 min-h-[3lh] w-[260px] max-w-full text-body-sm text-gray-400">
-        {company.description}
+      {/* Figma 408:3485 — 폭 260px, 3줄까지 보이고 넘치면 말줄임. 짧아도 3줄 높이를 잡아 카드 높이를 맞춘다
+          설명이 없는 기업도 많아서(stage 180곳 중 53곳) 빈 칸 대신 안내 문구를 한 단계 흐리게 보여준다 */}
+      <span
+        className={cn(
+          'line-clamp-3 min-h-[3lh] w-[260px] max-w-full text-body-sm',
+          description ? 'text-gray-400' : 'text-gray-300',
+        )}
+      >
+        {description || EMPTY_DESCRIPTION}
       </span>
     </button>
   )

@@ -8,7 +8,8 @@ export interface ComparedCompany {
 
 /** GET /company 목록의 기업 한 개 */
 export interface Company extends ComparedCompany {
-  description: string
+  /** DB 칸이 비어도 되는 칸이라 설명이 없는 기업은 null */
+  description: string | null
   /** DB 칸이 비어도 되는 칸이라 로고가 없는 기업은 null */
   logoUrl: string | null
 }
