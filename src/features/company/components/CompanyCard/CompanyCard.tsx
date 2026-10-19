@@ -50,11 +50,11 @@ export function CompanyCard({ company, selected, onToggle }: CompanyCardProps) {
           {company.name}
         </span>
       </span>
-      {/* Figma 408:3485 — 폭 260px, 3줄까지 보이고 넘치면 말줄임. 짧아도 3줄 높이를 잡아 카드 높이를 맞춘다
+      {/* Figma 408:3485 — 폭 260px, 3줄 높이. 넘치는 내용은 말줄임 대신 칸 안에서 세로 스크롤한다
           설명이 없는 기업도 많아서(stage 180곳 중 53곳) 빈 칸 대신 안내 문구를 한 단계 흐리게 보여준다 */}
       <span
         className={cn(
-          'line-clamp-3 min-h-[3lh] w-[260px] max-w-full text-body-sm',
+          'scrollbar-slim block h-[3lh] w-[260px] max-w-full overflow-y-auto text-body-sm',
           description ? 'text-gray-400' : 'text-gray-300',
         )}
       >
