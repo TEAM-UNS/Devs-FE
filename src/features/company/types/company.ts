@@ -6,10 +6,11 @@ export interface ComparedCompany {
   name: string
 }
 
-/** GET /company 목록의 기업 한 개. 로고는 아직 서버에 없다(백엔드 요청 예정) */
+/** GET /company 목록의 기업 한 개 */
 export interface Company extends ComparedCompany {
   description: string
-  logoUrl?: string
+  /** DB 칸이 비어도 되는 칸이라 로고가 없는 기업은 null */
+  logoUrl: string | null
 }
 
 /** 기업별 인기 스택 (GET /company/compare/top-skills) */
