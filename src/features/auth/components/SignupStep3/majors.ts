@@ -3,9 +3,13 @@ import { majorLabel } from '@/shared/api'
 import type { MajorCategoryDto } from '@/shared/api'
 import {
   BackendIcon,
+  DataAiIcon,
   DevOpsIcon,
+  EmbeddedIcon,
   EtcIcon,
   FrontendIcon,
+  GameIcon,
+  MobileIcon,
   SecurityIcon,
 } from './majorIcons'
 
@@ -20,13 +24,17 @@ export interface MajorOption {
 
 /**
  * 서버 전공 코드 → 카드 아이콘. 라벨은 대시보드와 같이 쓰도록 `majorLabel`에 있다
- * 아이콘은 Figma `전공 아이콘`(130:1412)에 있는 것만 쓰고, 없는 전공은 기타 아이콘으로 둔다
+ * 아이콘은 Figma `전공 아이콘`(130:1412)에서 가져오고, 표에 없는 코드가 오면 기타 아이콘으로 둔다
  */
 const MAJOR_ICONS: Record<string, MajorOption['Icon']> = {
   BACKEND: BackendIcon,
   FRONTEND: FrontendIcon,
   DEVOPS: DevOpsIcon,
   SECURITY: SecurityIcon,
+  MOBILE: MobileIcon,
+  DATA_AI: DataAiIcon,
+  GAME: GameIcon,
+  EMBEDDED: EmbeddedIcon,
 }
 
 /**
