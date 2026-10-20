@@ -48,6 +48,9 @@ async function openStream(
   request: ChatSendRequest,
   signal?: AbortSignal,
 ): Promise<Response> {
+  // axios 요청과 같은 이유로 주소가 비면 보내지 않는다 (http.ts withRetry)
+  if (!API_BASE_URL) throw new Error('VITE_API_BASE_URL이 비어 있다')
+
   let response = await send(request, signal)
 
   // 토큰이 만료됐으면 axios 요청과 같은 재발급을 거쳐 한 번만 다시 보낸다
