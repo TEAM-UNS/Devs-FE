@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { userQueries } from '@/shared/api'
 import { useLogout } from '@/shared/hooks/useLogout'
-import { MOCK_PROFILE } from '../../fixtures/mockProfile'
 import { toMyProfile } from '../../utils/toMyProfile'
 import { CareerGoalCard } from '../CareerGoalCard'
 import { ProfileSummary } from '../ProfileSummary'
@@ -21,8 +20,7 @@ export function MyPageOverview() {
   // TODO: 로딩·에러 화면은 따로 정한다. 그 전까지는 응답이 오기 전엔 아무것도 그리지 않는다
   if (!data) return null
 
-  // 리포트 구독은 서버에 아직 없어 목데이터를 그대로 쓴다 (백엔드에 추가 요청)
-  const profile = { ...MOCK_PROFILE, ...toMyProfile(data) }
+  const profile = toMyProfile(data)
 
   return (
     <div className="mx-auto flex max-w-[1120px] flex-col gap-9">
@@ -40,10 +38,7 @@ export function MyPageOverview() {
 
         {/* 아래 두 카드는 같은 높이로 나란히 선다 */}
         <div className="grid gap-6 lg:grid-cols-2">
-          <ReportSubscriptionCard
-            defaultMode={profile.subscriptionMode}
-            defaultFields={profile.subscribedFields}
-          />
+          <ReportSubscriptionCard />
           <CareerGoalCard />
         </div>
       </div>

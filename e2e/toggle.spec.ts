@@ -28,6 +28,20 @@ test('구독 토글 상태에 따라 동그라미 위치와 색상이 바뀐다'
       },
     }),
   )
+  await page.route('**/majors', (route) =>
+    route.fulfill({
+      json: { categories: [{ id: 1, major: 'FRONTEND', techStacks: [] }] },
+    }),
+  )
+  // 저장한 값을 다음 조회에 돌려준다. 저장 뒤 다시 조회해 서버 값으로 맞추기 때문이다
+  let subscription = { totalReport: false, majorReport: true, majorIds: [1] }
+  await page.route('**/user/report-subscription', (route) => {
+    if (route.request().method() === 'PUT') {
+      subscription = route.request().postDataJSON()
+      return route.fulfill({ status: 204 })
+    }
+    return route.fulfill({ json: subscription })
+  })
   await page.goto('/my')
 
   const all = page.getByRole('switch', { name: '전체 리포트 구독' })

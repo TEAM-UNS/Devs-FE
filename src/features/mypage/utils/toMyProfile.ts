@@ -17,9 +17,7 @@ const CAREER_LABELS: Record<PersonalHistory, string> = {
 }
 
 /** `/user/my` 응답을 프로필 요약·기술 스택 카드가 쓰는 값으로 바꾼다 */
-export function toMyProfile(
-  response: UserMyQueryResponse,
-): Pick<MyProfile, 'name' | 'email' | 'career' | 'majors' | 'skills'> {
+export function toMyProfile(response: UserMyQueryResponse): MyProfile {
   return {
     name: response.name,
     email: response.email,
