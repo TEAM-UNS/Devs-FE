@@ -1,9 +1,9 @@
 import { Button } from '@/shared/components/Button'
-import { Checkbox } from '@/shared/components/Checkbox'
 import { CheckIcon, LockIcon } from '@/shared/components/icons'
 import { cn } from '@/shared/utils/cn'
 import type { RoadmapDay } from '../../types'
 import type { DayState } from '../../utils/roadmapDay'
+import { RoadmapItemCheckbox } from './RoadmapItemCheckbox'
 
 interface RoadmapDayCardProps {
   readonly day: RoadmapDay
@@ -65,26 +65,14 @@ export function RoadmapDayCard({
             <ul className="flex flex-col gap-5">
               {day.items.map((item) => (
                 <li key={item.itemId}>
-                  {/* 지난 날은 고칠 수 없게 막는다. Checkbox의 비활성 글자색은 회색이라
-                      Figma(지난 날도 흰 제목)에 맞게 덮어쓴다 */}
-                  <Checkbox
-                    defaultChecked={item.done}
-                    disabled={past}
-                    // TODO: API 연동 — PATCH /roadmap/items/{itemId} { done }
-                    label={<span className="text-white">{item.title}</span>}
-                    description={
-                      item.description && (
-                        <span className="whitespace-pre-line text-gray-300">
-                          {item.description}
-                        </span>
-                      )
-                    }
-                  />
+                  <RoadmapItemCheckbox item={item} readOnly={day.completed} />
                 </li>
               ))}
             </ul>
 
-            {state === 'current' && day.allItemsDone && (
+            {/* 지난 날도 완료 전이면 서버가 체크·완료를 받아서 안내를 띄운다
+                완료한 지난 날은 Figma(Day 1)처럼 안내 없이 접는다 */}
+            {day.allItemsDone && (state === 'current' || !day.completed) && (
               <div className="flex items-center justify-between border-t border-element pt-4">
                 <p className="text-body-sm text-gray-400">
                   Day {day.dayNo} 학습 완료! [로드맵 완료]를 누르고 회고를
