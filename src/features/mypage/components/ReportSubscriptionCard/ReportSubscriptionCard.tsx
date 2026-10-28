@@ -39,11 +39,15 @@ export function ReportSubscriptionCard() {
        그대로 눌려서 선택이 바뀐다 */
     if (!majorReport) return
 
-    save((current) => ({
-      majorIds: current.majorIds.includes(majorId)
+    save((current) => {
+      const next = current.majorIds.includes(majorId)
         ? current.majorIds.filter((id) => id !== majorId)
-        : [...current.majorIds, majorId],
-    }))
+        : [...current.majorIds, majorId]
+      // 마지막 분야를 빼면 받을 리포트가 없으니 분야별 구독도 끈다
+      return next.length > 0
+        ? { majorIds: next }
+        : { majorIds: next, majorReport: false }
+    })
   }
 
   return (

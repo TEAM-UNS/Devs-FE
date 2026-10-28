@@ -115,6 +115,21 @@ describe('ReportSubscriptionCard', () => {
     })
   })
 
+  it('마지막 분야를 빼면 분야별 구독도 끈다', async () => {
+    const user = userEvent.setup()
+    keepSaving()
+    await renderCard()
+
+    await user.click(chip('프론트엔드'))
+
+    expect(fieldToggle()).not.toBeChecked()
+    expect(put).toHaveBeenCalledWith('/user/report-subscription', {
+      totalReport: false,
+      majorReport: false,
+      majorIds: [],
+    })
+  })
+
   it('분야별 구독이 꺼져 있으면 키보드로도 분야를 바꿀 수 없다', async () => {
     const user = userEvent.setup()
     vi.mocked(get).mockImplementation((path) =>
