@@ -6,6 +6,8 @@ interface ConditionStepProps {
   readonly summary: readonly (readonly string[])[]
   readonly comment: string
   readonly onCommentChange: (comment: string) => void
+  /** 생성 요청을 보내는 중이면 버튼을 잠가 두 번 만들지 않게 한다 */
+  readonly submitting: boolean
   readonly onPrevious: () => void
   readonly onSubmit: () => void
 }
@@ -15,6 +17,7 @@ export function ConditionStep({
   summary,
   comment,
   onCommentChange,
+  submitting,
   onPrevious,
   onSubmit,
 }: ConditionStepProps) {
@@ -26,6 +29,7 @@ export function ConditionStep({
       onPrevious={onPrevious}
       nextLabel="로드맵 생성하기"
       nextArrow={false}
+      nextDisabled={submitting}
       onNext={onSubmit}
     >
       <SelectionSummary groups={summary} />

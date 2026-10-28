@@ -1,14 +1,13 @@
 import { useState } from 'react'
-import { majorLabel } from '@/shared/api'
+import { majorLabel, type MajorCategoryDto } from '@/shared/api'
 import { majorIcon } from '@/shared/components/icons'
 import { MAJOR_DESCRIPTIONS } from '../../constants/create'
-import type { RoadmapMajor } from '../../types'
 import { SearchField } from '../SearchField'
 import { SelectCard } from '../SelectCard'
 import { StepLayout } from '../StepLayout'
 
 interface MajorStepProps {
-  readonly majors: readonly RoadmapMajor[]
+  readonly majors: readonly MajorCategoryDto[]
   readonly selectedId: number | null
   readonly onSelect: (id: number) => void
   readonly onNext: () => void

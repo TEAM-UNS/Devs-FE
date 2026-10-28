@@ -1,13 +1,14 @@
+import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Navigate, useSearchParams } from 'react-router-dom'
-import { majorLabel } from '@/shared/api'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { majorLabel, majorQueries } from '@/shared/api'
+import { ROUTES } from '@/shared/constants'
 import { MIN_WEEKS } from '../../constants/create'
-import { MOCK_GENERATING_PROGRESS, MOCK_MAJORS } from '../../constants/mock'
+import { useCreateRoadmap } from '../../hooks/useRoadmapMutations'
 import { STEP_PARAM, parseStep, reachableStep } from '../../utils/createStep'
 import { ConditionStep } from '../ConditionStep'
 import { MajorStep } from '../MajorStep'
 import { PeriodStep } from '../PeriodStep'
-import { RoadmapGenerating } from '../RoadmapGenerating'
 import { StackStep } from '../StackStep'
 
 /**
@@ -20,15 +21,12 @@ export function RoadmapCreate() {
   const [skillIds, setSkillIds] = useState<number[]>([])
   const [weeks, setWeeks] = useState(MIN_WEEKS)
   const [comment, setComment] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const navigate = useNavigate()
+  const majors = useQuery(majorQueries.list())
+  const create = useCreateRoadmap()
 
   const urlStep = parseStep(searchParams)
   const step = Math.min(urlStep, reachableStep(majorId, skillIds.length))
-
-  if (submitted) {
-    // TODO: API 연동 — POST /roadmap 후 GET /roadmap/{id}/status로 진행률을 받는다
-    return <RoadmapGenerating progress={MOCK_GENERATING_PROGRESS} />
-  }
 
   if (step !== urlStep) {
     return <Navigate to={{ search: `?${STEP_PARAM}=${step}` }} replace />
@@ -36,7 +34,9 @@ export function RoadmapCreate() {
 
   const goTo = (next: number) => setSearchParams({ [STEP_PARAM]: String(next) })
 
-  const major = MOCK_MAJORS.find(({ id }) => id === majorId)
+  // TODO: 직무 목록 로딩·실패 화면은 디자인 확인 후. 지금은 빈 목록 + 공통 에러 토스트
+  const majorList = majors.data?.categories ?? []
+  const major = majorList.find(({ id }) => id === majorId)
   const stacks = major?.techStacks ?? []
   const summary = [
     major ? [majorLabel(major.major)] : [],
@@ -57,11 +57,25 @@ export function RoadmapCreate() {
     )
   }
 
+  const handleSubmit = () => {
+    if (majorId === null) return
+    create.mutate(
+      {
+        majorId,
+        skillIds,
+        targetWeeks: weeks,
+        additionalComment: comment.trim() || undefined,
+      },
+      // 만드는 중 화면은 /roadmap이 그린다. 생성 흐름은 기록에서 지워 뒤로가기로 돌아오지 않게 한다
+      { onSuccess: () => navigate(ROUTES.roadmap, { replace: true }) },
+    )
+  }
+
   switch (step) {
     case 1:
       return (
         <MajorStep
-          majors={MOCK_MAJORS}
+          majors={majorList}
           selectedId={majorId}
           onSelect={handleSelectMajor}
           onNext={() => goTo(2)}
@@ -94,7 +108,8 @@ export function RoadmapCreate() {
           comment={comment}
           onCommentChange={setComment}
           onPrevious={() => goTo(3)}
-          onSubmit={() => setSubmitted(true)}
+          submitting={create.isPending || create.isSuccess}
+          onSubmit={handleSubmit}
         />
       )
   }

@@ -147,3 +147,12 @@ export async function put<TResponse>(
 ): Promise<TResponse> {
   return withRetry(path, () => client.put<TResponse>(path, body, config))
 }
+
+/** JSON 본문을 실어 PATCH 요청 */
+export async function patch<TResponse>(
+  path: string,
+  body?: unknown,
+  config?: RequestConfig,
+): Promise<TResponse> {
+  return withRetry(path, () => client.patch<TResponse>(path, body, config))
+}

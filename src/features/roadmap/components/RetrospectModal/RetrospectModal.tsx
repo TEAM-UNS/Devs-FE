@@ -5,6 +5,8 @@ import { RETROSPECT_MAX_LENGTH } from '../../constants/create'
 
 interface RetrospectModalProps {
   readonly title: string
+  /** 보내는 중이면 작성완료를 잠가 두 번 보내지 않게 한다 */
+  readonly submitting: boolean
   readonly onClose: () => void
   readonly onSubmit: (retrospect: string) => void
 }
@@ -15,6 +17,7 @@ interface RetrospectModalProps {
  */
 export function RetrospectModal({
   title,
+  submitting,
   onClose,
   onSubmit,
 }: RetrospectModalProps) {
@@ -80,7 +83,7 @@ export function RetrospectModal({
             >
               취소
             </Button>
-            <Button type="submit" className="flex-1">
+            <Button type="submit" disabled={submitting} className="flex-1">
               작성완료
             </Button>
           </div>
