@@ -21,7 +21,9 @@ import { useUpdateReportSubscription } from '../../hooks/useUpdateReportSubscrip
  * @returns 구독 토글과 분야 칩이 담긴 카드
  */
 export function ReportSubscriptionCard() {
-  const { data: subscription } = useQuery(subscriptionQueries.detail())
+  const { data: subscription, isRefetchError } = useQuery(
+    subscriptionQueries.detail(),
+  )
   const { data: majorList } = useQuery(majorQueries.list())
   const update = useUpdateReportSubscription()
 
@@ -29,6 +31,9 @@ export function ReportSubscriptionCard() {
   if (!subscription) return null
 
   const { totalReport, majorReport, majorIds } = subscription
+  /* 저장이 실패하면 서버 값을 다시 받아 맞추는데, 그 조회까지 실패하면 저장 안 된 값이 그대로 보인다
+     그때만 알린다. 다음 저장이나 조회가 성공하면 사라진다 */
+  const unsaved = update.isError && isRefetchError
   /* 화면 값이 아니라 캐시 값에 덮는다. 다시 그려지기 전에 또 눌러도 앞 변경이 남는다 */
   const save = (
     changes: (current: ReportSubscription) => Partial<ReportSubscription>,
@@ -114,6 +119,13 @@ export function ReportSubscriptionCard() {
           </div>
         </div>
       </div>
+
+      {/* TODO: 디자인에 없는 상태라 문구·위치는 임시. 디자이너 확인 후 바꾼다 */}
+      {unsaved && (
+        <p role="alert" className="mt-6 text-body-xs text-error">
+          설정을 저장하지 못했어요. 새로고침하면 저장된 설정을 볼 수 있어요
+        </p>
+      )}
 
       <p className="mt-6 flex items-center gap-1.5 text-body-xs text-gray-300">
         <InfoCircleIcon className="size-4 shrink-0" />

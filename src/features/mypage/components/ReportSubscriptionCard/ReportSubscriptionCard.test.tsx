@@ -149,6 +149,19 @@ describe('ReportSubscriptionCard', () => {
     expect(put).not.toHaveBeenCalled()
   })
 
+  it('저장도 다시 조회도 실패하면 저장하지 못했다고 알린다', async () => {
+    const user = userEvent.setup()
+    vi.mocked(put).mockRejectedValue(new Error('실패'))
+    await renderCard()
+    vi.mocked(get).mockRejectedValue(new Error('실패'))
+
+    await user.click(chip('모바일'))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '설정을 저장하지 못했어요',
+    )
+  })
+
   it('저장에 실패하면 누르기 전으로 되돌린다', async () => {
     const user = userEvent.setup()
     vi.mocked(put).mockRejectedValue(new Error('실패'))
