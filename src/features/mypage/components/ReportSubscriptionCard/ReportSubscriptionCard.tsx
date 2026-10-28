@@ -29,19 +29,21 @@ export function ReportSubscriptionCard() {
   if (!subscription) return null
 
   const { totalReport, majorReport, majorIds } = subscription
-  const save = (changes: Partial<ReportSubscription>) =>
-    update.mutate({ ...subscription, ...changes })
+  /* 화면 값이 아니라 캐시 값에 덮는다. 다시 그려지기 전에 또 눌러도 앞 변경이 남는다 */
+  const save = (
+    changes: (current: ReportSubscription) => Partial<ReportSubscription>,
+  ) => update.mutate((current) => ({ ...current, ...changes(current) }))
 
   const toggleField = (majorId: number) => {
     /* 분야별 구독이 꺼져 있으면 무시한다. 흐리게 두고 포인터만 막으면 키보드로는
        그대로 눌려서 선택이 바뀐다 */
     if (!majorReport) return
 
-    save({
-      majorIds: majorIds.includes(majorId)
-        ? majorIds.filter((id) => id !== majorId)
-        : [...majorIds, majorId],
-    })
+    save((current) => ({
+      majorIds: current.majorIds.includes(majorId)
+        ? current.majorIds.filter((id) => id !== majorId)
+        : [...current.majorIds, majorId],
+    }))
   }
 
   return (
@@ -59,12 +61,10 @@ export function ReportSubscriptionCard() {
             <Toggle
               aria-labelledby="subscribe-all"
               checked={totalReport}
-              onChange={(event) =>
-                save({
-                  totalReport: event.currentTarget.checked,
-                  majorReport: false,
-                })
-              }
+              onChange={(event) => {
+                const checked = event.currentTarget.checked
+                save(() => ({ totalReport: checked, majorReport: false }))
+              }}
             />
           </div>
 
@@ -79,12 +79,10 @@ export function ReportSubscriptionCard() {
               <Toggle
                 aria-labelledby="subscribe-fields"
                 checked={majorReport}
-                onChange={(event) =>
-                  save({
-                    totalReport: false,
-                    majorReport: event.currentTarget.checked,
-                  })
-                }
+                onChange={(event) => {
+                  const checked = event.currentTarget.checked
+                  save(() => ({ totalReport: false, majorReport: checked }))
+                }}
               />
             </div>
 

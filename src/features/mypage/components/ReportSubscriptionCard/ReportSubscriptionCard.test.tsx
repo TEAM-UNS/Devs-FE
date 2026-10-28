@@ -88,6 +88,33 @@ describe('ReportSubscriptionCard', () => {
     })
   })
 
+  it('저장이 끝나기 전에 또 누르면 앞 변경까지 담아 차례대로 저장한다', async () => {
+    const user = userEvent.setup()
+    let finishFirst = () => {}
+    vi.mocked(put).mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        finishFirst = resolve
+      }),
+    )
+    await renderCard()
+
+    await user.click(chip('모바일'))
+    await user.click(chip('백엔드'))
+
+    // 첫 저장이 끝나기 전에는 두 번째를 보내지 않는다
+    expect(put).toHaveBeenCalledTimes(1)
+    expect(chip('모바일')).toHaveAttribute('aria-pressed', 'true')
+    expect(chip('백엔드')).toHaveAttribute('aria-pressed', 'true')
+
+    finishFirst()
+
+    await waitFor(() => expect(put).toHaveBeenCalledTimes(2))
+    expect(put).toHaveBeenLastCalledWith('/user/report-subscription', {
+      ...SUBSCRIPTION,
+      majorIds: [2, 3, 1],
+    })
+  })
+
   it('분야별 구독이 꺼져 있으면 키보드로도 분야를 바꿀 수 없다', async () => {
     const user = userEvent.setup()
     vi.mocked(get).mockImplementation((path) =>
