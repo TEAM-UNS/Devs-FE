@@ -26,12 +26,16 @@ export function useCreateRoadmap() {
 /**
  * 항목 체크. 응답이 올 때까지 기다렸다가 캐시에 반영한다
  * 응답에 그날의 완료 여부와 학습률이 같이 와서 다시 조회하지 않는다
+ *
+ * 체크박스마다 mutation이 따로라, 여러 항목을 연달아 누르면 요청이 동시에 나간다
+ * 응답 순서가 뒤바뀌면 먼저 보낸 요청의 학습률이 나중 값을 덮으므로 같은 scope로 하나씩 보낸다
  */
 export function useCheckRoadmapItem() {
   const queryClient = useQueryClient()
   const { queryKey } = roadmapQueries.mine()
 
   return useMutation({
+    scope: { id: 'roadmap/item-check' },
     mutationFn: ({ itemId, done }: { itemId: number; done: boolean }) =>
       checkRoadmapItem(itemId, done),
     onSuccess: (response) =>

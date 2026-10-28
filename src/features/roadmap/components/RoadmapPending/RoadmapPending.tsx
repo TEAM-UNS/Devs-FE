@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { buttonClassName } from '@/shared/components/Button'
+import { Button, buttonClassName } from '@/shared/components/Button'
 import { ROUTES } from '@/shared/constants'
 import { roadmapQueries } from '../../api/roadmapQueries'
 import { RoadmapGenerating } from '../RoadmapGenerating'
@@ -28,6 +28,32 @@ export function RoadmapPending({ roadmapId }: RoadmapPendingProps) {
       })
     }
   }, [current, queryClient])
+
+  /* 조회가 실패하면 폴링이 멈춘다(roadmapQueries.status). 갇히지 않게 다시 묻는 버튼을 둔다
+     다시 성공하면 폴링도 이어진다 */
+  if (status.isError) {
+    // TODO: 디자인에 없는 화면. 실패 화면과 같은 틀의 임시 문구
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="flex flex-col items-center gap-6 text-center">
+          <div className="flex flex-col items-center gap-1">
+            <h2 className="text-h2 text-white">
+              진행 상황을 불러오지 못했어요
+            </h2>
+            <p className="text-body-md text-gray-400">
+              로드맵은 계속 만들어지고 있어요. 잠시 후 다시 확인해 주세요.
+            </p>
+          </div>
+          <Button
+            disabled={status.isFetching}
+            onClick={() => void status.refetch()}
+          >
+            다시 확인하기
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   if (current === 'failed') {
     // TODO: 실패 화면은 디자인에 없다. 생성 중 화면 틀에 맞춘 임시 문구·버튼

@@ -37,7 +37,11 @@ vi.mock('@/shared/api/http', () => ({
           : server.roadmaps[0]
       return next ? Promise.resolve(next) : Promise.reject(notFound())
     }
-    if (path.endsWith('/status')) return Promise.resolve(server.status)
+    if (path.endsWith('/status')) {
+      return server.status
+        ? Promise.resolve(server.status)
+        : Promise.reject(new AxiosError('server error'))
+    }
     return Promise.reject(notFound())
   }),
   post: vi.fn(),
@@ -134,6 +138,28 @@ describe('RoadmapPage', () => {
       'href',
       '/roadmap/new',
     )
+  })
+
+  it('진행률 조회가 실패하면 다시 확인할 수 있다', async () => {
+    server.roadmaps = [generating, completed]
+    renderPage()
+
+    const retry = await screen.findByRole('button', { name: '다시 확인하기' })
+    server.status = {
+      roadmapId: 7,
+      status: 'completed',
+      generatedWeeks: 1,
+      targetWeeks: 1,
+      progress: 100,
+      errorMessage: null,
+    }
+    await userEvent.click(retry)
+
+    expect(
+      await screen.findByRole('heading', {
+        name: '김데브의 프론트엔드 로드맵',
+      }),
+    ).toBeInTheDocument()
   })
 
   it('항목을 체크하면 응답의 완료 여부·학습률로 화면을 바꾼다', async () => {
