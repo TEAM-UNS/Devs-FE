@@ -6,6 +6,8 @@ import { LikeButton } from '../LikeButton'
 interface RetrospectCardProps {
   readonly retrospect: Retrospect
   readonly onOpen: () => void
+  /** 흐르는 줄을 채우려 반복해 놓은 복사본. 마우스로는 누르되 스크린리더·Tab은 원본만 거친다 */
+  readonly duplicate?: boolean
 }
 
 /* Figma 유리 카드(2079:10595). GLASS 효과의 굴절·분산은 CSS로 못 만들어서
@@ -21,11 +23,18 @@ const GLASS = cn(
 )
 
 /** 회고 카드 — 제목·내용 3줄·날짜·좋아요. 누르면 상세 모달 */
-export function RetrospectCard({ retrospect, onOpen }: RetrospectCardProps) {
+export function RetrospectCard({
+  retrospect,
+  onOpen,
+  duplicate = false,
+}: RetrospectCardProps) {
   const title = retrospectTitle(retrospect.dayNo)
+
+  const tabIndex = duplicate ? -1 : undefined
 
   return (
     <article
+      aria-hidden={duplicate || undefined}
       className={cn(
         'relative flex h-[180px] w-[360px] shrink-0 flex-col justify-between rounded-md p-[21px]',
         GLASS,
@@ -37,6 +46,7 @@ export function RetrospectCard({ retrospect, onOpen }: RetrospectCardProps) {
       <button
         type="button"
         onClick={onOpen}
+        tabIndex={tabIndex}
         aria-label={`${title} 회고 보기`}
         className="absolute inset-0 rounded-[inherit] focus-visible:outline-2 focus-visible:outline-primary-500"
       />
@@ -53,7 +63,11 @@ export function RetrospectCard({ retrospect, onOpen }: RetrospectCardProps) {
         <span className="text-body-sm text-gray-400">
           {formatBoardDate(retrospect.date)}
         </span>
-        <LikeButton liked={retrospect.liked} count={retrospect.likeCount} />
+        <LikeButton
+          liked={retrospect.liked}
+          count={retrospect.likeCount}
+          tabIndex={tabIndex}
+        />
       </div>
     </article>
   )

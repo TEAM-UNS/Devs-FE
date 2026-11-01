@@ -24,8 +24,9 @@ export function RetrospectBoard() {
   const rows = splitIntoRows(MOCK_RETROSPECTS)
 
   return (
-    // 배경이 화면 끝까지 깔리게 main의 안쪽 여백(p-10)만큼 밖으로 넓힌다
-    <div className="relative -m-10 h-[calc(100%+5rem)] overflow-hidden">
+    /* 배경이 화면 끝까지 깔리게 main의 안쪽 여백(p-10)만큼 밖으로 넓힌다
+       높이는 최소값만 둬서 화면이 낮으면 main이 세로로 스크롤한다. 흐르는 줄이 넘치는 가로만 자른다 */
+    <div className="relative -m-10 flex min-h-[calc(100%+5rem)] flex-col overflow-x-clip">
       <img
         src={boardBackground}
         alt=""
@@ -34,7 +35,7 @@ export function RetrospectBoard() {
       {/* Figma Rectangle 12 — 위쪽을 어둡게 눌러 제목이 배경 구슬에 묻히지 않게 한다 */}
       <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-canvas/60 via-canvas/20 via-[25%] to-transparent to-[62%]" />
 
-      <div className="relative flex h-full flex-col">
+      <div className="relative flex flex-1 flex-col pb-10">
         <header className="flex shrink-0 items-end justify-between px-12 pt-[58px]">
           <div className="flex flex-col gap-1">
             <h2 className="text-h1 text-white">주간 익명 회고 게시판</h2>

@@ -46,14 +46,13 @@ export function RetrospectRow({
       }}
     >
       {[...half, ...half].map((retrospect, index) => (
-        <li
-          key={index}
-          // 같은 회고가 여러 번 놓이므로 처음 한 번만 읽고 누를 수 있게 한다
-          inert={index >= retrospects.length}
-        >
+        <li key={index}>
+          {/* 같은 회고가 여러 번 놓인다. inert는 클릭까지 막는데, 오른쪽으로 흐르는 줄은
+              복사본부터 화면에 보여서 처음엔 아무 카드도 안 눌린다 → 복사본은 읽기·Tab에서만 뺀다 */}
           <RetrospectCard
             retrospect={retrospect}
             onOpen={() => onOpen(retrospect)}
+            duplicate={index >= retrospects.length}
           />
         </li>
       ))}
