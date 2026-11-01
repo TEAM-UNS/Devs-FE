@@ -16,6 +16,7 @@ export const ROUTES = {
   stackCompareResult: '/stack-compare/result',
   roadmap: '/roadmap',
   roadmapNew: '/roadmap/new',
+  retrospect: '/retrospect',
   chat: '/chat',
   myPage: '/my',
   about: '/about',

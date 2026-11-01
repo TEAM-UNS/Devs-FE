@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import {
+  BoardIcon,
   ChatBubbleIcon,
   ClipboardListIcon,
   HomeIcon,
@@ -29,6 +30,7 @@ const NAV_ITEMS: {
   { to: ROUTES.weeklyReport, label: '주간리포트', Icon: ClipboardListIcon },
   { to: ROUTES.stackCompare, label: '기업 스택 비교', Icon: LayersIcon },
   { to: ROUTES.roadmap, label: '로드맵', Icon: RouteIcon },
+  { to: ROUTES.retrospect, label: '익명 회고 게시판', Icon: BoardIcon },
   { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon },
   { to: ROUTES.myPage, label: '마이페이지', Icon: UserIcon },
 ]
