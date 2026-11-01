@@ -18,6 +18,7 @@ const MyPage = lazy(() => import('@/pages/MyPage'))
 const StackComparePage = lazy(() => import('@/pages/StackComparePage'))
 const RoadmapPage = lazy(() => import('@/pages/RoadmapPage'))
 const RoadmapCreatePage = lazy(() => import('@/pages/RoadmapCreatePage'))
+const RetrospectBoardPage = lazy(() => import('@/pages/RetrospectBoardPage'))
 const StackCompareResultPage = lazy(
   () => import('@/pages/StackCompareResultPage'),
 )
@@ -99,6 +100,7 @@ export const routes: RouteObject[] = [
       { path: 'stack-compare/result', element: <StackCompareResultPage /> },
       { path: 'roadmap', element: <RoadmapPage /> },
       { path: 'roadmap/new', element: <RoadmapCreatePage /> },
+      { path: 'retrospect', element: <RetrospectBoardPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],

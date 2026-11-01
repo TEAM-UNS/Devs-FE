@@ -8,6 +8,7 @@ const NAV_LABELS = [
   '주간리포트',
   '기업 스택 비교',
   '로드맵',
+  '익명 회고 게시판',
   'AI 챗봇',
   '마이페이지',
 ]
@@ -22,7 +23,7 @@ function renderSidebar(pathname = '/', progress = 64) {
 }
 
 describe('AppSidebar', () => {
-  it('로고와 네비게이션 6개를 렌더링한다', () => {
+  it('로고와 네비게이션 7개를 렌더링한다', () => {
     renderSidebar()
 
     expect(screen.getByAltText('Devs')).toBeInTheDocument()
