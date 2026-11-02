@@ -148,8 +148,8 @@ export function SignupStep1({
             message={errors.code?.message}
             {...register('code')}
           />
-          {/* 인증 메일이 스팸함으로 가는 경우가 있다. 보내기 전에는 필요 없는 말이라 보낸 뒤에만 */}
-          {sentTo !== undefined && (
+          {/* 인증 메일이 스팸함으로 가는 경우가 있다. 지금 입력한 주소로 보낸 뒤에만 보인다 */}
+          {sentTo === email && (
             <InfoNote>메일이 오지 않았다면 스팸함을 확인해주세요</InfoNote>
           )}
         </div>

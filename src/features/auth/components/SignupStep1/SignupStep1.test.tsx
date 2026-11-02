@@ -95,6 +95,8 @@ describe('SignupStep1', () => {
     expect(screen.getByRole('button', { name: /다음/ })).toBeDisabled()
     // 새 주소로 다시 받을 수 있어야 한다.
     expect(screen.getByRole('button', { name: '이메일 인증' })).toBeEnabled()
+    // 새 주소로는 아직 보내지 않았으니 스팸함 안내도 내린다
+    expect(screen.queryByText(/스팸함/)).not.toBeInTheDocument()
   })
 
   it('발송이 실패하면 에러 토스트를 띄우고 코드 입력을 열지 않는다', async () => {
