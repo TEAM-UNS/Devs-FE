@@ -12,6 +12,13 @@ import {
 
 const SERVICE_URL = 'https://kangyu.shop/'
 
+// 국외 이전 수령인 연락처(「개인정보 보호법」 제28조의8) — Google 개인정보 문의 창구
+const GOOGLE_PRIVACY_CONTACT = (
+  <ExternalLink href="https://support.google.com/policies/contact/general_privacy_form">
+    Google 개인정보 문의
+  </ExternalLink>
+)
+
 /** 개인정보 처리방침 */
 export function PrivacyPolicy() {
   return (
@@ -230,6 +237,7 @@ export function PrivacyPolicy() {
             '이전 항목',
             '이전 시점과 방법',
             '보유 기간',
+            '연락처',
           ]}
           rows={[
             [
@@ -237,21 +245,26 @@ export function PrivacyPolicy() {
               '이메일 발송 (인증 코드, 주간 리포트)',
               '이메일 주소, 메일 내용',
               '메일을 보낼 때, 암호화된 통신으로 전송',
-              '수탁자의 정책에 따름',
+              '위탁 계약 종료 시까지',
+              GOOGLE_PRIVACY_CONTACT,
             ],
             [
-              'Datadog, Inc',
+              'Datadog, Inc. (미국)',
               '서비스 성능·오류 모니터링',
               '서비스 이용 및 오류 기록, 브라우저 정보',
               '서비스 이용 중 수시, 암호화된 통신으로 전송',
-              '수탁자의 정책에 따름',
+              '위탁 계약 종료 시까지',
+              <ExternalLink key="datadog" href="mailto:privacy@datadoghq.com">
+                privacy@datadoghq.com
+              </ExternalLink>,
             ],
             [
               'Google LLC (미국)',
-              'AI 챗봇 답변 생성',
-              '질문과 대화 내용, 이름, 경력 구분, 관심 직군, 보유 기술',
-              '챗봇에 질문할 때, 암호화된 통신으로 전송',
-              '수탁자의 정책에 따름',
+              'AI 챗봇 답변 생성, 학습 로드맵 생성',
+              '질문과 대화 내용, 이름, 경력 구분, 관심 직군, 보유 기술, 로드맵에서 선택한 직군·기술·목표 기간',
+              '챗봇에 질문하거나 로드맵을 만들 때, 암호화된 통신으로 전송',
+              '위탁 계약 종료 시까지',
+              GOOGLE_PRIVACY_CONTACT,
             ],
             [
               'Google LLC (미국)',
@@ -259,6 +272,7 @@ export function PrivacyPolicy() {
               '이메일, 문의 내용, 사용 환경, 첨부 파일, Google 계정 정보(파일을 첨부할 때)',
               '문의를 보낼 때, 암호화된 통신으로 전송',
               '문의 처리 완료 후 1년',
+              GOOGLE_PRIVACY_CONTACT,
             ],
           ]}
         />

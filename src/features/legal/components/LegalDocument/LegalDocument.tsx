@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect } from 'react'
+import { type ReactNode, useLayoutEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { DevsLogo } from '@/shared/components/icons'
 import { ROUTES } from '@/shared/constants'
@@ -16,8 +16,8 @@ interface LegalDocumentProps {
 /** 로고 바 + 가운데 정렬 본문. 로그인 없이 열리는 화면이라 앱 사이드바 없이 그린다 */
 export function LegalDocument({ title, intro, children }: LegalDocumentProps) {
   /* 랜딩은 문서 전체가 스크롤돼서, 맨 아래 푸터 링크로 넘어오면 그 위치가 그대로 남아 문서 끝이 보인다
-     문서는 처음부터 읽게 열 때 맨 위로 올린다 */
-  useEffect(() => {
+     문서는 처음부터 읽게 열 때 맨 위로 올린다. 그리기 전에 올려야 문서 끝이 잠깐 보이지 않는다 */
+  useLayoutEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
