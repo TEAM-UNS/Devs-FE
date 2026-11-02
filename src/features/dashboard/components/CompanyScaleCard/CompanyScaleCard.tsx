@@ -7,6 +7,9 @@ import { EmptyMessage } from '../EmptyMessage'
 interface CompanyScaleCardProps {
   /** 현재 보고 있는 기업 규모 라벨 (예: '스타트업') */
   scale: string
+  /** 양옆에 흐리게 보이는 이전·다음 규모 (Figma 1059:5839) */
+  prevScale: string
+  nextScale: string
   ranks: readonly StackRank[]
   /** 이전/다음 규모로 이동. 넘기지 않으면 화살표는 표시만 된다 */
   onStep?: (direction: -1 | 1) => void
@@ -31,6 +34,8 @@ const STEP_BUTTON =
  */
 export function CompanyScaleCard({
   scale,
+  prevScale,
+  nextScale,
   ranks,
   onStep,
 }: CompanyScaleCardProps) {
@@ -51,7 +56,21 @@ export function CompanyScaleCard({
           >
             <ArrowIcon className="size-full" />
           </button>
+          {/* 이전·다음 규모는 바깥쪽으로 갈수록 흐려진다 — 글자에 흰 45%→투명 그라데이션을 입힌다
+              화살표가 같은 일을 하므로 스크린리더에는 지금 규모만 읽힌다 */}
+          <span
+            aria-hidden="true"
+            className="bg-linear-to-r from-white/0 to-white/45 bg-clip-text text-body-sm text-transparent"
+          >
+            {prevScale}
+          </span>
           <span className="text-h2 text-gray-1000">{scale}</span>
+          <span
+            aria-hidden="true"
+            className="bg-linear-to-r from-white/45 to-white/0 bg-clip-text text-body-sm text-transparent"
+          >
+            {nextScale}
+          </span>
           <button
             type="button"
             aria-label="다음 기업 규모"

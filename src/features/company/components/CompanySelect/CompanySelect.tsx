@@ -72,7 +72,8 @@ export function CompanySelect({
         )}
       </div>
 
-      <ul className="grid min-h-0 w-full flex-1 grid-cols-3 content-start items-start gap-8 overflow-y-auto pb-24">
+      {/* 목록이 화면 아래 끝까지 차도록 main의 아래 여백(p-10)만큼 내려 깐다. 안 그러면 카드가 끝에서 40px 위에서 잘린다 */}
+      <ul className="-mb-10 grid min-h-0 w-full flex-1 grid-cols-3 content-start items-start gap-8 overflow-y-auto pb-24">
         {companies.map((company) => (
           <li key={company.id}>
             <CompanyCard
