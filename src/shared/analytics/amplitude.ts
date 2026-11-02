@@ -33,6 +33,9 @@ export function initAmplitude() {
       },
       // 베타 테스트까지는 1로 두고 추후 트래픽이 증가하면 낮춰야함
       sessionReplay: { sampleRate: 1 },
+      /* 플래그는 화면이 쓰기 전에 뒤에서 미리 받아 둔다. 읽을 때마다 노출을 남기면 실제로 본 화면과
+         다른 variant가 기록되므로 자동 노출은 끄고, 노출은 화면이 남기는 이벤트(Dashboard Viewed 등)로 본다 */
+      experiment: { automaticExposureTracking: false },
     })
     .then(() => true)
     // 초기화가 실패해도 화면은 계속 돌아야 하기 때문에 예외처리가 필요함
@@ -81,7 +84,7 @@ function writeCachedFlag(key: string, value: string | undefined) {
 /**
  * 원격 플래그 값. 정해진 시간 안에 못 받거나 Amplitude가 꺼져 있으면 null
  * 시간이 지나도 받는 일은 계속해서, 받으면 다음 방문을 위해 기기에 남긴다
- * 값을 읽는 순간 Amplitude가 노출($exposure)을 기록한다
+ * 자동 노출 기록은 꺼 두었다. 노출은 실제로 그린 화면이 이벤트로 남긴다
  *
  * @param key 플래그 키
  * @param timeoutMs 기다릴 최대 시간

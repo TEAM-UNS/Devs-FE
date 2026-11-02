@@ -35,6 +35,15 @@ const NO_AXIS: string[] = []
 
 const PERIOD_LABELS = RISING_PERIODS.map((period) => period.label)
 
+/** 저장소가 막힌 환경(시크릿 모드 등)에서도 노출 이벤트가 깨지지 않게 로그인 여부를 읽는다 */
+function isLoggedIn(): boolean {
+  try {
+    return Boolean(getAccessToken())
+  } catch {
+    return false
+  }
+}
+
 /** 저장값이 기본값과 다른지 — 같으면 기억 모드여도 화면이 기본값과 같아 효과가 없다 */
 function differsFromDefault(filters: DashboardFilters): boolean {
   return (
@@ -90,7 +99,7 @@ export function DashboardOverview() {
     trackEvent('Dashboard Viewed', {
       filterMode: mode,
       flagSource,
-      loggedIn: Boolean(getAccessToken()),
+      loggedIn: isLoggedIn(),
       startMajorId: start.filters.majorId ?? null,
       startCompanySize: start.filters.companySize,
       startPeriod: start.filters.period,

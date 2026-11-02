@@ -335,4 +335,22 @@ describe('필터 기억 실험', () => {
       })
     })
   })
+
+  it('저장소가 막힌 환경에서도 그리고, 로그인 여부는 false로 남긴다', async () => {
+    const getItem = vi
+      .spyOn(Storage.prototype, 'getItem')
+      .mockImplementation(() => {
+        throw new Error('SecurityError')
+      })
+    renderWithQuery(<DashboardOverview />)
+
+    expect(
+      await screen.findByRole('button', { name: 'Backend' }),
+    ).toBeInTheDocument()
+    expect(trackEvent).toHaveBeenCalledWith(
+      'Dashboard Viewed',
+      expect.objectContaining({ loggedIn: false, hadSaved: false }),
+    )
+    getItem.mockRestore()
+  })
 })
