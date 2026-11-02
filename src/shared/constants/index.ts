@@ -22,6 +22,8 @@ export const ROUTES = {
   myMajorEdit: '/my/major',
   myTechStackEdit: '/my/tech-stack',
   about: '/about',
+  privacy: '/privacy',
+  terms: '/terms',
 
   /* 아래 둘은 네비게이션에 없다. 사용자가 직접 치고 들어오는 주소가 아니라
      OAuth 리다이렉트가 도착하는 곳과 그 뒤에 이어지는 화면이다. */
