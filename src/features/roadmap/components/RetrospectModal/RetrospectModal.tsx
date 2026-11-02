@@ -1,4 +1,4 @@
-import { useEffect, useRef, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Button } from '@/shared/components/Button'
 import { CloseIcon } from '@/shared/components/icons'
 import { RETROSPECT_MAX_LENGTH } from '../../constants/create'
@@ -22,6 +22,9 @@ export function RetrospectModal({
   onSubmit,
 }: RetrospectModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  // 비어 있으면 Figma 미작성 상태(2079:9850)처럼 '건너뛰고 완료하기'로 바뀐다
+  const [retrospect, setRetrospect] = useState('')
+  const empty = retrospect.trim() === ''
 
   useEffect(() => {
     dialogRef.current?.showModal()
@@ -29,8 +32,7 @@ export function RetrospectModal({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const retrospect = new FormData(event.currentTarget).get('retrospect')
-    onSubmit(typeof retrospect === 'string' ? retrospect : '')
+    onSubmit(retrospect)
   }
 
   return (
@@ -67,10 +69,12 @@ export function RetrospectModal({
               </p>
             </div>
             <textarea
-              name="retrospect"
               aria-label="회고"
+              value={retrospect}
+              onChange={(event) => setRetrospect(event.currentTarget.value)}
               maxLength={RETROSPECT_MAX_LENGTH}
-              className="h-[300px] w-full resize-none rounded-md border border-element bg-canvas px-6 py-5 text-body-md text-white outline-none focus:border-gray-300"
+              placeholder="오늘의 회고를 작성해주세요"
+              className="h-[300px] w-full resize-none rounded-md border border-element bg-canvas px-6 py-5 text-body-md text-white outline-none placeholder:text-gray-300 focus:border-gray-300"
             />
           </div>
 
@@ -84,7 +88,7 @@ export function RetrospectModal({
               취소
             </Button>
             <Button type="submit" disabled={submitting} className="flex-1">
-              작성완료
+              {empty ? '건너뛰고 완료하기' : '작성완료'}
             </Button>
           </div>
         </div>

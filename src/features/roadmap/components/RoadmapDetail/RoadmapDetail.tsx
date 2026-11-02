@@ -3,7 +3,13 @@ import { useState } from 'react'
 import { userQueries } from '@/shared/api'
 import { useCompleteRoadmapDay } from '../../hooks/useRoadmapMutations'
 import type { Roadmap } from '../../types'
-import { currentDayNo, dayState, lockedMessage } from '../../utils/roadmapDay'
+import { celebrate } from '../../utils/celebrate'
+import {
+  currentDayNo,
+  dayState,
+  finishesRoadmap,
+  lockedMessage,
+} from '../../utils/roadmapDay'
 import { RetrospectModal } from '../RetrospectModal'
 import { RoadmapProgressBar } from '../RoadmapProgressBar'
 import { RoadmapDayCard } from './RoadmapDayCard'
@@ -59,7 +65,13 @@ export function RoadmapDetail({ roadmap }: RoadmapDetailProps) {
           onSubmit={(retrospect) =>
             complete.mutate(
               { dayNo: retrospectDayNo, retrospect },
-              { onSuccess: () => setRetrospectDayNo(null) },
+              {
+                onSuccess: () => {
+                  setRetrospectDayNo(null)
+                  // 이번 날로 모든 날을 마쳤으면 로드맵 완료로 크게 터뜨린다
+                  void celebrate(finishesRoadmap(roadmap.days, retrospectDayNo))
+                },
+              },
             )
           }
         />

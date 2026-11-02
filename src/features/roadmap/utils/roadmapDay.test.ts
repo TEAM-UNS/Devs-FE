@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import type { RoadmapDay } from '../types'
-import { currentDayNo, dayState, lockedMessage } from './roadmapDay'
+import {
+  currentDayNo,
+  dayState,
+  finishesRoadmap,
+  lockedMessage,
+} from './roadmapDay'
 
 const day = (dayNo: number, locked: boolean): RoadmapDay => ({
   dayNo,
@@ -34,5 +39,17 @@ describe('lockedMessage', () => {
   it('바로 다음 날이면 "다음 날", 그 뒤로는 남은 일수를 보여준다', () => {
     expect(lockedMessage(3, 2)).toBe('다음 날에 열립니다.')
     expect(lockedMessage(4, 2)).toBe('2일 뒤에 열립니다.')
+  })
+})
+
+describe('finishesRoadmap', () => {
+  const done = (dayNo: number) => ({ ...day(dayNo, false), completed: true })
+
+  it('나머지 날을 모두 마쳤을 때만 로드맵이 끝난다', () => {
+    expect(finishesRoadmap([done(1), day(2, false)], 2)).toBe(true)
+    expect(finishesRoadmap([day(1, false), day(2, false)], 2)).toBe(false)
+    expect(finishesRoadmap([done(1), day(2, false), day(3, true)], 2)).toBe(
+      false,
+    )
   })
 })

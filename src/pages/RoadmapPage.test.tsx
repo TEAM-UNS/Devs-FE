@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AxiosError, type AxiosResponse } from 'axios'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -13,7 +13,13 @@ const server = vi.hoisted(() => ({
   status: null as RoadmapStatusResponse | null,
 }))
 
-const { patch } = vi.hoisted(() => ({ patch: vi.fn() }))
+const { patch, post, celebrate } = vi.hoisted(() => ({
+  patch: vi.fn(),
+  post: vi.fn(),
+  celebrate: vi.fn(),
+}))
+
+vi.mock('@/features/roadmap/utils/celebrate', () => ({ celebrate }))
 
 vi.mock('@/shared/analytics', () => ({
   trackEvent: vi.fn(),
@@ -44,7 +50,7 @@ vi.mock('@/shared/api/http', () => ({
     }
     return Promise.reject(notFound())
   }),
-  post: vi.fn(),
+  post,
   patch,
 }))
 
@@ -92,6 +98,8 @@ describe('RoadmapPage', () => {
     server.roadmaps = []
     server.status = null
     patch.mockReset()
+    post.mockReset()
+    celebrate.mockReset()
   })
 
   it('로드맵이 없으면(404) 생성 흐름으로 보낸다', async () => {
@@ -186,5 +194,67 @@ describe('RoadmapPage', () => {
       ).toHaveAttribute('aria-valuenow', '100'),
     )
     expect(screen.getByRole('checkbox', { name: 'JSX 학습' })).toBeChecked()
+  })
+
+  const readyToComplete: Roadmap = {
+    ...completed,
+    days: [
+      {
+        ...completed.days[0],
+        allItemsDone: true,
+        items: [{ ...completed.days[0].items[0], done: true }],
+      },
+    ],
+  }
+
+  it('회고를 비워 두면 건너뛰고 완료하고, 마지막 날이면 크게 축하한다', async () => {
+    server.roadmaps = [readyToComplete]
+    post.mockResolvedValue(undefined)
+    renderPage()
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: '로드맵 완료' }),
+    )
+    const dialog = await screen.findByRole('dialog', { hidden: true })
+    const textbox = within(dialog).getByRole('textbox', {
+      name: '회고',
+      hidden: true,
+    })
+    expect(textbox).toHaveAttribute('placeholder', '오늘의 회고를 작성해주세요')
+
+    await userEvent.type(textbox, '좋았다')
+    expect(
+      within(dialog).getByRole('button', { name: '작성완료', hidden: true }),
+    ).toBeInTheDocument()
+    await userEvent.clear(textbox)
+    await userEvent.click(
+      within(dialog).getByRole('button', {
+        name: '건너뛰고 완료하기',
+        hidden: true,
+      }),
+    )
+
+    expect(post).toHaveBeenCalledWith('/roadmap/days/1/complete', {
+      retrospect: '',
+    })
+    await waitFor(() => expect(celebrate).toHaveBeenCalledWith(true))
+  })
+
+  it('회고까지 마친 오늘은 체크가 보라로 남되 바꿀 수 없다', async () => {
+    server.roadmaps = [
+      {
+        ...readyToComplete,
+        days: [{ ...readyToComplete.days[0], completed: true }],
+      },
+    ]
+    renderPage()
+
+    const checkbox = await screen.findByRole('checkbox', { name: 'JSX 학습' })
+    expect(checkbox).toBeChecked()
+    expect(checkbox).not.toBeDisabled()
+    expect(checkbox).toHaveAttribute('aria-disabled', 'true')
+    await userEvent.click(checkbox)
+    expect(patch).not.toHaveBeenCalled()
+    expect(checkbox).toBeChecked()
   })
 })

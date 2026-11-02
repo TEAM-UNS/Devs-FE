@@ -21,3 +21,11 @@ export function lockedMessage(dayNo: number, today: number | null): string {
   const daysLeft = dayNo - today
   return daysLeft <= 1 ? '다음 날에 열립니다.' : `${daysLeft}일 뒤에 열립니다.`
 }
+
+/** 이 날을 마치면 로드맵의 모든 날이 끝나는지 — 로드맵 완료 연출 여부 */
+export function finishesRoadmap(
+  days: readonly RoadmapDay[],
+  dayNo: number,
+): boolean {
+  return days.every((day) => day.completed || day.dayNo === dayNo)
+}
