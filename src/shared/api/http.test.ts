@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { NotLoggedInError, get } from './http'
+import { get } from './http'
+import { NotLoggedInError } from './notLoggedInError'
 import { clearTokens, setTokens } from './tokenStorage'
 
 describe('토큰 없는 요청', () => {

@@ -1,5 +1,6 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
-import { NotLoggedInError, errorMessage } from '@/shared/api'
+import { errorMessage } from '@/shared/api'
+import { NotLoggedInError } from '@/shared/api/notLoggedInError'
 import { useToastStore } from '@/shared/stores/useToastStore'
 
 /** 공통 에러 토스트. 로그아웃 상태라 보내지 않은 요청은 사용자가 알 필요가 없어 띄우지 않는다 */

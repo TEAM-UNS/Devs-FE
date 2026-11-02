@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { NotLoggedInError } from '@/shared/api'
+import { NotLoggedInError } from '@/shared/api/notLoggedInError'
 import { useToastStore } from '@/shared/stores/useToastStore'
 import { createQueryClient } from './queryClient'
 

@@ -6,6 +6,7 @@ import {
   getRefreshToken,
   setTokens,
 } from './tokenStorage'
+import { NotLoggedInError } from './notLoggedInError'
 
 const REISSUE_PATH = '/user/reissue'
 const REFRESH_TOKEN_HEADER = 'X-Refresh-Token'
@@ -31,18 +32,6 @@ const GUEST_PATH_PREFIXES = ['/majors', '/dashboard/']
 
 const allowsGuest = (path: string) =>
   GUEST_PATH_PREFIXES.some((prefix) => path.startsWith(prefix))
-
-/**
- * 로그인이 필요한 요청을 토큰 없이 보내려 할 때. 서버에 보내지 않고 바로 실패시킨다
- * 로그아웃 직후 아직 화면에 남은 쿼리가 다시 불리는 경우처럼 사용자가 알 필요 없는 실패라
- * 공통 에러 토스트는 이 에러를 띄우지 않는다
- */
-export class NotLoggedInError extends Error {
-  constructor(path: string) {
-    super(`로그인이 필요한 요청을 토큰 없이 보내려 했다: ${path}`)
-    this.name = 'NotLoggedInError'
-  }
-}
 
 /* axios를 쓰지 않는 요청(챗봇 SSE의 fetch)도 같은 서버로 가야 해서 내보낸다 */
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
