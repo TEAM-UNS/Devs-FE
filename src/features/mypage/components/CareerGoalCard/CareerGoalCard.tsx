@@ -7,6 +7,8 @@ interface CareerGoalCardProps {
   /** 목표 직무(내 전공) 표기. 없으면 빈 문자열 */
   readonly majors: string
   readonly skills: string[]
+  /** 내가 쓴 회고 개수. 모르면 — */
+  readonly retrospectCount?: number
 }
 
 // 값이 없거나 아직 서버에서 받을 수 없는 줄
@@ -20,10 +22,12 @@ interface RowProps {
   readonly value: string
   /** 화살표로 갈 곳. 없으면 화살표를 누를 수 없다 */
   readonly to?: string
+  /** 화살표의 스크린리더 이름 */
+  readonly action?: string
   readonly last?: boolean
 }
 
-function Row({ label, value, to, last }: RowProps) {
+function Row({ label, value, to, action = '수정', last }: RowProps) {
   return (
     <li
       className={cn(
@@ -38,7 +42,7 @@ function Row({ label, value, to, last }: RowProps) {
         </span>
       </div>
       {to ? (
-        <Link to={to} aria-label={`${label} 수정`} className={ARROW_CLASS}>
+        <Link to={to} aria-label={`${label} ${action}`} className={ARROW_CLASS}>
           <ArrowIcon className="size-6 rotate-180" />
         </Link>
       ) : (
@@ -57,9 +61,14 @@ function Row({ label, value, to, last }: RowProps) {
 /**
  * 로드맵 관리 카드 — Figma 659:4119
  * 목표직무·관심 스택은 내 정보로 채우고 각 수정 화면으로 보낸다
- * TODO: 완료한 로드맵·내 후기는 개수·목록 API가 생기면 값과 이동을 붙인다
+ * 내 회고 보기는 내 회고 몰아보기(/my/retrospects)로 보낸다
+ * TODO: 나의 로드맵은 목록 기능을 미뤄 두어 값·이동이 없다
  */
-export function CareerGoalCard({ majors, skills }: CareerGoalCardProps) {
+export function CareerGoalCard({
+  majors,
+  skills,
+  retrospectCount,
+}: CareerGoalCardProps) {
   return (
     <section className="flex flex-col gap-2 rounded-sm bg-container px-8 py-6">
       <h2 className="text-body-lg font-semibold text-gray-1000">로드맵 관리</h2>
@@ -70,8 +79,14 @@ export function CareerGoalCard({ majors, skills }: CareerGoalCardProps) {
           value={skills.length > 0 ? skills.join(', ') : EMPTY}
           to={ROUTES.myTechStackEdit}
         />
-        <Row label="완료한 로드맵" value={EMPTY} />
-        <Row label="내 후기 보기" value={EMPTY} last />
+        <Row label="나의 로드맵" value={EMPTY} />
+        <Row
+          label="내 회고 보기"
+          value={retrospectCount === undefined ? EMPTY : `${retrospectCount}개`}
+          to={ROUTES.myRetrospects}
+          action="열기"
+          last
+        />
       </ul>
     </section>
   )

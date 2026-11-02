@@ -19,6 +19,7 @@ const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'))
 const TermsPage = lazy(() => import('@/pages/TermsPage'))
 const ChatPage = lazy(() => import('@/pages/ChatPage'))
 const MyPage = lazy(() => import('@/pages/MyPage'))
+const MyRetrospectsPage = lazy(() => import('@/pages/MyRetrospectsPage'))
 const MajorEditPage = lazy(() => import('@/pages/MajorEditPage'))
 const TechStackEditPage = lazy(() => import('@/pages/TechStackEditPage'))
 const StackComparePage = lazy(() => import('@/pages/StackComparePage'))
@@ -179,7 +180,10 @@ export const routes: RouteObject[] = [
       },
       {
         element: <AuthGate lock="myPage" />,
-        children: [{ path: 'my', element: <MyPage /> }],
+        children: [
+          { path: 'my', element: <MyPage /> },
+          { path: 'my/retrospects', element: <MyRetrospectsPage /> },
+        ],
       },
       { path: '*', element: <NotFoundPage /> },
     ],

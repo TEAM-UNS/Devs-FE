@@ -19,6 +19,7 @@ export const ROUTES = {
   retrospect: '/retrospect',
   chat: '/chat',
   myPage: '/my',
+  myRetrospects: '/my/retrospects',
   myMajorEdit: '/my/major',
   myTechStackEdit: '/my/tech-stack',
   about: '/about',
