@@ -1,4 +1,5 @@
 import { WeeklyReport } from '@/features/report'
+import { PageContainer } from '@/shared/components/PageContainer'
 import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
@@ -11,7 +12,9 @@ export default function WeeklyReportPage() {
   return (
     <>
       <PageTitle name="주간리포트" />
-      <WeeklyReport />
+      <PageContainer className="h-full">
+        <WeeklyReport />
+      </PageContainer>
     </>
   )
 }

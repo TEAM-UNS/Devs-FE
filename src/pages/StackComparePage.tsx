@@ -1,4 +1,5 @@
 import { StackCompareSelect } from '@/features/company'
+import { PageContainer } from '@/shared/components/PageContainer'
 import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
@@ -10,7 +11,9 @@ export default function StackComparePage() {
   return (
     <>
       <PageTitle name="기업 스택 비교" />
-      <StackCompareSelect />
+      <PageContainer className="h-full">
+        <StackCompareSelect />
+      </PageContainer>
     </>
   )
 }

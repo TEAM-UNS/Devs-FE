@@ -29,15 +29,16 @@ export function PopularStacksCard({
   return (
     <ChartCard
       title="인기 기술 스택"
-      description="현재 가장 인기있는 기술 스택들을 그래프로 확인할 수 있습니다."
+      // 설명을 빼고 필터 칩을 한 줄에 둔다. 좁아지면 줄을 넘기지 않고 가로로 스크롤한다
       className="h-[280px]"
       action={
-        <div className="flex flex-wrap justify-end gap-1.5">
+        <div className="flex min-w-0 gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {filters.map((filter) => {
             const selected = filter === selectedFilter
             return (
               <Chip
                 key={filter}
+                className="shrink-0"
                 size="small"
                 selected={selected}
                 icon={selected ? CHECK_ICON : undefined}

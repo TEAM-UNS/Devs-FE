@@ -1,4 +1,5 @@
 import { Roadmap } from '@/features/roadmap'
+import { PageContainer } from '@/shared/components/PageContainer'
 import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
@@ -10,7 +11,9 @@ export default function RoadmapPage() {
   return (
     <>
       <PageTitle name="로드맵" />
-      <Roadmap />
+      <PageContainer className="h-full">
+        <Roadmap />
+      </PageContainer>
     </>
   )
 }

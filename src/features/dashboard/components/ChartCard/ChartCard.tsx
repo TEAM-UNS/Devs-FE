@@ -3,7 +3,8 @@ import { cn } from '@/shared/utils/cn'
 
 interface ChartCardProps {
   title: string
-  description: string
+  /** 제목 아래 설명. 없으면 제목만 둔다 — 액션이 넓은 카드(인기 기술 스택)에 자리를 내준다 */
+  description?: string
   /** 헤더 우측 슬롯 — 필터 칩·기간 토글 등 */
   action?: ReactNode
   children: ReactNode
@@ -27,9 +28,11 @@ export function ChartCard({
       )}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col">
+        <div className="flex shrink-0 flex-col">
           <h2 className="text-body-lg font-semibold text-gray-1000">{title}</h2>
-          <p className="text-body-sm text-gray-400">{description}</p>
+          {description && (
+            <p className="text-body-sm text-gray-400">{description}</p>
+          )}
         </div>
         {action}
       </div>
