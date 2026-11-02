@@ -16,8 +16,9 @@ export function RoadmapProgressBar({ value, label }: RoadmapProgressBarProps) {
         aria-valuenow={value}
         className="h-3 flex-1 overflow-hidden rounded-full border border-gray-200 bg-element"
       >
+        {/* 값이 바뀌면 막대가 이어서 늘어난다(생성 진행률 틱·학습률 체크) */}
         <div
-          className="h-full rounded-full bg-linear-to-r from-primary-600 to-primary-300"
+          className="h-full rounded-full bg-linear-to-r from-primary-600 to-primary-300 transition-[width] duration-300 ease-out"
           style={{ width: `${value}%` }}
         />
       </div>

@@ -120,10 +120,13 @@ describe('RoadmapPage', () => {
     }
     renderPage()
 
+    // 막대를 100까지 채운 뒤 넘어간다
     expect(
-      await screen.findByRole('heading', {
-        name: '김데브의 프론트엔드 로드맵',
-      }),
+      await screen.findByRole(
+        'heading',
+        { name: '김데브의 프론트엔드 로드맵' },
+        { timeout: 3000 },
+      ),
     ).toBeInTheDocument()
   })
 
@@ -163,10 +166,13 @@ describe('RoadmapPage', () => {
     }
     await userEvent.click(retry)
 
+    // 막대를 100까지 채운 뒤 넘어간다
     expect(
-      await screen.findByRole('heading', {
-        name: '김데브의 프론트엔드 로드맵',
-      }),
+      await screen.findByRole(
+        'heading',
+        { name: '김데브의 프론트엔드 로드맵' },
+        { timeout: 3000 },
+      ),
     ).toBeInTheDocument()
   })
 
