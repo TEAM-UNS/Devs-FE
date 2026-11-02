@@ -66,10 +66,8 @@ export function HeroSection() {
         </h1>
         <p className="text-body-lg text-gray-400">{HERO_DESCRIPTION}</p>
       </div>
-      <div className="absolute top-[295px] left-1/2 flex -translate-x-1/2 gap-3">
-        <CtaLink cta="login" location="hero" variant="outline">
-          로그인
-        </CtaLink>
+      {/* 로그인은 헤더에 있어 히어로는 시작하기 하나만 둔다 */}
+      <div className="absolute top-[295px] left-1/2 -translate-x-1/2">
         <CtaLink cta="start" location="hero">
           무료로 시작하기
         </CtaLink>
