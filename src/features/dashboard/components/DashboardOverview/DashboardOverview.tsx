@@ -3,7 +3,11 @@ import { useQuery } from '@tanstack/react-query'
 import { trackEvent } from '@/shared/analytics'
 import { getAccessToken, majorLabel, majorQueries } from '@/shared/api'
 import { dashboardQueries } from '../../api'
-import { type FilterMode, useFilterMode } from '../../hooks/useFilterMode'
+import {
+  type FilterMode,
+  type FlagSource,
+  useFilterMode,
+} from '../../hooks/useFilterMode'
 import {
   ALL_MAJORS_LABEL,
   COMPANY_SIZES,
@@ -43,16 +47,23 @@ const PERIOD_LABELS = RISING_PERIODS.map((period) => period.label)
  * 본문은 비워 두고, 필터와 상관없는 전공 목록·KPI는 미리 받아 둔다
  */
 export function DashboardOverview() {
-  const { mode, flagLatencyMs } = useFilterMode()
+  const { mode, flagSource, flagLatencyMs } = useFilterMode()
   useQuery(majorQueries.list())
   useQuery(dashboardQueries.summary())
 
   if (mode === 'pending') return null
-  return <DashboardBody mode={mode} flagLatencyMs={flagLatencyMs} />
+  return (
+    <DashboardBody
+      mode={mode}
+      flagSource={flagSource}
+      flagLatencyMs={flagLatencyMs}
+    />
+  )
 }
 
 interface DashboardBodyProps {
   readonly mode: FilterMode
+  readonly flagSource: FlagSource
   readonly flagLatencyMs: number | null
 }
 
@@ -65,7 +76,11 @@ function differsFromDefault(filters: DashboardFilters): boolean {
   )
 }
 
-function DashboardBody({ mode, flagLatencyMs }: DashboardBodyProps) {
+function DashboardBody({
+  mode,
+  flagSource,
+  flagLatencyMs,
+}: DashboardBodyProps) {
   // 시작값은 처음 그릴 때 한 번만 정한다. 보고 있는 필터가 중간에 바뀌지 않게
   const [start] = useState(() => {
     const saved = loadFilters()
@@ -102,6 +117,7 @@ function DashboardBody({ mode, flagLatencyMs }: DashboardBodyProps) {
   useEffect(() => {
     trackEvent('Dashboard Viewed', {
       filterMode: mode,
+      flagSource,
       flagLatencyMs,
       loggedIn: Boolean(getAccessToken()),
       startMajorId: start.filters.majorId ?? null,
@@ -113,7 +129,7 @@ function DashboardBody({ mode, flagLatencyMs }: DashboardBodyProps) {
       savedPeriod: start.saved?.period ?? null,
       wouldDiffer: start.saved !== null && differsFromDefault(start.saved),
     })
-  }, [mode, flagLatencyMs, start])
+  }, [mode, flagSource, flagLatencyMs, start])
 
   // 직접 바꿀 때만 남긴다. 들어올 때 저장하면 기본값(A)이 마지막 선택을 덮어쓴다
   // A 기간에도 남겨 두어 B로 바뀐 첫날부터 기억이 동작한다

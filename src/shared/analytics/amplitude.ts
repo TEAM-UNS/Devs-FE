@@ -50,8 +50,37 @@ export function flagsEnabled(): boolean {
 // 플래그는 페이지당 한 번만 받아 온다
 let started: Promise<void> | null = null
 
+/* 마지막으로 받은 플래그 값. Amplitude 초기화가 1초 넘게 걸려 첫 화면이 플래그를 기다릴 수 없어서,
+   다음 방문부터는 이 값으로 바로 그린다. variant가 없으면(undefined) 빈 문자열로 남긴다 */
+const cacheKeyOf = (key: string) => `uns-flag:${key}`
+
+/**
+ * 이 기기에서 마지막으로 받은 플래그 값
+ *
+ * @param key 플래그 키
+ * @returns 받은 적 없으면 null, variant가 없었으면 undefined
+ */
+export function readCachedFlag(key: string): string | undefined | null {
+  try {
+    const cached = localStorage.getItem(cacheKeyOf(key))
+    if (cached === null) return null
+    return cached === '' ? undefined : cached
+  } catch {
+    return null
+  }
+}
+
+function writeCachedFlag(key: string, value: string | undefined) {
+  try {
+    localStorage.setItem(cacheKeyOf(key), value ?? '')
+  } catch {
+    // 저장소를 못 쓰면 매번 기다린다
+  }
+}
+
 /**
  * 원격 플래그 값. 정해진 시간 안에 못 받거나 Amplitude가 꺼져 있으면 null
+ * 시간이 지나도 받는 일은 계속해서, 받으면 다음 방문을 위해 기기에 남긴다
  * 값을 읽는 순간 Amplitude가 노출($exposure)을 기록한다
  *
  * @param key 플래그 키
@@ -68,7 +97,9 @@ export async function fetchFlag(
     if (!client) return null
     started ??= client.start()
     await started
-    return client.variant(key).value
+    const { value } = client.variant(key)
+    writeCachedFlag(key, value)
+    return value
   })().catch(() => null)
 
   let timer: ReturnType<typeof setTimeout> | undefined

@@ -10,3 +10,17 @@ describe('원격 플래그', () => {
     ).resolves.toBeNull()
   })
 })
+
+describe('플래그 캐시', () => {
+  it('받은 적 없으면 null, 빈 값은 variant 없음(undefined)으로 읽는다', async () => {
+    const { readCachedFlag } = await import('./amplitude')
+    localStorage.removeItem('uns-flag:test-flag')
+    expect(readCachedFlag('test-flag')).toBeNull()
+
+    localStorage.setItem('uns-flag:test-flag', '')
+    expect(readCachedFlag('test-flag')).toBeUndefined()
+
+    localStorage.setItem('uns-flag:test-flag', 'on')
+    expect(readCachedFlag('test-flag')).toBe('on')
+  })
+})
