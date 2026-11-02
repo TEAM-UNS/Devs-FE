@@ -13,8 +13,14 @@ export { signup, updateMajor, updateTechStack } from './api'
 export { useLogin } from './hooks/useLogin'
 export { useOAuthLogin } from './hooks/useOAuthLogin'
 export { useOnboarding, type OnboardingInput } from './hooks/useOnboarding'
+export { useUpdateMajor } from './hooks/useUpdateMajor'
+export { useUpdateTechStack } from './hooks/useUpdateTechStack'
 export { startOAuthLogin, takeOAuthProvider } from './utils/oauthProvider'
-export { toPersonalHistory } from './utils/toPersonalHistory'
+export {
+  fromPersonalHistory,
+  toPersonalHistory,
+} from './utils/toPersonalHistory'
+export { groupSkillsByMajor } from './utils/groupSkillsByMajor'
 export {
   type SignupStep1Input,
   type SignupStep2Input,

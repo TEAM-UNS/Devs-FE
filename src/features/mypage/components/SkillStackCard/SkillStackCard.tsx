@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { ROUTES } from '@/shared/constants'
 import { Chip } from '@/shared/components/Chip'
 import { ArrowIcon } from '@/shared/components/icons'
 
@@ -19,15 +21,13 @@ export function SkillStackCard({ skills }: SkillStackCardProps) {
           보유 기술 스택
         </h2>
 
-        {/* TODO: 보유 기술 스택 수정 화면이 생기면 연결한다 */}
-        <button
-          type="button"
-          disabled
+        <Link
+          to={ROUTES.myTechStackEdit}
           aria-label="보유 기술 스택 수정"
           className="flex size-6 items-center justify-center text-gray-400 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary-500"
         >
           <ArrowIcon className="size-6 rotate-180" />
-        </button>
+        </Link>
       </div>
 
       <ul className="mt-5 flex flex-wrap gap-3">

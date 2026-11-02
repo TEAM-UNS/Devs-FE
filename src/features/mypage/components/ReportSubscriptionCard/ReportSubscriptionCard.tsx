@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { majorLabel, majorQueries } from '@/shared/api'
 import { Chip } from '@/shared/components/Chip'
 import { cn } from '@/shared/utils/cn'
-import { InfoCircleIcon } from '@/shared/components/icons'
+import { InfoNote } from '@/shared/components/InfoNote'
 import { Toggle } from '@/shared/components/Toggle'
 import {
   type ReportSubscription,
@@ -127,10 +127,12 @@ export function ReportSubscriptionCard() {
         </p>
       )}
 
-      <p className="mt-6 flex items-center gap-1.5 text-body-xs text-gray-300">
-        <InfoCircleIcon className="size-4 shrink-0" />
-        구독 중인 리포트는 매주 월요일 아침 9시에 이메일로 발송됩니다
-      </p>
+      <div className="mt-6 flex flex-col gap-1">
+        <InfoNote>
+          구독 중인 리포트는 매주 월요일 아침 9시에 이메일로 발송됩니다
+        </InfoNote>
+        <InfoNote>메일이 보이지 않으면 스팸함을 확인해주세요</InfoNote>
+      </div>
     </section>
   )
 }

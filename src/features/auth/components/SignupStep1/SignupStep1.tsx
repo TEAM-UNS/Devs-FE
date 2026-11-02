@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
 import { Input } from '@/shared/components/Input'
 import { ArrowIcon } from '@/shared/components/icons'
+import { InfoNote } from '@/shared/components/InfoNote'
 import { useToastStore } from '@/shared/stores/useToastStore'
 import { sendEmailCode, verifyEmail } from '../../api'
 import { useCountdown } from '../../hooks/useCountdown'
@@ -135,17 +136,23 @@ export function SignupStep1({
             </Button>
           </div>
         </div>
-        <Input
-          label="이메일 인증"
-          inputMode="numeric"
-          maxLength={CODE_LENGTH}
-          placeholder={`전송된 코드 ${CODE_LENGTH}자리를 입력해주세요`}
-          disabled={!codeActive}
-          timer={codeActive ? formatTimer(secondsLeft) : undefined}
-          state={errors.code ? 'error' : 'default'}
-          message={errors.code?.message}
-          {...register('code')}
-        />
+        <div className="flex flex-col gap-2">
+          <Input
+            label="이메일 인증"
+            inputMode="numeric"
+            maxLength={CODE_LENGTH}
+            placeholder={`전송된 코드 ${CODE_LENGTH}자리를 입력해주세요`}
+            disabled={!codeActive}
+            timer={codeActive ? formatTimer(secondsLeft) : undefined}
+            state={errors.code ? 'error' : 'default'}
+            message={errors.code?.message}
+            {...register('code')}
+          />
+          {/* 인증 메일이 스팸함으로 가는 경우가 있다. 지금 입력한 주소로 보낸 뒤에만 보인다 */}
+          {sentTo === email && (
+            <InfoNote>메일이 오지 않았다면 스팸함을 확인해주세요</InfoNote>
+          )}
+        </div>
       </div>
       <Button
         type="submit"

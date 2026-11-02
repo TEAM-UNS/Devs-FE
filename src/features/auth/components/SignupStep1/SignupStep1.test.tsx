@@ -49,6 +49,7 @@ describe('SignupStep1', () => {
     renderWithQuery(<SignupStep1 onNext={noop} />)
 
     expect(screen.getByLabelText('이메일 인증')).toBeDisabled()
+    expect(screen.queryByText(/스팸함/)).not.toBeInTheDocument()
   })
 
   it('발송이 성공하면 코드 입력이 열리고 타이머(5:00)가 뜬다', async () => {
@@ -60,6 +61,9 @@ describe('SignupStep1', () => {
     // 응답이 온 뒤에 열리므로 findBy로 기다린다
     expect(await screen.findByText('5:00')).toBeInTheDocument()
     expect(screen.getByLabelText('이메일 인증')).toBeEnabled()
+    expect(
+      screen.getByText('메일이 오지 않았다면 스팸함을 확인해주세요'),
+    ).toBeInTheDocument()
     // 전송 후에는 재전송을 막는다 (Figma 120:1684 이후 인증 버튼 비활성)
     expect(screen.getByRole('button', { name: '이메일 인증' })).toBeDisabled()
     // 전송 성공 토스트 — 표시는 App에 마운트된 ToastViewport의 몫이라 스토어를 본다
@@ -91,6 +95,8 @@ describe('SignupStep1', () => {
     expect(screen.getByRole('button', { name: /다음/ })).toBeDisabled()
     // 새 주소로 다시 받을 수 있어야 한다.
     expect(screen.getByRole('button', { name: '이메일 인증' })).toBeEnabled()
+    // 새 주소로는 아직 보내지 않았으니 스팸함 안내도 내린다
+    expect(screen.queryByText(/스팸함/)).not.toBeInTheDocument()
   })
 
   it('발송이 실패하면 에러 토스트를 띄우고 코드 입력을 열지 않는다', async () => {

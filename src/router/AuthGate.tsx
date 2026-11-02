@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import boardBackground from '@/assets/locked/board.jpg'
 import chatBackground from '@/assets/locked/chat.jpg'
 import myBackground from '@/assets/locked/my.jpg'
@@ -43,16 +43,20 @@ const LOCKS = {
   },
 } as const
 
-interface AuthGateProps {
-  /** 비로그인일 때 띄울 잠금 화면 */
-  readonly lock: keyof typeof LOCKS
-}
+type AuthGateProps =
+  /** 비로그인일 때 띄울 잠금 화면. 잠금 화면은 RootLayout(사이드바·main 여백) 안에서만 맞게 그려진다 */
+  | { readonly lock: keyof typeof LOCKS }
+  /** RootLayout 밖 전체 화면(마이페이지 수정 등)은 잠금 화면 대신 그 화면의 부모로 보낸다 */
+  | { readonly guestRedirect: string }
 
 /**
  * 로그인해야 쓸 수 있는 화면 묶음. 로그인했으면 그대로, 아니면 그 화면의 잠금 안내를 그린다
  * 로그인으로 튕기지 않고 사이드바를 둔 채 안내만 바꿔서, 비로그인도 메뉴를 둘러볼 수 있다
  */
-export function AuthGate({ lock }: AuthGateProps) {
+export function AuthGate(props: AuthGateProps) {
   if (getAccessToken()) return <Outlet />
-  return <LoginRequired {...LOCKS[lock]} />
+  if ('guestRedirect' in props) {
+    return <Navigate to={props.guestRedirect} replace />
+  }
+  return <LoginRequired {...LOCKS[props.lock]} />
 }

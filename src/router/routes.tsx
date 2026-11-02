@@ -2,6 +2,7 @@
 import { lazy, Suspense } from 'react'
 import type { RouteObject } from 'react-router-dom'
 import { RouteFallback } from '@/shared/components/RouteFallback'
+import { ROUTES } from '@/shared/constants'
 import { AuthGate } from './AuthGate'
 import { RootLayout } from './RootLayout'
 
@@ -14,8 +15,12 @@ const SignupPage = lazy(() => import('@/pages/SignupPage'))
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const OAuthCallbackPage = lazy(() => import('@/pages/OAuthCallbackPage'))
 const OnboardingPage = lazy(() => import('@/pages/OnboardingPage'))
+const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'))
+const TermsPage = lazy(() => import('@/pages/TermsPage'))
 const ChatPage = lazy(() => import('@/pages/ChatPage'))
 const MyPage = lazy(() => import('@/pages/MyPage'))
+const MajorEditPage = lazy(() => import('@/pages/MajorEditPage'))
+const TechStackEditPage = lazy(() => import('@/pages/TechStackEditPage'))
 const StackComparePage = lazy(() => import('@/pages/StackComparePage'))
 const RoadmapPage = lazy(() => import('@/pages/RoadmapPage'))
 const RoadmapCreatePage = lazy(() => import('@/pages/RoadmapCreatePage'))
@@ -58,6 +63,39 @@ function LandingRoute() {
   )
 }
 
+function MajorEditRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <MajorEditPage />
+    </Suspense>
+  )
+}
+
+function TechStackEditRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <TechStackEditPage />
+    </Suspense>
+  )
+}
+
+/* 법률 문서는 랜딩처럼 비로그인 방문자도 보는 화면이라 가드(RootLayout) 밖에 둔다 */
+function PrivacyRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <PrivacyPage />
+    </Suspense>
+  )
+}
+
+function TermsRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <TermsPage />
+    </Suspense>
+  )
+}
+
 function OnboardingRoute() {
   return (
     <Suspense fallback={authFallback}>
@@ -85,10 +123,27 @@ export const routes: RouteObject[] = [
     path: '/onboarding',
     element: <OnboardingRoute />,
   },
+  /* 마이페이지 수정은 온보딩처럼 전체 화면이라 RootLayout 밖에 둔다
+     잠금 화면은 RootLayout 안에서만 맞게 그려져서, 비로그인은 마이페이지(잠금 화면)로 보낸다 */
+  {
+    element: <AuthGate guestRedirect={ROUTES.myPage} />,
+    children: [
+      { path: '/my/major', element: <MajorEditRoute /> },
+      { path: '/my/tech-stack', element: <TechStackEditRoute /> },
+    ],
+  },
   /* 랜딩은 비로그인 방문자용이라 가드(RootLayout) 밖에 둔다 */
   {
     path: '/',
     element: <LandingRoute />,
+  },
+  {
+    path: '/privacy',
+    element: <PrivacyRoute />,
+  },
+  {
+    path: '/terms',
+    element: <TermsRoute />,
   },
   /* 메인·소개는 비로그인도 본다. 나머지는 AuthGate가 비로그인이면 잠금 안내로 바꾼다 */
   {

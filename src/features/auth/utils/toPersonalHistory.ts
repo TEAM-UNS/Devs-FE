@@ -33,3 +33,22 @@ export function toPersonalHistory(
 
   return lookup[career.careerLevel] ?? 'NO_EXPERIENCE'
 }
+
+/**
+ * `toPersonalHistory`의 반대 — 서버 ENUM을 3단계 경력 선택으로 되돌린다.
+ * 마이페이지 수정 화면이 지금 값을 미리 골라 두는 데 쓴다.
+ *
+ * @param history 서버 ENUM 값
+ * @returns 3단계 경력 유무·연차 (`NO_EXPERIENCE`면 경력 없음)
+ */
+export function fromPersonalHistory(
+  history: PersonalHistory,
+): Pick<SignupStep3Input, 'careerType' | 'careerLevel'> {
+  const level = Object.entries(LEVEL_TO_HISTORY).find(
+    ([, value]) => value === history,
+  )?.[0]
+
+  return level
+    ? { careerType: 'has', careerLevel: level }
+    : { careerType: 'none' }
+}

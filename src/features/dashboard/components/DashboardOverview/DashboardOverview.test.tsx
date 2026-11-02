@@ -1,6 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   MOCK_COMPANY_SIZE,
   MOCK_POPULAR,
@@ -19,6 +19,23 @@ import { DashboardOverview } from './DashboardOverview'
 vi.mock('../../hooks/useEChart', () => ({
   useEChart: () => ({ current: null }),
 }))
+
+/* 필터 기억 실험의 모드. 플래그는 원격이라 여기서 정해 끼운다 */
+let filterMode: 'default' | 'remember' | 'fallback' = 'default'
+vi.mock('../../hooks/useFilterMode', () => ({
+  useFilterMode: () => ({ mode: filterMode, flagSource: 'cache' }),
+}))
+
+const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }))
+vi.mock('@/shared/analytics', () => ({ trackEvent }))
+
+const SAVED_KEY = 'uns-dashboard-filters'
+
+beforeEach(() => {
+  filterMode = 'default'
+  localStorage.clear()
+  trackEvent.mockClear()
+})
 
 /* 요약만 상황별로 바꿔 끼우고, 나머지는 고정 응답을 쓴다. */
 let summaryResponse = MOCK_SUMMARY
@@ -213,5 +230,127 @@ describe('DashboardOverview', () => {
     expect(within(mentionCard).getByText('-')).toBeInTheDocument()
 
     summaryResponse = MOCK_SUMMARY
+  })
+})
+
+describe('필터 기억 실험', () => {
+  const saved = { majorId: 1, companySize: 'LARGE', period: 'WEEK' }
+
+  it('기억 모드면 마지막 선택으로 시작한다', async () => {
+    filterMode = 'remember'
+    localStorage.setItem(SAVED_KEY, JSON.stringify(saved))
+    renderWithQuery(<DashboardOverview />)
+
+    expect(
+      await screen.findByRole('button', { name: 'Backend' }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText('대기업')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '1주' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    expect(trackEvent).toHaveBeenCalledWith('Dashboard Viewed', {
+      filterMode: 'remember',
+      flagSource: 'cache',
+      loggedIn: false,
+      startMajorId: 1,
+      startCompanySize: 'LARGE',
+      startPeriod: 'WEEK',
+      hadSaved: true,
+      savedMajorId: 1,
+      savedCompanySize: 'LARGE',
+      savedPeriod: 'WEEK',
+      wouldDiffer: true,
+    })
+  })
+
+  it('기본 모드면 저장값이 있어도 기본값으로 시작하고, 들어온 것만으로 저장값을 덮지 않는다', async () => {
+    localStorage.setItem(SAVED_KEY, JSON.stringify(saved))
+    renderWithQuery(<DashboardOverview />)
+
+    expect(
+      await screen.findByRole('button', { name: 'Backend' }),
+    ).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByText('스타트업')).toBeInTheDocument()
+    expect(JSON.parse(localStorage.getItem(SAVED_KEY) ?? '{}')).toEqual(saved)
+    // A 방문에도 저장값을 남겨, 기억했다면 달라졌을 방문인지 알 수 있다
+    expect(trackEvent).toHaveBeenCalledWith(
+      'Dashboard Viewed',
+      expect.objectContaining({
+        filterMode: 'default',
+        startMajorId: null,
+        savedMajorId: 1,
+        wouldDiffer: true,
+      }),
+    )
+  })
+
+  it('저장값이 기본값과 같으면 wouldDiffer는 false', async () => {
+    localStorage.setItem(
+      SAVED_KEY,
+      JSON.stringify({ companySize: 'STARTUP', period: 'MONTH' }),
+    )
+    renderWithQuery(<DashboardOverview />)
+
+    await screen.findByRole('button', { name: 'Backend' })
+    expect(trackEvent).toHaveBeenCalledWith(
+      'Dashboard Viewed',
+      expect.objectContaining({ hadSaved: true, wouldDiffer: false }),
+    )
+  })
+
+  it('기본 모드에서도 직접 바꾼 선택은 남기고 변경 이벤트를 보낸다', async () => {
+    renderWithQuery(<DashboardOverview />)
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Backend' }),
+    )
+
+    expect(JSON.parse(localStorage.getItem(SAVED_KEY) ?? '{}')).toEqual({
+      majorId: 1,
+      companySize: 'STARTUP',
+      period: 'MONTH',
+    })
+    expect(trackEvent).toHaveBeenCalledWith('Dashboard Filter Changed', {
+      filterMode: 'default',
+      filter: 'majorId',
+      from: null,
+      to: 1,
+    })
+  })
+
+  it('기억한 전공이 목록에 없으면 전체로 본다', async () => {
+    filterMode = 'remember'
+    localStorage.setItem(SAVED_KEY, JSON.stringify({ ...saved, majorId: 999 }))
+    renderWithQuery(<DashboardOverview />)
+
+    await screen.findByRole('button', { name: 'Backend' })
+    expect(screen.getByRole('button', { name: '전체' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await waitFor(async () => {
+      expect(await lastParamsOf('/dashboard/popular-tech-stacks')).toEqual({
+        major_id: undefined,
+      })
+    })
+  })
+
+  it('저장소가 막힌 환경에서도 그리고, 로그인 여부는 false로 남긴다', async () => {
+    const getItem = vi
+      .spyOn(Storage.prototype, 'getItem')
+      .mockImplementation(() => {
+        throw new Error('SecurityError')
+      })
+    renderWithQuery(<DashboardOverview />)
+
+    expect(
+      await screen.findByRole('button', { name: 'Backend' }),
+    ).toBeInTheDocument()
+    expect(trackEvent).toHaveBeenCalledWith(
+      'Dashboard Viewed',
+      expect.objectContaining({ loggedIn: false, hadSaved: false }),
+    )
+    getItem.mockRestore()
   })
 })

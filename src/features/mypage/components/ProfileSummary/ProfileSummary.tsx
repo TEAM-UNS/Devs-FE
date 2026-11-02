@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { ROUTES } from '@/shared/constants'
 import { ArrowIcon, LogoutIcon } from '@/shared/components/icons'
 
 interface ProfileSummaryProps {
@@ -62,15 +64,13 @@ export function ProfileSummary({
           </span>
         </p>
 
-        {/* TODO: 전공·경력 수정 화면이 생기면 연결한다 */}
-        <button
-          type="button"
-          disabled
+        <Link
+          to={ROUTES.myMajorEdit}
           aria-label="전공·경력 수정"
           className="ml-auto flex size-6 items-center justify-center text-gray-400 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary-500"
         >
           <ArrowIcon className="size-6 rotate-180" />
-        </button>
+        </Link>
       </div>
     </section>
   )
