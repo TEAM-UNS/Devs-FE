@@ -1,10 +1,7 @@
-import type { Retrospect } from '../types'
-import { MY_RETROSPECTS_MOCK } from '../mocks/myRetrospects'
+import { useQuery } from '@tanstack/react-query'
+import { retrospectQueries } from '../api/retrospectQueries'
 
-/**
- * 내가 쓴 회고 목록
- * TODO: API가 생기면 쿼리로 바꾼다. 지금은 목 데이터(MY_RETROSPECTS_MOCK)
- */
-export function useMyRetrospects(): Retrospect[] {
-  return MY_RETROSPECTS_MOCK
+/** 내가 쓴 회고 목록 — 몰아보기 화면과 마이페이지 개수가 같은 캐시를 쓴다 */
+export function useMyRetrospects() {
+  return useQuery(retrospectQueries.mine())
 }

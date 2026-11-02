@@ -32,8 +32,8 @@ export function MyRetrospects() {
           </div>
         </header>
       }
-      retrospects={retrospects}
-      loaded
+      retrospects={retrospects.data ?? []}
+      loaded={retrospects.isSuccess}
       emptyText="아직 작성한 회고가 없어요"
       mine
     />

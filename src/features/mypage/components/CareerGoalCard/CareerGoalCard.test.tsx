@@ -43,16 +43,15 @@ describe('CareerGoalCard', () => {
     ).toHaveAttribute('href', '/my/retrospects')
   })
 
-  it('나의 로드맵은 아직 값이 없고 누를 수 없다', () => {
+  it('나의 로드맵 줄은 없다', () => {
     renderCard('프론트엔드', ['React'], 6)
 
-    expect(screen.getByText('나의 로드맵')).toBeInTheDocument()
-    expect(screen.getAllByRole('link')).toHaveLength(3)
+    expect(screen.queryByText('나의 로드맵')).not.toBeInTheDocument()
   })
 
   it('전공·스택·개수를 모르면 — 로 보여준다', () => {
     renderCard('', [])
 
-    expect(screen.getAllByText('—')).toHaveLength(4)
+    expect(screen.getAllByText('—')).toHaveLength(3)
   })
 })

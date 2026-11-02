@@ -8,6 +8,21 @@ const { mutate } = vi.hoisted(() => ({ mutate: vi.fn() }))
 vi.mock('../../hooks/useToggleLike', () => ({
   useToggleLike: () => ({ mutate, isPending: false }),
 }))
+vi.mock('../../hooks/useMyRetrospects', () => ({
+  useMyRetrospects: () => ({
+    isSuccess: true,
+    data: [
+      {
+        retrospectId: 6,
+        dayNo: 6,
+        content: '리액트 핵심 개념을 복습했다',
+        date: '2026-08-23',
+        likeCount: 2,
+        liked: false,
+      },
+    ],
+  }),
+}))
 
 function renderPage() {
   return render(
