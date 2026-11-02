@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Button, buttonClassName } from '@/shared/components/Button'
 import { ROUTES } from '@/shared/constants'
 import { roadmapQueries } from '../../api/roadmapQueries'
+import { useGeneratingProgress } from '../../hooks/useGeneratingProgress'
 import { RoadmapGenerating } from '../RoadmapGenerating'
 
 interface RoadmapPendingProps {
@@ -13,21 +14,27 @@ interface RoadmapPendingProps {
 const FAILED_FALLBACK = '잠시 후 다시 만들어 주세요.'
 
 /**
- * 아직 다 만들어지지 않은 로드맵. 진행률을 3초마다 묻고, 끝나면 내 로드맵을 다시 받아 상세로 넘어간다
+ * 아직 다 만들어지지 않은 로드맵. 진행률을 3초마다 묻고, 끝나면 막대를 100까지 채운 뒤
+ * 내 로드맵을 다시 받아 상세로 넘어간다
  * 화면을 나갔다 와도 서버 상태로 이어서 보여준다
  */
 export function RoadmapPending({ roadmapId }: RoadmapPendingProps) {
   const queryClient = useQueryClient()
   const status = useQuery(roadmapQueries.status(roadmapId))
   const current = status.data?.status
+  const progress = useGeneratingProgress(
+    status.data?.progress ?? 0,
+    current === 'completed',
+  )
+  const filled = current === 'completed' && progress === 100
 
   useEffect(() => {
-    if (current === 'completed') {
+    if (filled) {
       void queryClient.invalidateQueries({
         queryKey: roadmapQueries.mine().queryKey,
       })
     }
-  }, [current, queryClient])
+  }, [filled, queryClient])
 
   /* 조회가 실패하면 폴링이 멈춘다(roadmapQueries.status). 갇히지 않게 다시 묻는 버튼을 둔다
      다시 성공하면 폴링도 이어진다 */
@@ -74,5 +81,5 @@ export function RoadmapPending({ roadmapId }: RoadmapPendingProps) {
     )
   }
 
-  return <RoadmapGenerating progress={status.data?.progress ?? 0} />
+  return <RoadmapGenerating progress={progress} />
 }
