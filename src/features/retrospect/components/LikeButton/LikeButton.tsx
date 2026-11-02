@@ -20,7 +20,8 @@ export function LikeButton({
 
   if (readOnly) {
     return (
-      <span className="relative z-10 flex items-center gap-1 text-body-sm text-gray-400">
+      // 누를 수 없는 표시라 카드 덮개 버튼 위로 올리지 않는다 — 하트·숫자를 눌러도 카드가 열린다
+      <span className="pointer-events-none flex items-center gap-1 text-body-sm text-gray-400">
         <HeartIcon filled={liked} className="size-6 text-white" />
         <span className="sr-only">좋아요</span>
         {likeCount}
