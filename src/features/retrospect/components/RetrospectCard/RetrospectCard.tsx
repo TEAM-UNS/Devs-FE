@@ -63,11 +63,7 @@ export function RetrospectCard({
         <span className="text-body-sm text-gray-400">
           {formatBoardDate(retrospect.date)}
         </span>
-        <LikeButton
-          liked={retrospect.liked}
-          count={retrospect.likeCount}
-          tabIndex={tabIndex}
-        />
+        <LikeButton retrospect={retrospect} tabIndex={tabIndex} />
       </div>
     </article>
   )

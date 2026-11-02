@@ -156,3 +156,11 @@ export async function patch<TResponse>(
 ): Promise<TResponse> {
   return withRetry(path, () => client.patch<TResponse>(path, body, config))
 }
+
+/** DELETE 요청. `delete`는 예약어라 이름을 줄였다 */
+export async function del<TResponse>(
+  path: string,
+  config?: RequestConfig,
+): Promise<TResponse> {
+  return withRetry(path, () => client.delete<TResponse>(path, config))
+}

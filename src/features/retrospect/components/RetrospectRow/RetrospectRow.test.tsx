@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import { renderWithQuery } from '@/test/renderWithQuery'
 import type { Retrospect } from '../../types'
 import { RetrospectRow } from './RetrospectRow'
 
@@ -15,7 +16,7 @@ const retrospect: Retrospect = {
 describe('RetrospectRow', () => {
   it('반복해 놓은 카드도 누르면 상세를 연다', () => {
     const onOpen = vi.fn()
-    const { container } = render(
+    const { container } = renderWithQuery(
       <RetrospectRow
         retrospects={[retrospect]}
         direction="right"
@@ -33,7 +34,7 @@ describe('RetrospectRow', () => {
   })
 
   it('스크린리더·Tab에는 원본 한 장만 드러난다', () => {
-    render(
+    renderWithQuery(
       <RetrospectRow
         retrospects={[retrospect]}
         direction="right"
