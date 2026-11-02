@@ -18,6 +18,8 @@ const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'))
 const TermsPage = lazy(() => import('@/pages/TermsPage'))
 const ChatPage = lazy(() => import('@/pages/ChatPage'))
 const MyPage = lazy(() => import('@/pages/MyPage'))
+const MajorEditPage = lazy(() => import('@/pages/MajorEditPage'))
+const TechStackEditPage = lazy(() => import('@/pages/TechStackEditPage'))
 const StackComparePage = lazy(() => import('@/pages/StackComparePage'))
 const RoadmapPage = lazy(() => import('@/pages/RoadmapPage'))
 const RoadmapCreatePage = lazy(() => import('@/pages/RoadmapCreatePage'))
@@ -56,6 +58,22 @@ function LandingRoute() {
   return (
     <Suspense fallback={authFallback}>
       <LandingPage />
+    </Suspense>
+  )
+}
+
+function MajorEditRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <MajorEditPage />
+    </Suspense>
+  )
+}
+
+function TechStackEditRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <TechStackEditPage />
     </Suspense>
   )
 }
@@ -103,6 +121,14 @@ export const routes: RouteObject[] = [
   {
     path: '/onboarding',
     element: <OnboardingRoute />,
+  },
+  /* 마이페이지 수정은 온보딩처럼 전체 화면이라 RootLayout 밖에 두고, 가드는 마이페이지와 같은 잠금을 쓴다 */
+  {
+    element: <AuthGate lock="myPage" />,
+    children: [
+      { path: '/my/major', element: <MajorEditRoute /> },
+      { path: '/my/tech-stack', element: <TechStackEditRoute /> },
+    ],
   },
   /* 랜딩은 비로그인 방문자용이라 가드(RootLayout) 밖에 둔다 */
   {

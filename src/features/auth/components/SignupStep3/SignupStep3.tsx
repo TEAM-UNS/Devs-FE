@@ -24,6 +24,10 @@ interface SignupStep3Props {
   onChange?: (data: Partial<SignupStep3Input>) => void
   /** 검증 통과 시 호출 */
   onNext: (data: SignupStep3Input) => void
+  /** 제출 중이면 버튼을 잠근다 */
+  pending?: boolean
+  /** 버튼 문구. 주면 다음 단계가 없는 화면(마이페이지 수정)이라 화살표를 뺀다 */
+  submitLabel?: string
 }
 
 /**
@@ -34,6 +38,8 @@ export function SignupStep3({
   initialValues,
   onChange,
   onNext,
+  pending,
+  submitLabel,
 }: SignupStep3Props) {
   const [majors, setMajors] = useState<string[]>(initialValues?.majors ?? [])
   const [careerType, setCareerType] = useState<CareerType | undefined>(
@@ -107,12 +113,12 @@ export function SignupStep3({
       <Button
         type="button"
         variant="primary"
-        disabled={!isValid}
-        endIcon={NEXT_ICON}
+        disabled={!isValid || pending}
+        endIcon={submitLabel ? undefined : NEXT_ICON}
         onClick={handleSubmit}
         className="w-full"
       >
-        다음
+        {submitLabel ?? '다음'}
       </Button>
     </div>
   )

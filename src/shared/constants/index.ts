@@ -19,6 +19,8 @@ export const ROUTES = {
   retrospect: '/retrospect',
   chat: '/chat',
   myPage: '/my',
+  myMajorEdit: '/my/major',
+  myTechStackEdit: '/my/tech-stack',
   about: '/about',
   privacy: '/privacy',
   terms: '/terms',
