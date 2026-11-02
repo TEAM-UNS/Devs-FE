@@ -19,6 +19,8 @@ export const ROUTES = {
   retrospect: '/retrospect',
   chat: '/chat',
   myPage: '/my',
+  myMajorEdit: '/my/major',
+  myTechStackEdit: '/my/tech-stack',
   about: '/about',
 
   /* 아래 둘은 네비게이션에 없다. 사용자가 직접 치고 들어오는 주소가 아니라
