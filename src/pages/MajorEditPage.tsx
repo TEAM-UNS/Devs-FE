@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { userQueries } from '@/shared/api'
 import { ROUTES } from '@/shared/constants'
+import { useGoBack } from '@/shared/hooks/useGoBack'
 import { useToastStore } from '@/shared/stores/useToastStore'
 import {
   AuthLayout,
@@ -22,6 +23,7 @@ const EDIT_DONE_MESSAGE = '수정이 완료되었어요!'
 export default function MajorEditPage() {
   const { data } = useQuery(userQueries.me())
   const navigate = useNavigate()
+  const goBack = useGoBack(ROUTES.myPage)
   const showToast = useToastStore((state) => state.show)
   const updateMajorMutation = useUpdateMajor()
 
@@ -41,7 +43,7 @@ export default function MajorEditPage() {
   }
 
   return (
-    <AuthLayout className="max-w-[816px]" onBack={() => navigate(-1)}>
+    <AuthLayout className="max-w-[816px]" onBack={goBack}>
       <PageTitle name="전공·경력 수정" />
       <div className="flex flex-col gap-12">
         <div className="flex flex-col items-center gap-1 text-center">
