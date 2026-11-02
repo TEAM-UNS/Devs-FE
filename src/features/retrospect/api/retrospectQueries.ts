@@ -1,8 +1,9 @@
 import { queryOptions } from '@tanstack/react-query'
+import { RETROSPECT_QUERY_KEY } from '@/shared/api'
 import { fetchMyRetrospects, fetchRetrospects } from './requests'
 
 export const retrospectQueries = {
-  all: () => ['retrospect'] as const,
+  all: () => RETROSPECT_QUERY_KEY,
 
   list: () =>
     queryOptions({

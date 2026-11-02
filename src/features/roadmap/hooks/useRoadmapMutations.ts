@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { RETROSPECT_QUERY_KEY } from '@/shared/api'
 import { roadmapQueries } from '../api/roadmapQueries'
 import {
   checkRoadmapItem,
@@ -46,7 +47,10 @@ export function useCheckRoadmapItem() {
   })
 }
 
-/** 하루 완료 + 회고. 완료하면 그날이 잠기므로 내 로드맵을 다시 받는다 */
+/**
+ * 하루 완료 + 회고. 완료하면 그날이 잠기므로 내 로드맵을 다시 받는다
+ * 새 회고가 익명 게시판·내 회고 목록에 바로 보이도록 회고 쿼리도 함께 무효화한다
+ */
 export function useCompleteRoadmapDay() {
   const queryClient = useQueryClient()
 
@@ -59,8 +63,11 @@ export function useCompleteRoadmapDay() {
       retrospect: string
     }) => completeRoadmapDay(dayNo, retrospect),
     onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: roadmapQueries.mine().queryKey,
-      }),
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: roadmapQueries.mine().queryKey,
+        }),
+        queryClient.invalidateQueries({ queryKey: RETROSPECT_QUERY_KEY }),
+      ]),
   })
 }
