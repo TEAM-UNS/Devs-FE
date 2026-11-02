@@ -41,6 +41,18 @@ describe('AppSidebar', () => {
     )
   })
 
+  it('미완성 메뉴는 링크가 아니라 비활성 항목이다', () => {
+    renderSidebar()
+
+    expect(
+      screen.queryByRole('link', { name: '익명 회고 게시판' }),
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('익명 회고 게시판')).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    )
+  })
+
   it('기업 스택 비교는 비교 화면으로 가는 링크다', () => {
     renderSidebar()
 

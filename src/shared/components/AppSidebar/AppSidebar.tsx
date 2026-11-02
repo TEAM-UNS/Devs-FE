@@ -30,7 +30,13 @@ const NAV_ITEMS: {
   { to: ROUTES.weeklyReport, label: '주간리포트', Icon: ClipboardListIcon },
   { to: ROUTES.stackCompare, label: '기업 스택 비교', Icon: LayersIcon },
   { to: ROUTES.roadmap, label: '로드맵', Icon: RouteIcon },
-  { to: ROUTES.retrospect, label: '익명 회고 게시판', Icon: BoardIcon },
+  // 목데이터만 있어 운영에 지어낸 회고가 보이지 않게 막아 둔다. API 연동 때 연다 (#144)
+  {
+    to: ROUTES.retrospect,
+    label: '익명 회고 게시판',
+    Icon: BoardIcon,
+    disabled: true,
+  },
   { to: ROUTES.chat, label: 'AI 챗봇', Icon: ChatBubbleIcon },
   { to: ROUTES.myPage, label: '마이페이지', Icon: UserIcon },
 ]
