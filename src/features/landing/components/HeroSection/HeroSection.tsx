@@ -70,7 +70,7 @@ export function HeroSection() {
         <CtaLink cta="login" location="hero" variant="outline">
           로그인
         </CtaLink>
-        <CtaLink cta="signup" location="hero">
+        <CtaLink cta="start" location="hero">
           무료로 시작하기
         </CtaLink>
       </div>

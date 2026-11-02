@@ -1,10 +1,11 @@
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import {
   BoardIcon,
   ChatBubbleIcon,
   ClipboardListIcon,
   HomeIcon,
   LayersIcon,
+  LoginIcon,
   RouteIcon,
   DevsLogo,
   UserIcon,
@@ -13,8 +14,8 @@ import { ROUTES } from '@/shared/constants'
 import { cn } from '@/shared/utils/cn'
 
 interface AppSidebarProps {
-  /** 하단 게이지에 표시할 로드맵 진행도 (0~100) */
-  roadmapProgress: number
+  /** 하단 게이지에 표시할 로드맵 진행도 (0~100). 비로그인이면 null — 게이지 대신 로그인 링크 */
+  roadmapProgress: number | null
 }
 
 // 아래 상수는 모듈 스코프 — 렌더마다 새로 만들지 않는다.
@@ -45,8 +46,10 @@ const ITEM_IDLE = 'text-gray-400'
 const FOCUS_RING =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500'
 
-/** 앱 전역 사이드바 — 로고 · 주요 화면 네비게이션 · 하단 로드맵 진행도 게이지. */
+/** 앱 전역 사이드바 — 로고 · 주요 화면 네비게이션 · 하단 로드맵 진행도 게이지(비로그인이면 로그인 링크). */
 export function AppSidebar({ roadmapProgress }: AppSidebarProps) {
+  const location = useLocation()
+
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col justify-between border-r border-element bg-container py-12">
       <div className="flex flex-col gap-6">
@@ -96,26 +99,41 @@ export function AppSidebar({ roadmapProgress }: AppSidebarProps) {
         </nav>
       </div>
 
-      <div className="flex flex-col gap-2 px-5">
-        <div className="flex items-center justify-between text-body-sm">
-          <span className="text-gray-1000">로드맵 진행도</span>
-          <span className="text-primary-400">{roadmapProgress}%</span>
-        </div>
-        <div
-          className="h-2 overflow-clip rounded-full border border-gray-200 bg-element"
-          role="progressbar"
-          aria-label="로드맵 진행도"
-          aria-valuenow={roadmapProgress}
-          aria-valuemin={0}
-          aria-valuemax={100}
+      {/* Figma 로그인 전(2166:9237) — 로그인하면 지금 보던 화면으로 돌아온다 */}
+      {roadmapProgress === null ? (
+        <Link
+          to={ROUTES.login}
+          state={{ from: location.pathname + location.search }}
+          className={cn(
+            'flex items-center gap-2 px-5 text-body-md text-gray-1000',
+            FOCUS_RING,
+          )}
         >
-          {/* 데이터로 결정되는 폭이라 말단 엘리먼트에 한해 inline style을 쓴다 (CONVENTIONS §7 예외). */}
+          <LoginIcon className="size-6 shrink-0" />
+          로그인
+        </Link>
+      ) : (
+        <div className="flex flex-col gap-2 px-5">
+          <div className="flex items-center justify-between text-body-sm">
+            <span className="text-gray-1000">로드맵 진행도</span>
+            <span className="text-primary-400">{roadmapProgress}%</span>
+          </div>
           <div
-            className="h-full rounded-full bg-gradient-to-r from-primary-600 to-primary-300"
-            style={{ width: `${roadmapProgress}%` }}
-          />
+            className="h-2 overflow-clip rounded-full border border-gray-200 bg-element"
+            role="progressbar"
+            aria-label="로드맵 진행도"
+            aria-valuenow={roadmapProgress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            {/* 데이터로 결정되는 폭이라 말단 엘리먼트에 한해 inline style을 쓴다 (CONVENTIONS §7 예외). */}
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary-600 to-primary-300"
+              style={{ width: `${roadmapProgress}%` }}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </aside>
   )
 }

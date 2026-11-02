@@ -30,10 +30,22 @@ test('사이드바로 이동하면 별도 lazy 청크가 로드된다', async ({
   await expect(page.getByRole('heading', { name: '소개' })).toBeVisible()
 })
 
-test('토큰이 없으면 앱 화면 대신 로그인으로 보낸다', async ({ page }) => {
+test('토큰이 없으면 메인은 그대로, 로그인이 필요한 화면은 잠금 안내를 보여준다', async ({
+  page,
+}) => {
   await page.addInitScript(() => localStorage.clear())
-  await page.goto('/about')
 
+  await page.goto('/dashboard')
+  await expect(page.getByText('오늘 수집된 공고')).toBeVisible()
+
+  await page.getByRole('link', { name: '로드맵' }).click()
+  await expect(page).toHaveURL(/\/roadmap$/)
+  await expect(
+    page.getByText('나에게 맞춘 학습 로드맵을 받아보세요!'),
+  ).toBeVisible()
+
+  // 로그인하면 보던 화면으로 돌아오도록 지금 주소를 들고 간다
+  await page.getByRole('link', { name: 'Devs 시작하기' }).click()
   await expect(page).toHaveURL(/\/login$/)
   await expect(
     page.getByRole('heading', { name: '다시 만나서 반가워요!' }),
