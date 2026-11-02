@@ -7,13 +7,18 @@ import { ProfileSummary } from '../ProfileSummary'
 import { ReportSubscriptionCard } from '../ReportSubscriptionCard'
 import { SkillStackCard } from '../SkillStackCard'
 
+interface MyPageOverviewProps {
+  /** 내가 쓴 회고 개수 — 회고 feature가 알고 있어 page가 넘겨준다 */
+  readonly retrospectCount?: number
+}
+
 /**
  * 마이페이지 본문 — 프로필 요약 + 카드 세 장.
  * 폭·간격은 Figma 653:3597(1120px 그리드) 기준이다.
  *
  * @returns 프로필과 설정 카드가 배치된 마이페이지 화면
  */
-export function MyPageOverview() {
+export function MyPageOverview({ retrospectCount }: MyPageOverviewProps) {
   const { data } = useQuery(userQueries.me())
   const logout = useLogout()
 
@@ -39,7 +44,11 @@ export function MyPageOverview() {
         {/* 아래 두 카드는 같은 높이로 나란히 선다 */}
         <div className="grid gap-6 lg:grid-cols-2">
           <ReportSubscriptionCard />
-          <CareerGoalCard majors={profile.majors} skills={profile.skills} />
+          <CareerGoalCard
+            majors={profile.majors}
+            skills={profile.skills}
+            retrospectCount={retrospectCount}
+          />
         </div>
       </div>
     </div>

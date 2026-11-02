@@ -8,6 +8,8 @@ interface RetrospectCardProps {
   readonly onOpen: () => void
   /** 흐르는 줄을 채우려 반복해 놓은 복사본. 마우스로는 누르되 스크린리더·Tab은 원본만 거친다 */
   readonly duplicate?: boolean
+  /** 내 회고 — 제목을 '내 로드맵'으로 부르고 좋아요는 개수만 보여준다 */
+  readonly mine?: boolean
 }
 
 /* Figma 유리 카드(2079:10595). GLASS 효과의 굴절·분산은 CSS로 못 만들어서
@@ -27,8 +29,9 @@ export function RetrospectCard({
   retrospect,
   onOpen,
   duplicate = false,
+  mine = false,
 }: RetrospectCardProps) {
-  const title = retrospectTitle(retrospect.dayNo)
+  const title = retrospectTitle(retrospect.dayNo, mine)
 
   const tabIndex = duplicate ? -1 : undefined
 
@@ -63,7 +66,11 @@ export function RetrospectCard({
         <span className="text-body-sm text-gray-400">
           {formatBoardDate(retrospect.date)}
         </span>
-        <LikeButton retrospect={retrospect} tabIndex={tabIndex} />
+        <LikeButton
+          retrospect={retrospect}
+          tabIndex={tabIndex}
+          readOnly={mine}
+        />
       </div>
     </article>
   )

@@ -14,9 +14,12 @@ export function splitIntoRows(
   return rows.filter((row) => row.length > 0)
 }
 
-/** 서버는 제목을 주지 않아 며칠째 회고인지로 만든다 */
-export function retrospectTitle(dayNo: number): string {
-  return `익명 러너의 로드맵 - Day${dayNo}`
+/**
+ * 서버는 제목을 주지 않아 며칠째 회고인지로 만든다
+ * 내 회고 몰아보기에서는 익명이 아니라 '내 로드맵'으로 부른다 (Figma 2217:8656)
+ */
+export function retrospectTitle(dayNo: number, mine = false): string {
+  return `${mine ? '내 로드맵' : '익명 러너의 로드맵'} - Day${dayNo}`
 }
 
 /** '2026-10-26' → '2026.10.26' (Figma 표기) */
