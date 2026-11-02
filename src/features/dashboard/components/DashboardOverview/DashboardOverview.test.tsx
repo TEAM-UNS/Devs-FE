@@ -23,11 +23,7 @@ vi.mock('../../hooks/useEChart', () => ({
 /* 필터 기억 실험의 모드. 플래그는 원격이라 여기서 정해 끼운다 */
 let filterMode: 'default' | 'remember' | 'fallback' = 'default'
 vi.mock('../../hooks/useFilterMode', () => ({
-  useFilterMode: () => ({
-    mode: filterMode,
-    flagSource: 'live',
-    flagLatencyMs: 120,
-  }),
+  useFilterMode: () => ({ mode: filterMode, flagSource: 'cache' }),
 }))
 
 const { trackEvent } = vi.hoisted(() => ({ trackEvent: vi.fn() }))
@@ -255,8 +251,7 @@ describe('필터 기억 실험', () => {
     )
     expect(trackEvent).toHaveBeenCalledWith('Dashboard Viewed', {
       filterMode: 'remember',
-      flagSource: 'live',
-      flagLatencyMs: 120,
+      flagSource: 'cache',
       loggedIn: false,
       startMajorId: 1,
       startCompanySize: 'LARGE',

@@ -3,11 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { trackEvent } from '@/shared/analytics'
 import { getAccessToken, majorLabel, majorQueries } from '@/shared/api'
 import { dashboardQueries } from '../../api'
-import {
-  type FilterMode,
-  type FlagSource,
-  useFilterMode,
-} from '../../hooks/useFilterMode'
+import { useFilterMode } from '../../hooks/useFilterMode'
 import {
   ALL_MAJORS_LABEL,
   COMPANY_SIZES,
@@ -39,34 +35,6 @@ const NO_AXIS: string[] = []
 
 const PERIOD_LABELS = RISING_PERIODS.map((period) => period.label)
 
-/**
- * 메인페이지 본문 — KPI 카드 4장 + 차트 카드 3종.
- * 폭·간격은 Figma 290:1054(1120px 그리드) 기준이다.
- *
- * 필터 시작값은 원격 플래그(필터 기억 실험)로 정한다. 플래그를 기다리는 동안(최대 500ms)
- * 본문은 비워 두고, 필터와 상관없는 전공 목록·KPI는 미리 받아 둔다
- */
-export function DashboardOverview() {
-  const { mode, flagSource, flagLatencyMs } = useFilterMode()
-  useQuery(majorQueries.list())
-  useQuery(dashboardQueries.summary())
-
-  if (mode === 'pending') return null
-  return (
-    <DashboardBody
-      mode={mode}
-      flagSource={flagSource}
-      flagLatencyMs={flagLatencyMs}
-    />
-  )
-}
-
-interface DashboardBodyProps {
-  readonly mode: FilterMode
-  readonly flagSource: FlagSource
-  readonly flagLatencyMs: number | null
-}
-
 /** 저장값이 기본값과 다른지 — 같으면 기억 모드여도 화면이 기본값과 같아 효과가 없다 */
 function differsFromDefault(filters: DashboardFilters): boolean {
   return (
@@ -76,11 +44,15 @@ function differsFromDefault(filters: DashboardFilters): boolean {
   )
 }
 
-function DashboardBody({
-  mode,
-  flagSource,
-  flagLatencyMs,
-}: DashboardBodyProps) {
+/**
+ * 메인페이지 본문 — KPI 카드 4장 + 차트 카드 3종.
+ * 폭·간격은 Figma 290:1054(1120px 그리드) 기준이다.
+ *
+ * 필터 시작값은 원격 플래그(필터 기억 실험)로 정한다. 플래그는 기다리지 않는다(useFilterMode)
+ */
+export function DashboardOverview() {
+  const { mode, flagSource } = useFilterMode()
+
   // 시작값은 처음 그릴 때 한 번만 정한다. 보고 있는 필터가 중간에 바뀌지 않게
   const [start] = useState(() => {
     const saved = loadFilters()
@@ -118,7 +90,6 @@ function DashboardBody({
     trackEvent('Dashboard Viewed', {
       filterMode: mode,
       flagSource,
-      flagLatencyMs,
       loggedIn: Boolean(getAccessToken()),
       startMajorId: start.filters.majorId ?? null,
       startCompanySize: start.filters.companySize,
@@ -129,7 +100,7 @@ function DashboardBody({
       savedPeriod: start.saved?.period ?? null,
       wouldDiffer: start.saved !== null && differsFromDefault(start.saved),
     })
-  }, [mode, flagSource, flagLatencyMs, start])
+  }, [mode, flagSource, start])
 
   // 직접 바꿀 때만 남긴다. 들어올 때 저장하면 기본값(A)이 마지막 선택을 덮어쓴다
   // A 기간에도 남겨 두어 B로 바뀐 첫날부터 기억이 동작한다

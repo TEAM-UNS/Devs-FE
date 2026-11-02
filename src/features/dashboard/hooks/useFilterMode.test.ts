@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useFilterMode } from './useFilterMode'
 
@@ -17,53 +17,35 @@ describe('useFilterMode', () => {
     mocks.fetchFlag.mockResolvedValue(undefined)
   })
 
-  it('Amplitude를 켜지 않는 환경이면 기다리지 않고 바로 기본 모드', () => {
+  it('Amplitude를 켜지 않는 환경이면 기본 모드이고 플래그를 받지 않는다', () => {
     mocks.flagsEnabled.mockReturnValue(false)
     const { result } = renderHook(() => useFilterMode())
 
-    expect(result.current).toEqual({
-      mode: 'default',
-      flagSource: 'none',
-      flagLatencyMs: null,
-    })
+    expect(result.current).toEqual({ mode: 'default', flagSource: 'none' })
     expect(mocks.fetchFlag).not.toHaveBeenCalled()
   })
 
-  it('지난 값이 있으면 기다리지 않고 그 값으로 정하고, 최신 값은 뒤에서 받아 둔다', () => {
+  it('지난 값이 on이면 첫 렌더부터 기억 모드, 그 밖의 값은 기본 모드', () => {
     mocks.readCachedFlag.mockReturnValue('on')
-    const { result } = renderHook(() => useFilterMode())
-
-    expect(result.current).toEqual({
+    expect(renderHook(() => useFilterMode()).result.current).toEqual({
       mode: 'remember',
       flagSource: 'cache',
-      flagLatencyMs: null,
     })
+
+    mocks.readCachedFlag.mockReturnValue(undefined)
+    expect(renderHook(() => useFilterMode()).result.current).toEqual({
+      mode: 'default',
+      flagSource: 'cache',
+    })
+  })
+
+  it('받은 적이 없으면 기다리지 않고 fallback으로 그리고, 다음 방문을 위해 뒤에서 받아 둔다', () => {
+    const { result } = renderHook(() => useFilterMode())
+
+    expect(result.current).toEqual({ mode: 'fallback', flagSource: 'uncached' })
     expect(mocks.fetchFlag).toHaveBeenCalledWith(
       'dashboard-filter-memory',
       10_000,
     )
-  })
-
-  it('지난 값이 없으면 최대 500ms 기다려 받은 값으로 정한다', async () => {
-    mocks.fetchFlag.mockResolvedValueOnce('on')
-    const on = renderHook(() => useFilterMode())
-    expect(on.result.current.mode).toBe('pending')
-    await waitFor(() => expect(on.result.current.mode).toBe('remember'))
-    expect(on.result.current.flagSource).toBe('live')
-    expect(on.result.current.flagLatencyMs).toEqual(expect.any(Number))
-
-    mocks.fetchFlag.mockResolvedValueOnce('off')
-    const off = renderHook(() => useFilterMode())
-    await waitFor(() => expect(off.result.current.mode).toBe('default'))
-
-    expect(mocks.fetchFlag).toHaveBeenCalledWith('dashboard-filter-memory', 500)
-  })
-
-  it('시간 안에 못 받으면 fallback', async () => {
-    mocks.fetchFlag.mockResolvedValueOnce(null)
-    const { result } = renderHook(() => useFilterMode())
-
-    await waitFor(() => expect(result.current.mode).toBe('fallback'))
-    expect(result.current.flagSource).toBe('timeout')
   })
 })
