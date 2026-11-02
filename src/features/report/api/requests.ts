@@ -6,6 +6,7 @@ import type {
   ReportPeriod,
   TechMentionsResponse,
   TechTrendResponse,
+  ReportWeekRangeResponse,
   WeeklyCollectedCountResponse,
 } from '../types'
 
@@ -88,6 +89,15 @@ export async function fetchWeeklyCollectedCount(
   baseDate: string,
 ): Promise<WeeklyCollectedCountResponse> {
   return get<WeeklyCollectedCountResponse>('/report/weekly-collected-count', {
+    base_date: baseDate,
+  })
+}
+
+/** 기준일이 속한 주의 연·월·주차와 시작·종료일 조회 */
+export async function fetchWeekRange(
+  baseDate: string,
+): Promise<ReportWeekRangeResponse> {
+  return get<ReportWeekRangeResponse>('/report/week-range', {
     base_date: baseDate,
   })
 }

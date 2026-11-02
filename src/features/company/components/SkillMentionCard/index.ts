@@ -1,0 +1,1 @@
+export { SkillMentionCard } from './SkillMentionCard'

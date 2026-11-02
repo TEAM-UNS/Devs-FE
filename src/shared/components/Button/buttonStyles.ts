@@ -20,8 +20,8 @@ const BASE_STYLES = [
 // primary는 배경색, outline은 테두리(+surface 채움), ghost는 텍스트 색으로 위계를 표현.
 const VARIANT_STYLES: Record<ButtonVariant, string> = {
   primary: [
-    'bg-primary-500 text-white',
-    'hover:bg-primary-400 active:bg-primary-300',
+    'bg-primary-400 text-white',
+    'hover:bg-primary-300 active:bg-primary-200',
     'disabled:bg-gray-200 disabled:text-gray-300',
   ].join(' '),
   outline: [

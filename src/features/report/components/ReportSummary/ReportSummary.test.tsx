@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { ReportSummary } from './ReportSummary'
 
 const JULY_WEEK_2 = {
+  year: 2026,
   label: '7월 2주차',
   start: '2026.07.06',
   end: '2026.07.12',
-  baseDate: '2026-07-06',
 }
 
 describe('ReportSummary', () => {
@@ -19,22 +19,22 @@ describe('ReportSummary', () => {
     expect(screen.queryByRole('heading')).not.toBeInTheDocument()
   })
 
-  it('연도는 주의 시작일에서 가져온다', () => {
-    // 12/28(월) ~ 1/3(일). 대부분 새해지만 시작이 12월이라 12월 주차로 친다.
+  it('연도는 서버가 준 값을 쓴다', () => {
+    // 12/28(월) ~ 1/3(일). 목요일(1/1)이 새해라 서버는 2027년 1월 1주차로 준다.
     render(
       <ReportSummary
         week={{
-          label: '12월 5주차',
+          year: 2027,
+          label: '1월 1주차',
           start: '2026.12.28',
           end: '2027.01.03',
-          baseDate: '2026-12-28',
         }}
         paragraphs={[]}
       />,
     )
 
     expect(
-      screen.getByText('2026년 12월 5주차 요약 리포트가 없습니다.'),
+      screen.getByText('2027년 1월 1주차 요약 리포트가 없습니다.'),
     ).toBeInTheDocument()
   })
 

@@ -92,6 +92,10 @@ async function withRetry<TResponse>(
   path: string,
   send: () => Promise<AxiosResponse<TResponse>>,
 ): Promise<TResponse> {
+  /* 주소가 비면 요청이 프론트 서버로 가서 index.html이 200으로 온다. 그걸 데이터로 믿으면
+     화면이 통째로 깨지니 보내기 전에 실패시켜 공통 에러 토스트로 보낸다 */
+  if (!API_BASE_URL) throw new Error('VITE_API_BASE_URL이 비어 있다')
+
   try {
     return (await send()).data
   } catch (error) {
@@ -142,4 +146,21 @@ export async function put<TResponse>(
   config?: RequestConfig,
 ): Promise<TResponse> {
   return withRetry(path, () => client.put<TResponse>(path, body, config))
+}
+
+/** JSON 본문을 실어 PATCH 요청 */
+export async function patch<TResponse>(
+  path: string,
+  body?: unknown,
+  config?: RequestConfig,
+): Promise<TResponse> {
+  return withRetry(path, () => client.patch<TResponse>(path, body, config))
+}
+
+/** DELETE 요청. `delete`는 예약어라 이름을 줄였다 */
+export async function del<TResponse>(
+  path: string,
+  config?: RequestConfig,
+): Promise<TResponse> {
+  return withRetry(path, () => client.delete<TResponse>(path, config))
 }

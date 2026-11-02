@@ -87,6 +87,23 @@ describe('SignupPage', () => {
     })
   })
 
+  it('2단계부터 화살표로 이전 단계에 돌아가고, 1단계에는 화살표가 없다', async () => {
+    renderPage()
+    expect(
+      screen.queryByRole('button', { name: '이전 단계로' }),
+    ).not.toBeInTheDocument()
+
+    await passStep1()
+    await userEvent.click(screen.getByRole('button', { name: '이전 단계로' }))
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute(
+      'aria-valuenow',
+      '1',
+    )
+    // 입력해 둔 이메일은 남아 있다
+    expect(screen.getByLabelText('이메일')).toHaveValue('user@uns.dev')
+  })
+
   it('2단계로 넘어가면 간편로그인(소셜)은 사라지고 로그인 링크는 유지된다', async () => {
     renderPage()
 

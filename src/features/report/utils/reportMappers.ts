@@ -2,11 +2,13 @@ import type { TrendDirection } from '@/shared/components/TrendMark'
 import type {
   MentionBar,
   PopularTechStackResponse,
+  ReportWeekRangeResponse,
   ReportTrend,
   StackRank,
   TechMentionsResponse,
   TechTrendResponse,
   TrendHighlight,
+  WeekRange,
   WeeklyCollectedCountResponse,
 } from '../types'
 
@@ -94,4 +96,18 @@ export function toCollectedCount(
   response: WeeklyCollectedCountResponse | undefined,
 ): number {
   return response?.count ?? 0
+}
+
+/** week-range 응답을 헤더용 주차로 바꾼다. 날짜는 `2026-07-06` → `2026.07.06` */
+export function toWeekRange(
+  response: ReportWeekRangeResponse | undefined,
+): WeekRange | undefined {
+  if (!response) return undefined
+
+  return {
+    year: response.year,
+    label: `${response.month}월 ${response.week}주차`,
+    start: response.startDate.replaceAll('-', '.'),
+    end: response.endDate.replaceAll('-', '.'),
+  }
 }

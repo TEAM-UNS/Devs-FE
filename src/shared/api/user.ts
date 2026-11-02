@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query'
-import { get } from './http'
+import { get, post } from './http'
 
 /*
  * 로그인한 사용자 정보 (GET /user/my). 마이페이지(프로필)와 주간 리포트(전공 칩)가
@@ -34,6 +34,11 @@ export interface UserMyQueryResponse {
 /** 로그인한 사용자의 프로필을 조회한다 */
 export async function fetchMyProfile(): Promise<UserMyQueryResponse> {
   return get<UserMyQueryResponse>('/user/my')
+}
+
+/** 서버에 저장된 내 refresh token을 지운다 (POST /user/logout, 204) */
+export async function logout(): Promise<void> {
+  return post<void>('/user/logout')
 }
 
 /** 사용자 정보 쿼리 정의 */

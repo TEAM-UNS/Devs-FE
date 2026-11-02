@@ -77,8 +77,8 @@ export function ChatHistorySidebar({
 }: ChatHistorySidebarProps) {
   return (
     <aside className="relative flex h-full w-60 shrink-0 flex-col bg-container py-12 after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-element">
-      <div className="flex flex-1 flex-col gap-6">
-        <div className="flex flex-col gap-4 px-3">
+      <div className="flex min-h-0 flex-1 flex-col gap-6">
+        <div className="flex shrink-0 flex-col gap-4 px-3">
           <Link
             to={ROUTES.home}
             className="flex items-center gap-1 text-body-md text-gray-1000 focus-visible:outline-2 focus-visible:outline-primary-500"
@@ -90,7 +90,7 @@ export function ChatHistorySidebar({
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col gap-2">
-          <h2 className="px-5 text-body-sm text-gray-300">최근</h2>
+          <h2 className="shrink-0 px-5 text-body-sm text-gray-300">최근</h2>
           {threads.length === 0 ? (
             <p className="flex flex-1 items-center justify-center text-body-sm text-gray-300">
               최근 대화가 없습니다.
@@ -115,7 +115,7 @@ export function ChatHistorySidebar({
         ref={newChatButtonRef}
         type="button"
         onClick={onNewChat}
-        className="flex items-center gap-1 px-5 py-3 text-body-md text-gray-1000 focus-visible:outline-2 focus-visible:outline-primary-500"
+        className="flex shrink-0 items-center gap-1 px-5 py-3 text-body-md text-gray-1000 focus-visible:outline-2 focus-visible:outline-primary-500"
       >
         <img src={plusIcon} alt="" className="size-6" />새 대화 시작
       </button>

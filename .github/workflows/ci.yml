@@ -50,6 +50,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: pnpm build
+        env:
+          # 주소가 비면 요청을 보내지 않는다. E2E는 응답을 가로채므로 preview 서버(같은 출처)를 가리킨다
+          VITE_API_BASE_URL: http://localhost:4173
       - uses: actions/upload-artifact@v4
         with:
           name: dist

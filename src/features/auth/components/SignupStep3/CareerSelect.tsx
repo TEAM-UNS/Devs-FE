@@ -54,7 +54,7 @@ export function CareerSelect({
             className={cn(
               SEGMENT_BASE,
               careerType === 'none'
-                ? 'bg-primary-500 text-white'
+                ? 'bg-primary-400 text-white'
                 : 'text-gray-300',
             )}
           >
@@ -67,7 +67,7 @@ export function CareerSelect({
             className={cn(
               SEGMENT_BASE,
               careerType === 'has'
-                ? 'bg-primary-500 text-white'
+                ? 'bg-primary-400 text-white'
                 : 'text-gray-300',
             )}
           >

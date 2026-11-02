@@ -1,0 +1,1 @@
+export { TopSkillsCard } from './TopSkillsCard'

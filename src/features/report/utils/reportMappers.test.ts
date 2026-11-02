@@ -5,6 +5,7 @@ import {
   toMentionBars,
   toStackRanks,
   toTrendHighlights,
+  toWeekRange,
 } from './reportMappers'
 
 const item = (
@@ -121,5 +122,28 @@ describe('toCollectedCount', () => {
   it('건수를 꺼내고 응답이 없으면 0', () => {
     expect(toCollectedCount({ count: 19283 })).toBe(19283)
     expect(toCollectedCount(undefined)).toBe(0)
+  })
+})
+
+describe('toWeekRange', () => {
+  it('서버의 연·월·주차를 라벨로, 날짜는 점 표기로 바꾼다', () => {
+    expect(
+      toWeekRange({
+        year: 2026,
+        month: 10,
+        week: 1,
+        startDate: '2026-09-28',
+        endDate: '2026-10-04',
+      }),
+    ).toEqual({
+      year: 2026,
+      label: '10월 1주차',
+      start: '2026.09.28',
+      end: '2026.10.04',
+    })
+  })
+
+  it('응답 전에는 없다', () => {
+    expect(toWeekRange(undefined)).toBeUndefined()
   })
 })

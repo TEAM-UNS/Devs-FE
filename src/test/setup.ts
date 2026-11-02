@@ -14,6 +14,18 @@ if (!('ResizeObserver' in globalThis)) {
   } as unknown as typeof ResizeObserver
 }
 
+// jsdom에는 dialog의 showModal이 없다. 모달(로드맵 회고·게시판 상세)이 열리기만 하면 되므로
+// open만 켜 준다
+// node 환경으로 도는 테스트(streamChat 등)에는 HTMLDialogElement 자체가 없다
+if (
+  typeof HTMLDialogElement !== 'undefined' &&
+  !HTMLDialogElement.prototype.showModal
+) {
+  HTMLDialogElement.prototype.showModal = function showModal() {
+    this.open = true
+  }
+}
+
 // findBy*/waitFor 기본 대기시간(1초)을 늘린다. 화면이 서버 응답을 기다렸다가 바뀌는
 // 테스트가 있는데, 병렬 워커가 붐비면 응답 처리 + 리렌더가 1초를 넘겨 간헐적으로 실패했다.
 // 제품 코드의 문제가 아니라 실행 환경 편차라 대기시간만 늘린다.

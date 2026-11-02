@@ -6,6 +6,7 @@ import {
   fetchMaxIncrease,
   fetchPopularTechStack,
   fetchTechMentions,
+  fetchWeekRange,
   fetchWeeklyCollectedCount,
 } from './requests'
 
@@ -80,5 +81,13 @@ export const reportQueries = {
         baseDate,
       ] as const,
       queryFn: () => fetchWeeklyCollectedCount(baseDate),
+    }),
+
+  weekRange: (baseDate: string) =>
+    queryOptions({
+      queryKey: [...reportQueries.all(), 'week-range', baseDate] as const,
+      queryFn: () => fetchWeekRange(baseDate),
+      // 지난 주의 날짜·주차는 바뀌지 않는다
+      staleTime: Infinity,
     }),
 }

@@ -135,6 +135,8 @@ export default function SignupPage() {
     setStep((s) => Math.min(s + 1, TOTAL_STEPS))
   }
 
+  const handleBack = () => setStep((s) => s - 1)
+
   const handleSignup = (data: SignupStep4Input) => {
     const { email, name, password, majors } = draft
     // 앞 단계를 거치지 않으면 도달할 수 없지만, 타입을 좁히려면 확인이 필요하다.
@@ -163,7 +165,10 @@ export default function SignupPage() {
   }
 
   return (
-    <AuthLayout className={isWideStep ? 'max-w-[708px]' : undefined}>
+    <AuthLayout
+      className={isWideStep ? 'max-w-[708px]' : undefined}
+      onBack={isFirstStep ? undefined : handleBack}
+    >
       <PageTitle name="회원가입" />
       <div className="flex flex-col gap-8">
         <Stepper total={TOTAL_STEPS} current={step} />

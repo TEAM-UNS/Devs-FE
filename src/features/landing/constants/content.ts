@@ -215,7 +215,7 @@ export const FAQS: readonly Faq[] = [
 ]
 
 export const TEAM_MEMBERS = [
-  { role: 'BE', name: '이강희' },
+  { role: 'PM, BE', name: '이강희' },
   { role: 'FE', name: '이선우' },
   { role: 'AI', name: '이시우' },
   { role: 'Design', name: '최하은' },
