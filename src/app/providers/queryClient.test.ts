@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { NotLoggedInError } from '@/shared/api'
 import { useToastStore } from '@/shared/stores/useToastStore'
 import { createQueryClient } from './queryClient'
 
@@ -24,5 +25,21 @@ describe('createQueryClient', () => {
     )
 
     expect(useToastStore.getState().toasts).toHaveLength(1)
+  })
+})
+
+describe('로그아웃 상태 요청', () => {
+  it('토큰이 없어 보내지 않은 요청은 에러 토스트를 띄우지 않는다', async () => {
+    const queryClient = createQueryClient()
+
+    await queryClient
+      .fetchQuery({
+        queryKey: ['user', 'me'],
+        queryFn: () => Promise.reject(new NotLoggedInError('/user/my')),
+        retry: false,
+      })
+      .catch(() => {})
+
+    expect(useToastStore.getState().toasts).toHaveLength(0)
   })
 })

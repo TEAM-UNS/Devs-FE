@@ -26,6 +26,24 @@ const OAUTH_TOKEN_PREFIX = '/user/oauth/'
 const isPublic = (path: string) =>
   PUBLIC_PATHS.has(path) || path.startsWith(OAUTH_TOKEN_PREFIX)
 
+/* 서버가 비로그인에도 열어 둔 조회(SecurityConfig permitAll). 토큰이 있으면 싣고, 없어도 보낸다 */
+const GUEST_PATH_PREFIXES = ['/majors', '/dashboard/']
+
+const allowsGuest = (path: string) =>
+  GUEST_PATH_PREFIXES.some((prefix) => path.startsWith(prefix))
+
+/**
+ * 로그인이 필요한 요청을 토큰 없이 보내려 할 때. 서버에 보내지 않고 바로 실패시킨다
+ * 로그아웃 직후 아직 화면에 남은 쿼리가 다시 불리는 경우처럼 사용자가 알 필요 없는 실패라
+ * 공통 에러 토스트는 이 에러를 띄우지 않는다
+ */
+export class NotLoggedInError extends Error {
+  constructor(path: string) {
+    super(`로그인이 필요한 요청을 토큰 없이 보내려 했다: ${path}`)
+    this.name = 'NotLoggedInError'
+  }
+}
+
 /* axios를 쓰지 않는 요청(챗봇 SSE의 fetch)도 같은 서버로 가야 해서 내보낸다 */
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
@@ -92,6 +110,11 @@ async function withRetry<TResponse>(
   path: string,
   send: () => Promise<AxiosResponse<TResponse>>,
 ): Promise<TResponse> {
+  // 보내 봐야 401이고, 리슈할 토큰도 없어 결과가 같다
+  if (!isPublic(path) && !allowsGuest(path) && !getAccessToken()) {
+    throw new NotLoggedInError(path)
+  }
+
   /* 주소가 비면 요청이 프론트 서버로 가서 index.html이 200으로 온다. 그걸 데이터로 믿으면
      화면이 통째로 깨지니 보내기 전에 실패시켜 공통 에러 토스트로 보낸다 */
   if (!API_BASE_URL) throw new Error('VITE_API_BASE_URL이 비어 있다')
