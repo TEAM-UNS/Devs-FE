@@ -15,7 +15,7 @@ export default function MyPage() {
   return (
     <>
       <PageTitle name="마이페이지" />
-      <MyPageOverview retrospectCount={retrospects.length} />
+      <MyPageOverview retrospectCount={retrospects.data?.length} />
     </>
   )
 }

@@ -11,7 +11,7 @@ interface CareerGoalCardProps {
   readonly retrospectCount?: number
 }
 
-// 값이 없거나 아직 서버에서 받을 수 없는 줄
+// 값이 없는 줄
 const EMPTY = '—'
 
 const ARROW_CLASS =
@@ -20,8 +20,8 @@ const ARROW_CLASS =
 interface RowProps {
   readonly label: string
   readonly value: string
-  /** 화살표로 갈 곳. 없으면 화살표를 누를 수 없다 */
-  readonly to?: string
+  /** 화살표로 갈 곳 */
+  readonly to: string
   /** 화살표의 스크린리더 이름 */
   readonly action?: string
   readonly last?: boolean
@@ -41,19 +41,9 @@ function Row({ label, value, to, action = '수정', last }: RowProps) {
           {value}
         </span>
       </div>
-      {to ? (
-        <Link to={to} aria-label={`${label} ${action}`} className={ARROW_CLASS}>
-          <ArrowIcon className="size-6 rotate-180" />
-        </Link>
-      ) : (
-        // 링크로 두고 클릭만 막으면 키보드·새 탭으로는 들어가지므로 글자처럼 둔다
-        <span
-          aria-hidden="true"
-          className={cn(ARROW_CLASS, 'cursor-not-allowed')}
-        >
-          <ArrowIcon className="size-6 rotate-180" />
-        </span>
-      )}
+      <Link to={to} aria-label={`${label} ${action}`} className={ARROW_CLASS}>
+        <ArrowIcon className="size-6 rotate-180" />
+      </Link>
     </li>
   )
 }
@@ -62,7 +52,6 @@ function Row({ label, value, to, action = '수정', last }: RowProps) {
  * 로드맵 관리 카드 — Figma 659:4119
  * 목표직무·관심 스택은 내 정보로 채우고 각 수정 화면으로 보낸다
  * 내 회고 보기는 내 회고 몰아보기(/my/retrospects)로 보낸다
- * TODO: 나의 로드맵은 목록 기능을 미뤄 두어 값·이동이 없다
  */
 export function CareerGoalCard({
   majors,
@@ -79,7 +68,6 @@ export function CareerGoalCard({
           value={skills.length > 0 ? skills.join(', ') : EMPTY}
           to={ROUTES.myTechStackEdit}
         />
-        <Row label="나의 로드맵" value={EMPTY} />
         <Row
           label="내 회고 보기"
           value={retrospectCount === undefined ? EMPTY : `${retrospectCount}개`}
