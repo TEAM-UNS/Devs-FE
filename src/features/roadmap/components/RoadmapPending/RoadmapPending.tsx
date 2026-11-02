@@ -5,6 +5,7 @@ import { Button, buttonClassName } from '@/shared/components/Button'
 import { ROUTES } from '@/shared/constants'
 import { roadmapQueries } from '../../api/roadmapQueries'
 import { useGeneratingProgress } from '../../hooks/useGeneratingProgress'
+import { clearGeneratingStartedAt } from '../../utils/generatingStartedAt'
 import { RoadmapGenerating } from '../RoadmapGenerating'
 
 interface RoadmapPendingProps {
@@ -23,6 +24,7 @@ export function RoadmapPending({ roadmapId }: RoadmapPendingProps) {
   const status = useQuery(roadmapQueries.status(roadmapId))
   const current = status.data?.status
   const progress = useGeneratingProgress(
+    roadmapId,
     status.data?.progress ?? 0,
     current === 'completed',
   )
@@ -35,6 +37,11 @@ export function RoadmapPending({ roadmapId }: RoadmapPendingProps) {
       })
     }
   }, [filled, queryClient])
+
+  // 끝난 생성의 시작 시각은 더 쓸 일이 없다
+  useEffect(() => {
+    if (filled || current === 'failed') clearGeneratingStartedAt(roadmapId)
+  }, [filled, current, roadmapId])
 
   /* 조회가 실패하면 폴링이 멈춘다(roadmapQueries.status). 갇히지 않게 다시 묻는 버튼을 둔다
      다시 성공하면 폴링도 이어진다 */
