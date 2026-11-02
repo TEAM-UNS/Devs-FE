@@ -36,9 +36,10 @@ export function RetrospectRow({
   const duration = half.length * SECONDS_PER_CARD
 
   return (
+    // 모션 감소면 줄이 멈춰 화면 밖 카드가 잘리므로, 그때만 줄 폭을 화면에 맞추고 가로 스크롤을 연다
     <ul
       className={cn(
-        'flex w-max gap-8 pr-8 hover:[animation-play-state:paused]',
+        'flex w-max gap-8 pr-8 hover:[animation-play-state:paused] motion-reduce:w-auto motion-reduce:max-w-full motion-reduce:overflow-x-auto',
         direction === 'right'
           ? 'motion-safe:animate-marquee-right'
           : 'motion-safe:animate-marquee-left',
