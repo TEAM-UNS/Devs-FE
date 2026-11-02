@@ -7,6 +7,7 @@ export { clearTokens, getAccessToken, setTokens } from './tokenStorage'
 export { majorLabel, majorQueries } from './majors'
 export type { TechStackDto, MajorCategoryDto, MajorsResponse } from './majors'
 export { logout, userQueries } from './user'
+export { RETROSPECT_QUERY_KEY } from './retrospectKey'
 export type {
   UserMajorDto,
   UserMyQueryResponse,

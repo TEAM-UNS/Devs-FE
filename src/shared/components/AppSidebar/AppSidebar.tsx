@@ -80,7 +80,8 @@ export function AppSidebar({ roadmapProgress }: AppSidebarProps) {
                 ) : (
                   <NavLink
                     to={to}
-                    end
+                    // 마이페이지는 내 회고 몰아보기(/my/retrospects)에서도 켜 둔다 (Figma 2217:8656)
+                    end={to !== ROUTES.myPage}
                     className={({ isActive }) =>
                       cn(
                         ITEM_BASE,

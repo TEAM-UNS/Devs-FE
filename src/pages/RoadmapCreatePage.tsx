@@ -1,4 +1,5 @@
 import { RoadmapCreate } from '@/features/roadmap'
+import { PageContainer } from '@/shared/components/PageContainer'
 import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
@@ -10,7 +11,9 @@ export default function RoadmapCreatePage() {
   return (
     <>
       <PageTitle name="로드맵 만들기" />
-      <RoadmapCreate />
+      <PageContainer className="h-full">
+        <RoadmapCreate />
+      </PageContainer>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { StackCompareResult } from '@/features/company'
+import { PageContainer } from '@/shared/components/PageContainer'
 import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
@@ -10,7 +11,9 @@ export default function StackCompareResultPage() {
   return (
     <>
       <PageTitle name="기업 스택 비교 결과" />
-      <StackCompareResult />
+      <PageContainer className="h-full">
+        <StackCompareResult />
+      </PageContainer>
     </>
   )
 }

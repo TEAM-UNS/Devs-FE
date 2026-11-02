@@ -177,6 +177,14 @@ export function DashboardOverview() {
 
   const companySizeLabel =
     COMPANY_SIZES.find((size) => size.value === companySize)?.label ?? ''
+  // 화살표가 양 끝에서 순환하므로 양옆에 보이는 규모도 순환한다
+  const sizeIndex = COMPANY_SIZES.findIndex(
+    (size) => size.value === companySize,
+  )
+  const neighborScale = (direction: -1 | 1) =>
+    COMPANY_SIZES[
+      (sizeIndex + direction + COMPANY_SIZES.length) % COMPANY_SIZES.length
+    ].label
   const periodLabel =
     RISING_PERIODS.find((item) => item.value === period)?.label ?? ''
 
@@ -199,6 +207,8 @@ export function DashboardOverview() {
       <div className="grid h-[316px] grid-cols-[490fr_606fr] gap-6">
         <CompanyScaleCard
           scale={companySizeLabel}
+          prevScale={neighborScale(-1)}
+          nextScale={neighborScale(1)}
           ranks={ranks}
           onStep={stepCompanySize}
         />

@@ -7,6 +7,8 @@ import { LikeButton } from '../LikeButton'
 interface RetrospectDetailModalProps {
   readonly retrospect: Retrospect
   readonly onClose: () => void
+  /** 내 회고 — 제목을 '내 로드맵'으로 부르고 좋아요는 개수만 보여준다 */
+  readonly mine?: boolean
 }
 
 /**
@@ -17,9 +19,10 @@ interface RetrospectDetailModalProps {
 export function RetrospectDetailModal({
   retrospect,
   onClose,
+  mine = false,
 }: RetrospectDetailModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
-  const title = retrospectTitle(retrospect.dayNo)
+  const title = retrospectTitle(retrospect.dayNo, mine)
 
   useEffect(() => {
     dialogRef.current?.showModal()
@@ -57,7 +60,7 @@ export function RetrospectDetailModal({
             <span className="text-body-sm text-gray-400">
               {formatBoardDate(retrospect.date)}
             </span>
-            <LikeButton retrospect={retrospect} />
+            <LikeButton retrospect={retrospect} readOnly={mine} />
           </div>
         </div>
       </div>
