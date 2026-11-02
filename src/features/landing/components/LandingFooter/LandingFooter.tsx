@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import { DevsLogo } from '@/shared/components/icons'
+import { ROUTES } from '@/shared/constants'
 import githubIcon from '@/assets/landing/footer-github.webp'
 import {
   CONTACT_EMAIL,
@@ -45,9 +47,19 @@ export function LandingFooter() {
             ))}
           </p>
         </div>
-        <p className="text-body-lg text-gray-200">
-          © 2026 UNS. All rights reserved.
-        </p>
+        {/* Figma 푸터는 개인정보처리방침 링크만 있다. 이용약관을 옆에 두고, 방침은 관행대로 굵게 구분한다 */}
+        <div className="flex flex-col items-end gap-1.5 text-body-lg text-gray-200">
+          <nav aria-label="약관 및 정책" className="flex items-center gap-3">
+            <Link to={ROUTES.terms} className="underline">
+              이용약관
+            </Link>
+            {DIVIDER}
+            <Link to={ROUTES.privacy} className="font-semibold underline">
+              개인정보처리방침
+            </Link>
+          </nav>
+          <p>© 2026 UNS. All rights reserved.</p>
+        </div>
       </div>
     </footer>
   )
