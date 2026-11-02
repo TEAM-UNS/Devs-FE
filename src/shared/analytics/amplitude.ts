@@ -1,5 +1,9 @@
 import * as amplitude from '@amplitude/unified'
 
+/* 초기화가 끝났는지. 실험 플래그는 초기화가 끝나야 붙는 플러그인이라 이걸 기다린다
+   개발 빌드·키 없음이면 초기화를 안 하므로 null로 남는다 */
+let ready: Promise<boolean> | null = null
+
 /**
  * Amplitude 초기화 (이벤트 + 세션 리플레이)
  * 개발 중 클릭이 실제 지표에 섞이지 않도록 프로덕션 빌드에서만 킴
@@ -14,7 +18,7 @@ export function initAmplitude() {
     return
   }
 
-  amplitude
+  ready = amplitude
     .initAll(apiKey, {
       analytics: {
         /* 페이지 조회는 제목이 들어간 뒤 trackPageView로 직접 보낸다
@@ -29,9 +33,88 @@ export function initAmplitude() {
       },
       // 베타 테스트까지는 1로 두고 추후 트래픽이 증가하면 낮춰야함
       sessionReplay: { sampleRate: 1 },
+      /* 플래그는 화면이 쓰기 전에 뒤에서 미리 받아 둔다. 읽을 때마다 노출을 남기면 실제로 본 화면과
+         다른 variant가 기록되므로 자동 노출은 끄고, 노출은 화면이 남기는 이벤트(Dashboard Viewed 등)로 본다 */
+      experiment: { automaticExposureTracking: false },
     })
+    .then(() => true)
     // 초기화가 실패해도 화면은 계속 돌아야 하기 때문에 예외처리가 필요함
-    .catch(() => console.warn('Amplitude init failed — analytics disabled'))
+    .catch(() => {
+      console.warn('Amplitude init failed — analytics disabled')
+      return false
+    })
+}
+
+/** 원격 플래그를 쓸 수 있는 환경인지. 개발·테스트처럼 Amplitude를 켜지 않았으면 false라 기다릴 필요가 없다 */
+export function flagsEnabled(): boolean {
+  return ready !== null
+}
+
+// 플래그는 페이지당 한 번만 받아 온다
+let started: Promise<void> | null = null
+
+/* 마지막으로 받은 플래그 값. Amplitude 초기화가 1초 넘게 걸려 첫 화면이 플래그를 기다릴 수 없어서,
+   다음 방문부터는 이 값으로 바로 그린다. variant가 없으면(undefined) 빈 문자열로 남긴다 */
+const cacheKeyOf = (key: string) => `uns-flag:${key}`
+
+/**
+ * 이 기기에서 마지막으로 받은 플래그 값
+ *
+ * @param key 플래그 키
+ * @returns 받은 적 없으면 null, variant가 없었으면 undefined
+ */
+export function readCachedFlag(key: string): string | undefined | null {
+  try {
+    const cached = localStorage.getItem(cacheKeyOf(key))
+    if (cached === null) return null
+    return cached === '' ? undefined : cached
+  } catch {
+    return null
+  }
+}
+
+function writeCachedFlag(key: string, value: string | undefined) {
+  try {
+    localStorage.setItem(cacheKeyOf(key), value ?? '')
+  } catch {
+    // 저장소를 못 쓰면 매번 기다린다
+  }
+}
+
+/**
+ * 원격 플래그 값. 정해진 시간 안에 못 받거나 Amplitude가 꺼져 있으면 null
+ * 시간이 지나도 받는 일은 계속해서, 받으면 다음 방문을 위해 기기에 남긴다
+ * 자동 노출 기록은 꺼 두었다. 노출은 실제로 그린 화면이 이벤트로 남긴다
+ *
+ * @param key 플래그 키
+ * @param timeoutMs 기다릴 최대 시간
+ * @returns 받은 variant 값(없으면 undefined), 못 받으면 null
+ */
+export async function fetchFlag(
+  key: string,
+  timeoutMs: number,
+): Promise<string | undefined | null> {
+  const load = (async () => {
+    if (!ready || !(await ready)) return null
+    const client = amplitude.experiment()
+    if (!client) return null
+    started ??= client.start()
+    await started
+    const { value } = client.variant(key)
+    writeCachedFlag(key, value)
+    return value
+  })().catch(() => null)
+
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), timeoutMs)
+  })
+
+  try {
+    return await Promise.race([load, timeout])
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 /**
