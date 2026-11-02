@@ -1,10 +1,10 @@
+import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import boardBackground from '@/assets/retrospect/board-bg.webp'
 import { buttonClassName } from '@/shared/components/Button'
 import { ROUTES } from '@/shared/constants'
-import { MOCK_RETROSPECTS } from '../../constants/mock'
-import type { Retrospect } from '../../types'
+import { retrospectQueries } from '../../api/retrospectQueries'
 import { splitIntoRows } from '../../utils/board'
 import { RetrospectDetailModal } from '../RetrospectDetailModal'
 import { RetrospectRow } from '../RetrospectRow'
@@ -18,10 +18,13 @@ const ROW_MOTION = [
 
 /** 주간 익명 회고 게시판 — 이번 주 회고가 세 줄로 흐르고, 누르면 상세 모달 */
 export function RetrospectBoard() {
-  // 상세 모달로 연 회고. null이면 닫힘
-  const [opened, setOpened] = useState<Retrospect | null>(null)
-  // TODO: API 연동 — GET /retrospect
-  const rows = splitIntoRows(MOCK_RETROSPECTS)
+  const retrospects = useQuery(retrospectQueries.list())
+  /* 상세 모달로 연 회고의 id. 객체 대신 id를 들고 캐시에서 찾아야
+     모달 안에서 누른 좋아요가 바로 반영된다 */
+  const [openedId, setOpenedId] = useState<number | null>(null)
+  const list = retrospects.data ?? []
+  const rows = splitIntoRows(list)
+  const opened = list.find(({ retrospectId }) => retrospectId === openedId)
 
   return (
     /* 배경이 화면 끝까지 깔리게 main의 안쪽 여백(p-10)만큼 밖으로 넓힌다
@@ -49,12 +52,14 @@ export function RetrospectBoard() {
           </Link>
         </header>
 
-        {rows.length === 0 ? (
-          // TODO: 빈 화면은 디자인에 없다. 임시 문구
+        {/* TODO: 빈 화면은 디자인에 없다. 임시 문구
+            로딩 중·실패는 아무것도 그리지 않는다(실패는 공통 에러 토스트) */}
+        {retrospects.isSuccess && list.length === 0 && (
           <p className="m-auto text-body-lg text-gray-400">
             이번 주 회고가 아직 없어요
           </p>
-        ) : (
+        )}
+        {rows.length > 0 && (
           <div className="mt-[66px] flex flex-col gap-16">
             {rows.map((row, index) => (
               <RetrospectRow
@@ -62,7 +67,7 @@ export function RetrospectBoard() {
                 retrospects={row}
                 direction={ROW_MOTION[index].direction}
                 offset={ROW_MOTION[index].offset}
-                onOpen={setOpened}
+                onOpen={({ retrospectId }) => setOpenedId(retrospectId)}
               />
             ))}
           </div>
@@ -72,7 +77,7 @@ export function RetrospectBoard() {
       {opened && (
         <RetrospectDetailModal
           retrospect={opened}
-          onClose={() => setOpened(null)}
+          onClose={() => setOpenedId(null)}
         />
       )}
     </div>

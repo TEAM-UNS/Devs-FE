@@ -9,3 +9,10 @@ export interface Retrospect {
   /** 내가 좋아요를 눌렀는지 */
   liked: boolean
 }
+
+/** POST·DELETE /like/{retrospectId} 응답 */
+export interface RetrospectLikeResponse {
+  retrospectId: number
+  likeCount: number
+  liked: boolean
+}

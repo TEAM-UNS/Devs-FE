@@ -57,7 +57,7 @@ export function RetrospectDetailModal({
             <span className="text-body-sm text-gray-400">
               {formatBoardDate(retrospect.date)}
             </span>
-            <LikeButton liked={retrospect.liked} count={retrospect.likeCount} />
+            <LikeButton retrospect={retrospect} />
           </div>
         </div>
       </div>
