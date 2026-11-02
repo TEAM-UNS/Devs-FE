@@ -4,11 +4,13 @@ import { trackEvent } from '@/shared/analytics'
 import { buttonClassName } from '@/shared/components/Button'
 import { ROUTES } from '@/shared/constants'
 
-type Cta = 'login' | 'signup'
+/** start: 가입 없이 메인으로 들어가 둘러보기 */
+type Cta = 'login' | 'signup' | 'start'
 
 const CTA_PATHS: Record<Cta, string> = {
   login: ROUTES.login,
   signup: ROUTES.signup,
+  start: ROUTES.home,
 }
 
 interface CtaLinkProps {

@@ -14,7 +14,7 @@ const NAV_LABELS = [
 ]
 
 /** NavLink가 라우터 컨텍스트를 요구하므로 MemoryRouter로 감싼다. */
-function renderSidebar(pathname = '/', progress = 64) {
+function renderSidebar(pathname = '/', progress: number | null = 64) {
   return render(
     <MemoryRouter initialEntries={[pathname]}>
       <AppSidebar roadmapProgress={progress} />
@@ -85,5 +85,17 @@ describe('AppSidebar', () => {
     const bar = screen.getByRole('progressbar', { name: '로드맵 진행도' })
     expect(bar).toHaveAttribute('aria-valuenow', '37')
     expect(screen.getByText('37%')).toBeInTheDocument()
+  })
+
+  it('비로그인이면 진행도 대신 로그인 링크를 보여준다', () => {
+    renderSidebar('/roadmap', null)
+
+    expect(
+      screen.queryByRole('progressbar', { name: '로드맵 진행도' }),
+    ).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '로그인' })).toHaveAttribute(
+      'href',
+      '/login',
+    )
   })
 })

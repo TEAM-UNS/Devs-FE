@@ -2,6 +2,7 @@
 import { lazy, Suspense } from 'react'
 import type { RouteObject } from 'react-router-dom'
 import { RouteFallback } from '@/shared/components/RouteFallback'
+import { AuthGate } from './AuthGate'
 import { RootLayout } from './RootLayout'
 
 const LandingPage = lazy(() => import('@/pages/LandingPage'))
@@ -89,19 +90,42 @@ export const routes: RouteObject[] = [
     path: '/',
     element: <LandingRoute />,
   },
+  /* 메인·소개는 비로그인도 본다. 나머지는 AuthGate가 비로그인이면 잠금 안내로 바꾼다 */
   {
     element: <RootLayout />,
     children: [
       { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'weekly-report', element: <WeeklyReportPage /> },
-      { path: 'chat', element: <ChatPage /> },
-      { path: 'my', element: <MyPage /> },
-      { path: 'stack-compare', element: <StackComparePage /> },
-      { path: 'stack-compare/result', element: <StackCompareResultPage /> },
-      { path: 'roadmap', element: <RoadmapPage /> },
-      { path: 'roadmap/new', element: <RoadmapCreatePage /> },
-      { path: 'retrospect', element: <RetrospectBoardPage /> },
       { path: 'about', element: <AboutPage /> },
+      {
+        element: <AuthGate lock="weeklyReport" />,
+        children: [{ path: 'weekly-report', element: <WeeklyReportPage /> }],
+      },
+      {
+        element: <AuthGate lock="stackCompare" />,
+        children: [
+          { path: 'stack-compare', element: <StackComparePage /> },
+          { path: 'stack-compare/result', element: <StackCompareResultPage /> },
+        ],
+      },
+      {
+        element: <AuthGate lock="roadmap" />,
+        children: [
+          { path: 'roadmap', element: <RoadmapPage /> },
+          { path: 'roadmap/new', element: <RoadmapCreatePage /> },
+        ],
+      },
+      {
+        element: <AuthGate lock="retrospect" />,
+        children: [{ path: 'retrospect', element: <RetrospectBoardPage /> }],
+      },
+      {
+        element: <AuthGate lock="chat" />,
+        children: [{ path: 'chat', element: <ChatPage /> }],
+      },
+      {
+        element: <AuthGate lock="myPage" />,
+        children: [{ path: 'my', element: <MyPage /> }],
+      },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
