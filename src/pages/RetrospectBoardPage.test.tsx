@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Retrospect } from '@/features/retrospect/types'
 import { renderWithQuery } from '@/test/renderWithQuery'
 import RetrospectBoardPage from './RetrospectBoardPage'
@@ -39,13 +39,6 @@ function renderPage() {
 }
 
 describe('RetrospectBoardPage', () => {
-  // jsdom에는 dialog의 showModal이 없다
-  beforeAll(() => {
-    HTMLDialogElement.prototype.showModal = function showModal() {
-      this.open = true
-    }
-  })
-
   beforeEach(() => {
     server.retrospects = []
     post.mockReset()

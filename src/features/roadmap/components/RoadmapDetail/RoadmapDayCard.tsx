@@ -65,7 +65,11 @@ export function RoadmapDayCard({
             <ul className="flex flex-col gap-5">
               {day.items.map((item) => (
                 <li key={item.itemId}>
-                  <RoadmapItemCheckbox item={item} readOnly={day.completed} />
+                  <RoadmapItemCheckbox
+                    item={item}
+                    readOnly={day.completed}
+                    dimmed={past}
+                  />
                 </li>
               ))}
             </ul>
