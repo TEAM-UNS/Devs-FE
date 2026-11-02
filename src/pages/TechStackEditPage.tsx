@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { majorQueries, userQueries } from '@/shared/api'
 import { ROUTES } from '@/shared/constants'
+import { useGoBack } from '@/shared/hooks/useGoBack'
 import { useToastStore } from '@/shared/stores/useToastStore'
 import {
   AuthLayout,
@@ -22,6 +23,7 @@ export default function TechStackEditPage() {
   const { data } = useQuery(userQueries.me())
   const majorList = useQuery(majorQueries.list())
   const navigate = useNavigate()
+  const goBack = useGoBack(ROUTES.myPage)
   const showToast = useToastStore((state) => state.show)
   const updateTechStackMutation = useUpdateTechStack()
 
@@ -45,7 +47,7 @@ export default function TechStackEditPage() {
   const majorIds = data?.majors.map(({ majorId }) => majorId) ?? []
 
   return (
-    <AuthLayout className="max-w-[708px]" onBack={() => navigate(-1)}>
+    <AuthLayout className="max-w-[708px]" onBack={goBack}>
       <PageTitle name="보유 기술 스택 수정" />
       <div className="flex flex-col gap-12">
         <div className="flex flex-col items-center gap-1 text-center">

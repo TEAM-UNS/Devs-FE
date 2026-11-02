@@ -2,6 +2,7 @@
 import { lazy, Suspense } from 'react'
 import type { RouteObject } from 'react-router-dom'
 import { RouteFallback } from '@/shared/components/RouteFallback'
+import { ROUTES } from '@/shared/constants'
 import { AuthGate } from './AuthGate'
 import { RootLayout } from './RootLayout'
 
@@ -122,9 +123,10 @@ export const routes: RouteObject[] = [
     path: '/onboarding',
     element: <OnboardingRoute />,
   },
-  /* 마이페이지 수정은 온보딩처럼 전체 화면이라 RootLayout 밖에 두고, 가드는 마이페이지와 같은 잠금을 쓴다 */
+  /* 마이페이지 수정은 온보딩처럼 전체 화면이라 RootLayout 밖에 둔다
+     잠금 화면은 RootLayout 안에서만 맞게 그려져서, 비로그인은 마이페이지(잠금 화면)로 보낸다 */
   {
-    element: <AuthGate lock="myPage" />,
+    element: <AuthGate guestRedirect={ROUTES.myPage} />,
     children: [
       { path: '/my/major', element: <MajorEditRoute /> },
       { path: '/my/tech-stack', element: <TechStackEditRoute /> },

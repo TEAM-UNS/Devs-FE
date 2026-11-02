@@ -38,4 +38,20 @@ describe('AuthGate', () => {
       '/login',
     )
   })
+
+  it('전체 화면 묶음은 비로그인이면 잠금 화면 대신 부모 화면으로 보낸다', () => {
+    render(
+      <MemoryRouter initialEntries={['/my/major']}>
+        <Routes>
+          <Route path="/my" element={<p>마이페이지</p>} />
+          <Route element={<AuthGate guestRedirect="/my" />}>
+            <Route path="/my/major" element={<p>전공 수정</p>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.queryByText('전공 수정')).not.toBeInTheDocument()
+    expect(screen.getByText('마이페이지')).toBeInTheDocument()
+  })
 })
