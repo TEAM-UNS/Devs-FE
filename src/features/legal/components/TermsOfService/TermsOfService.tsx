@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ROUTES } from '@/shared/constants'
 import {
-  Blank,
   ExternalLink,
   LegalBullets,
   LegalDocument,
@@ -13,6 +12,8 @@ import {
 /* 문구는 팀이 정리한 서비스 이용약관(2026/10/29 시행) 그대로다. 바꿀 때는 팀 확인을 받는다 */
 
 const SERVICE_URL = 'https://kangyu.shop/'
+// 랜딩 푸터 Contact와 같은 팀 메일
+const CONTACT_EMAIL = 'teamuns2026@gmail.com'
 
 /** 서비스 이용약관 */
 export function TermsOfService() {
@@ -303,9 +304,13 @@ export function TermsOfService() {
             처리방침을 공개하고 지킵니다.
           </li>
           <li>
-            회원은 <Blank>문의 이메일</Blank>로 서비스에 관한 의견이나 불만을
-            제기할 수 있습니다. 팀은 정당한 의견이나 불만을 지체 없이 처리하고,
-            처리에 시간이 걸리면 그 사유와 일정을 이메일로 알립니다.
+            회원은{' '}
+            <ExternalLink href={`mailto:${CONTACT_EMAIL}`}>
+              {CONTACT_EMAIL}
+            </ExternalLink>
+            로 서비스에 관한 의견이나 불만을 제기할 수 있습니다. 팀은 정당한
+            의견이나 불만을 지체 없이 처리하고, 처리에 시간이 걸리면 그 사유와
+            일정을 이메일로 알립니다.
           </li>
         </LegalList>
       </LegalSection>

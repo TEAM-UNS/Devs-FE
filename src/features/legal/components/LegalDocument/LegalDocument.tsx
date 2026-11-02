@@ -114,18 +114,6 @@ export function LegalTable({ head, rows }: LegalTableProps) {
   )
 }
 
-/**
- * 팀에게 값을 받아야 하는 빈 칸. 받기 전에 운영에 나가지 않도록 눈에 띄게 둔다
- * TODO: 값을 받으면 이 표시를 지우고 본문에 바로 쓴다
- */
-export function Blank({ children }: { readonly children: ReactNode }) {
-  return (
-    <mark className="rounded-sm bg-warning/15 px-1 text-warning">
-      [{children}]
-    </mark>
-  )
-}
-
 /** 본문 속 외부 링크 */
 export function ExternalLink({
   href,

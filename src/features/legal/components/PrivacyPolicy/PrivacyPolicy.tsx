@@ -1,5 +1,4 @@
 import {
-  Blank,
   ExternalLink,
   LegalBullets,
   LegalDocument,
@@ -171,10 +170,7 @@ export function PrivacyPolicy() {
             ['인증 코드 재발송 제한 기록', '5분'],
             ['로그인 유지 토큰', '발급 후 최대 14일 (로그아웃하면 즉시 삭제)'],
             ['접속 기록 (IP 주소, 접속 일시 등)', '3개월 (「통신비밀보호법」)'],
-            [
-              '서비스 이용 및 오류 기록 (모니터링)',
-              <Blank key="monitoring">100년</Blank>,
-            ],
+            ['서비스 이용 및 오류 기록 (모니터링)', '수집 후 1년'],
           ]}
         />
         <p>
@@ -223,10 +219,9 @@ export function PrivacyPolicy() {
 
       <LegalSection title="제6조 개인정보 처리의 위탁 및 국외 이전">
         <p>
-          서비스 서버와 데이터베이스는 팀이 직접 운영하며{' '}
-          <Blank>대한민국</Blank>에 있습니다. 다만 아래 업무는 해외 업체에
-          맡기며, 이 과정에서 개인정보가 국외로 이전됩니다(「개인정보 보호법」
-          제26조, 제28조의 8).
+          서비스 서버와 데이터베이스는 팀이 직접 운영하며 대한민국에 있습니다.
+          다만 아래 업무는 해외 업체에 맡기며, 이 과정에서 개인정보가 국외로
+          이전됩니다(「개인정보 보호법」 제26조, 제28조의 8).
         </p>
         <LegalTable
           head={[
@@ -249,16 +244,14 @@ export function PrivacyPolicy() {
               '서비스 성능·오류 모니터링',
               '서비스 이용 및 오류 기록, 브라우저 정보',
               '서비스 이용 중 수시, 암호화된 통신으로 전송',
-              <Blank key="datadog">보관 기간 입력</Blank>,
+              '수탁자의 정책에 따름',
             ],
             [
-              <span key="ai">
-                <Blank>AI GEMINI</Blank> (<Blank>대한민국</Blank>)
-              </span>,
+              'Google LLC (미국)',
               'AI 챗봇 답변 생성',
               '질문과 대화 내용, 이름, 경력 구분, 관심 직군, 보유 기술',
               '챗봇에 질문할 때, 암호화된 통신으로 전송',
-              <Blank key="ai-period">보관 기간 입력</Blank>,
+              '수탁자의 정책에 따름',
             ],
             [
               'Google LLC (미국)',
@@ -404,12 +397,7 @@ export function PrivacyPolicy() {
           head={['구분', '내용']}
           rows={[
             ['성명', '이강희'],
-            [
-              '소속 및 직책',
-              <span key="role">
-                TEAM UNS <Blank>PM</Blank>
-              </span>,
-            ],
+            ['소속 및 직책', 'TEAM UNS PM'],
             [
               '이메일',
               <ExternalLink key="email" href="mailto:kh63167574@gmail.com">

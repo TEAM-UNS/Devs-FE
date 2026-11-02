@@ -1,5 +1,4 @@
 export {
-  Blank,
   ExternalLink,
   LegalBullets,
   LegalDocument,
