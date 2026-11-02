@@ -41,4 +41,18 @@ describe('CtaLink', () => {
       '/login',
     )
   })
+
+  it('시작하기는 가입 없이 메인으로 보낸다', () => {
+    render(
+      <MemoryRouter>
+        <CtaLink cta="start" location="hero">
+          무료로 시작하기
+        </CtaLink>
+      </MemoryRouter>,
+    )
+
+    expect(
+      screen.getByRole('link', { name: '무료로 시작하기' }),
+    ).toHaveAttribute('href', '/dashboard')
+  })
 })

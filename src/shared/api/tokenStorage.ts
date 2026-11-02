@@ -9,7 +9,7 @@ export interface AuthTokens {
 /**
  * 저장된 accessToken. 쓰는 곳은 둘
  * - `http.ts` 요청 헤더에 실음
- * - `RootLayout` 라우트 가드 — 없으면 `/login`으로 보냄
+ * - `AuthGate` 라우트 가드 — 없으면 그 화면의 잠금 안내를 그림 (`RootLayout`은 사이드바 모양만)
  */
 export function getAccessToken(): string | null {
   return localStorage.getItem(ACCESS_TOKEN_KEY)
