@@ -39,7 +39,7 @@ export function MyPageOverview() {
         {/* 아래 두 카드는 같은 높이로 나란히 선다 */}
         <div className="grid gap-6 lg:grid-cols-2">
           <ReportSubscriptionCard />
-          <CareerGoalCard />
+          <CareerGoalCard majors={profile.majors} skills={profile.skills} />
         </div>
       </div>
     </div>
