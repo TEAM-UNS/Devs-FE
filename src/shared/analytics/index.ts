@@ -1,2 +1,8 @@
-export { initAmplitude, resetAnalytics, trackEvent } from './amplitude'
+export {
+  fetchFlag,
+  flagsEnabled,
+  initAmplitude,
+  resetAnalytics,
+  trackEvent,
+} from './amplitude'
 export { trackPageView } from './pageView'
