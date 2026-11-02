@@ -29,14 +29,20 @@ export function RetrospectDetailModal({
   }, [])
 
   return (
+    // 배경 클릭은 마우스용 보조 수단이고, 키보드는 네이티브 Esc로 닫힌다
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
     <dialog
       ref={dialogRef}
       onClose={onClose}
       aria-labelledby="retrospect-detail-title"
+      // 배경(::backdrop)을 누르면 target이 dialog 자신이다. 안쪽 여백은 아래 div가 가져가 모달 안 클릭과 구분한다
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
       // Figma 배경: 검정 45% + 배경 블러 6 (로드맵 회고 모달과 같다)
-      className="m-auto w-[800px] max-w-[calc(100%-2rem)] rounded-md border border-element bg-container px-6 pt-6 pb-9 backdrop:bg-black/45 backdrop:backdrop-blur-[6px]"
+      className="m-auto w-[800px] max-w-[calc(100%-2rem)] rounded-md border border-element bg-container p-0 backdrop:bg-black/45 backdrop:backdrop-blur-[6px]"
     >
-      <div className="flex flex-col items-center gap-5">
+      <div className="flex flex-col items-center gap-5 px-6 pt-6 pb-9">
         <div className="flex w-full justify-end">
           <button
             type="button"
