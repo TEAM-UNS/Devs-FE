@@ -20,15 +20,25 @@ describe('WeekWheel', () => {
     expect(value()).toHaveAttribute('aria-valuenow', '2')
   })
 
-  it('키보드 위아래·Home·End로 바꾼다', async () => {
+  it('숫자가 아래로 갈수록 커지므로 위 버튼이 줄이기, 아래 버튼이 늘리기다', () => {
+    render(<Controlled initial={4} />)
+
+    const [up, down] = screen.getAllByRole('button')
+    expect(up).toHaveAccessibleName('한 주 줄이기')
+    expect(down).toHaveAccessibleName('한 주 늘리기')
+  })
+
+  it('키보드 ↑는 위 숫자, ↓는 아래 숫자로 가고 Home·End로 끝까지 간다', async () => {
     render(<Controlled initial={4} />)
 
     value().focus()
-    await userEvent.keyboard('{ArrowUp}')
+    await userEvent.keyboard('{ArrowDown}')
     expect(value()).toHaveAttribute('aria-valuenow', '5')
+    await userEvent.keyboard('{ArrowUp}')
+    expect(value()).toHaveAttribute('aria-valuenow', '4')
     await userEvent.keyboard('{End}')
     expect(value()).toHaveAttribute('aria-valuenow', '12')
-    await userEvent.keyboard('{ArrowUp}')
+    await userEvent.keyboard('{ArrowDown}')
     expect(value()).toHaveAttribute('aria-valuenow', '12')
     await userEvent.keyboard('{Home}')
     expect(value()).toHaveAttribute('aria-valuenow', '1')
