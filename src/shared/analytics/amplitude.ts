@@ -4,6 +4,8 @@ import { getAccessToken } from '@/shared/api/tokenStorage'
 /* 초기화가 끝났는지. 실험 플래그는 초기화가 끝나야 붙는 플러그인이라 이걸 기다린다
    개발 빌드·키 없음이면 초기화를 안 하므로 null로 남는다 */
 let ready: Promise<boolean> | null = null
+// 초기화가 성공해 끝났는지. 끝난 뒤의 식별은 기다리지 않고 바로 해야 같은 자리의 다음 이벤트에 붙는다
+let initialized = false
 
 /**
  * Amplitude 초기화 (이벤트 + 세션 리플레이)
@@ -41,7 +43,10 @@ export function initAmplitude() {
          다른 variant가 기록되므로 자동 노출은 끄고, 노출은 화면이 남기는 이벤트(Dashboard Viewed 등)로 본다 */
       experiment: { automaticExposureTracking: false },
     })
-    .then(() => true)
+    .then(() => {
+      initialized = true
+      return true
+    })
     // 초기화가 실패해도 화면은 계속 돌아야 하기 때문에 예외처리가 필요함
     .catch(() => {
       console.warn('Amplitude init failed — analytics disabled')
@@ -151,10 +156,30 @@ export function userIdFromToken(token: string | null): string | null {
  * 백엔드가 sub에 다른 값을 넣도록 바뀌면 식별이 조용히 달라지니 그때 함께 고친다
  */
 export function identifyUser() {
-  // 개발·테스트처럼 초기화하지 않았으면 아무것도 하지 않는다
-  if (ready === null) return
-  const userId = userIdFromToken(getAccessToken())
+  // 로그인 직후처럼 초기화가 끝났으면 바로 맞춰 바로 다음 이벤트(Logged In)부터 붙게 한다
+  if (initialized) {
+    applyIdentity()
+    return
+  }
+  // 앱 시작 직후엔 초기화 전이라 저장된 id를 못 읽으므로 끝난 뒤에 맞춘다
+  // 개발·테스트처럼 초기화하지 않았으면(ready === null) 아무것도 하지 않는다
+  void ready?.then((ok) => {
+    if (ok) applyIdentity()
+  })
+}
+
+function applyIdentity() {
+  let token: string | null
+  try {
+    token = getAccessToken()
+  } catch {
+    // 브라우저가 저장소를 막으면 식별만 건너뛴다
+    return
+  }
+  const userId = userIdFromToken(token)
   if (userId) amplitude.setUserId(userId)
+  // 토큰은 없는데 지난 사람 id가 남아 있으면(만료로 지워짐 등) 기기 식별부터 새로 시작한다
+  else if (amplitude.getUserId()) amplitude.reset()
 }
 
 /**
