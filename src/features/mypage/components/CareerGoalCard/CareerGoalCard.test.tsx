@@ -23,6 +23,9 @@ describe('CareerGoalCard', () => {
   it('목표직무·관심 스택을 내 정보로 보여주고 각 수정 화면으로 보낸다', () => {
     renderCard('프론트엔드', ['React', 'Vue.js', 'Next.js'])
 
+    expect(
+      screen.getByRole('heading', { name: '내 커리어 관리' }),
+    ).toBeInTheDocument()
     expect(screen.getByText('프론트엔드')).toBeInTheDocument()
     expect(screen.getByText('React, Vue.js, Next.js')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '목표직무 수정' })).toHaveAttribute(
