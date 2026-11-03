@@ -327,6 +327,30 @@
     }
   }
 
+  /* 대시보드 기업 규모 라벨 넘김 — 라벨 줄이 한 칸씩 옆으로 밀린다 (CompanyScaleCard).
+     라벨은 새 자리에 바로 그려 두고, 이전 자리의 모습(--from-*)에서 출발시킨다.
+     `to`를 생략해 각 자리의 원래 모습이 종료값이 된다(gauge-grow와 같은 요령).
+     주간 리포트 카드 넘김과 같은 곡선·시간으로 앱 안의 넘김을 맞췄다 (Figma에 스펙 없음) */
+  --animate-scale-slide-in: scale-slide-in var(--duration-slow)
+    var(--ease-carousel) both;
+  --animate-scale-slide-out: scale-slide-out var(--duration-slow)
+    var(--ease-carousel) both;
+
+  @keyframes scale-slide-in {
+    from {
+      transform: translateX(var(--from-x)) scale(var(--from-scale, 1));
+      opacity: var(--from-opacity, 1);
+    }
+  }
+
+  /* 반대쪽 끝 라벨은 바깥으로 밀려나며 사라진다 */
+  @keyframes scale-slide-out {
+    to {
+      transform: translateX(var(--to-x));
+      opacity: 0;
+    }
+  }
+
   /* ── 토스트 ──────────────────────────────────────────────────
      toast-in: 위에서 내려오며 살짝 지나쳤다 돌아온다. Figma에 스펙이 없어, 랜딩 device-rise와
      같은 overshoot 곡선으로 앱 안의 움직임을 맞췄다
