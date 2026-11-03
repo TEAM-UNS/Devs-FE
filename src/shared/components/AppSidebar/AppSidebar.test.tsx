@@ -70,13 +70,18 @@ describe('AppSidebar', () => {
     ).not.toHaveAttribute('aria-current')
   })
 
-  it('메인페이지는 정확히 / 에서만 활성화된다', () => {
-    // end 옵션이 없으면 '/'가 모든 하위 경로에 매칭돼 항상 활성으로 보인다.
-    renderSidebar('/weekly-report')
+  it.each([
+    ['/roadmap/new', '로드맵'],
+    ['/stack-compare/result', '기업 스택 비교'],
+    ['/my/retrospects', '마이페이지'],
+  ])('하위 경로 %s 에서도 %s 메뉴가 켜진다', (pathname, label) => {
+    // 로드맵이 없으면 /roadmap에서 /roadmap/new로 보내져서, 정확히 일치만 보면 메뉴가 꺼졌다
+    renderSidebar(pathname)
 
-    expect(
-      screen.getByRole('link', { name: '메인페이지' }),
-    ).not.toHaveAttribute('aria-current')
+    expect(screen.getByRole('link', { name: label })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
   })
 
   it('로드맵 진행도를 progressbar와 퍼센트 문구로 함께 노출한다', () => {
