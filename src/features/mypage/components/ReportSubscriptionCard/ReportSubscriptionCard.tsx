@@ -131,8 +131,13 @@ export function ReportSubscriptionCard() {
         <InfoNote>
           구독 중인 리포트는 매주 월요일 아침 9시에 이메일로 발송됩니다
         </InfoNote>
-        <InfoNote>메일이 보이지 않으면 스팸함을 확인해주세요</InfoNote>
       </div>
+      {/* 리포트가 스팸함으로 가면 구독한 줄도 모르고 끊긴다. 한 번 '스팸 아님'으로 옮기면 다음부터 받은편지함으로 온다 */}
+      <InfoNote tone="emphasis" className="mt-3">
+        메일이 안 보이면 <strong className="font-semibold">스팸함</strong>을
+        확인하고 &lsquo;스팸 아님&rsquo;으로 표시해 주세요. 다음 리포트부터
+        받은편지함으로 와요
+      </InfoNote>
     </section>
   )
 }

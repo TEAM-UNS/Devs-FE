@@ -148,9 +148,16 @@ export function SignupStep1({
             message={errors.code?.message}
             {...register('code')}
           />
-          {/* 인증 메일이 스팸함으로 가는 경우가 있다. 지금 입력한 주소로 보낸 뒤에만 보인다 */}
+          {/* 인증 메일이 스팸함으로 가는 경우가 있다. 지금 입력한 주소로 보낸 뒤에만 보인다
+              놓치면 가입이 막히니 강조 상자로 띄우고, 보낸 주소를 같이 보여 오타도 알아채게 한다 */}
           {sentTo === email && (
-            <InfoNote>메일이 오지 않았다면 스팸함을 확인해주세요</InfoNote>
+            <div role="status">
+              <InfoNote tone="emphasis">
+                {sentTo}로 인증 메일을 보냈어요. 메일이 안 보이면{' '}
+                <strong className="font-semibold">스팸함</strong>도 확인해
+                주세요
+              </InfoNote>
+            </div>
           )}
         </div>
       </div>

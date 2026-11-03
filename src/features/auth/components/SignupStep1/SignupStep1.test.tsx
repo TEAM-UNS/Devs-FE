@@ -61,9 +61,8 @@ describe('SignupStep1', () => {
     // 응답이 온 뒤에 열리므로 findBy로 기다린다
     expect(await screen.findByText('5:00')).toBeInTheDocument()
     expect(screen.getByLabelText('이메일 인증')).toBeEnabled()
-    expect(
-      screen.getByText('메일이 오지 않았다면 스팸함을 확인해주세요'),
-    ).toBeInTheDocument()
+    // 보낸 주소와 스팸함 안내를 강조 상자로 알린다
+    expect(screen.getByRole('status')).toHaveTextContent(/스팸함/)
     // 전송 후에는 재전송을 막는다 (Figma 120:1684 이후 인증 버튼 비활성)
     expect(screen.getByRole('button', { name: '이메일 인증' })).toBeDisabled()
     // 전송 성공 토스트 — 표시는 App에 마운트된 ToastViewport의 몫이라 스토어를 본다
