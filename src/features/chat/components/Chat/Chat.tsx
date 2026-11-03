@@ -199,7 +199,7 @@ export function Chat() {
           )
           break
         case 'error':
-          errorMessage = streamErrorMessage(event.data.code)
+          errorMessage = streamErrorMessage(event.data)
           break
       }
     }

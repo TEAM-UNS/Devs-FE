@@ -30,16 +30,22 @@ describe('thrownErrorMessage — 스트림 시작 전 실패와 끊김', () => {
 })
 
 describe('streamErrorMessage — 스트림 도중 error 이벤트', () => {
-  it('LLM 장애는 잠시 후 다시 시도하라고 알린다', () => {
-    expect(streamErrorMessage('LLM_UNAVAILABLE')).toBe(
-      CHAT_ERROR.llmUnavailable,
-    )
+  it('서버가 보낸 message를 그대로 보여준다 (일일 한도 초과)', () => {
+    const message = '오늘 사용량을 모두 썼습니다. 내일 다시 이용해주세요.'
+    const data = {
+      code: 'RATE_LIMITED',
+      message,
+      detail: { reset: 1762182000 },
+    }
+
+    expect(streamErrorMessage(data)).toBe(message)
   })
 
-  it.each(['INTERNAL_ERROR', undefined])(
-    '그 밖의 코드(%s)는 기본 문구를 보여준다',
-    (code) => {
-      expect(streamErrorMessage(code)).toBe(CHAT_ERROR.default)
-    },
-  )
+  it.each([
+    ['빈 문자열', { message: '' }],
+    ['공백뿐', { message: '  ' }],
+    ['없음', {}],
+  ])('message가 %s이면 기본 문구를 보여준다', (_, data) => {
+    expect(streamErrorMessage(data)).toBe(CHAT_ERROR.default)
+  })
 })
