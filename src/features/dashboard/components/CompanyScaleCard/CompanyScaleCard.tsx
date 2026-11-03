@@ -24,9 +24,10 @@ const GAUGE_COLORS = [
   'bg-primary-400',
 ] as const
 
-// 규모 전환 버튼 — 반투명 흰 원 안에 셰브론 (Figma 274:1868 / 274:1870).
+/* 규모 전환 버튼 — 배경 없이 회색 셰브론만 (Figma 1059:5838 / 1059:5843, #495057)
+   포커스 링은 Figma에 없지만 키보드 위치가 보여야 해서 주간리포트 WeekNavigator와 같이 붙인다 */
 const STEP_BUTTON =
-  'flex size-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-gray-1000'
+  'flex size-5 shrink-0 items-center justify-center rounded-full text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500'
 
 /**
  * 기업 규모별 기술 스택 분석 카드 — 규모 좌우 전환 + 순위별 가로 게이지.
