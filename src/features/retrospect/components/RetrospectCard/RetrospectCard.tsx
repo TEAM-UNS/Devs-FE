@@ -10,6 +10,8 @@ interface RetrospectCardProps {
   readonly duplicate?: boolean
   /** 내 회고 — 제목을 '내 로드맵'으로 부르고 좋아요는 개수만 보여준다 */
   readonly mine?: boolean
+  /** 놓이는 자리에 맞춘 폭 등 — 흐르는 줄은 고정 폭, 타임라인은 칸을 채운다 */
+  readonly className?: string
 }
 
 /* Figma 유리 카드(2079:10595). GLASS 효과의 굴절·분산은 CSS로 못 만들어서
@@ -30,6 +32,7 @@ export function RetrospectCard({
   onOpen,
   duplicate = false,
   mine = false,
+  className,
 }: RetrospectCardProps) {
   const title = retrospectTitle(retrospect.dayNo, mine)
 
@@ -43,6 +46,7 @@ export function RetrospectCard({
         GLASS,
         // Figma 주석 "호버 시 위로 약간 올라가는 애니메이션"
         'motion-safe:transition-transform motion-safe:duration-fast motion-safe:ease-standard motion-safe:hover:-translate-y-1',
+        className,
       )}
     >
       {/* 카드 전체를 누르게 하되 좋아요 버튼과 겹치지 않게 덮개 버튼을 깔아 둔다 */}

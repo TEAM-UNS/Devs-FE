@@ -6,7 +6,7 @@ import { RetrospectWall } from '../RetrospectWall'
 
 /**
  * 내 회고 몰아보기 — Figma 2217:8656
- * 익명 게시판과 같은 흐르는 카드에 내가 쓴 회고만 보여준다. 제목은 '내 로드맵 - DayN', 좋아요는 개수만 보여준다
+ * 익명 게시판과 같은 배경·카드로, 내가 쓴 회고를 월별 세로 타임라인에 보여준다. 제목은 '내 로드맵 - DayN', 좋아요는 개수만 보여준다
  */
 export function MyRetrospects() {
   const retrospects = useMyRetrospects()
