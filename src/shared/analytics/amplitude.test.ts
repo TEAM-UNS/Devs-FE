@@ -24,3 +24,24 @@ describe('플래그 캐시', () => {
     expect(readCachedFlag('test-flag')).toBe('on')
   })
 })
+
+describe('userIdFromToken', () => {
+  // 서명은 보지 않으므로 가운데(payload)만 맞으면 된다
+  const tokenWith = (payload: object) =>
+    `header.${btoa(JSON.stringify(payload)).replaceAll('=', '')}.signature`
+
+  it('토큰의 sub(사용자 id)를 꺼낸다', async () => {
+    const { userIdFromToken } = await import('./amplitude')
+    expect(userIdFromToken(tokenWith({ sub: '42', email: 'a@b.test' }))).toBe(
+      '42',
+    )
+  })
+
+  it('토큰이 없거나 모양이 다르거나 sub가 없으면 null', async () => {
+    const { userIdFromToken } = await import('./amplitude')
+    expect(userIdFromToken(null)).toBeNull()
+    expect(userIdFromToken('not-a-jwt')).toBeNull()
+    expect(userIdFromToken('a.%%%.c')).toBeNull()
+    expect(userIdFromToken(tokenWith({ email: 'a@b.test' }))).toBeNull()
+  })
+})

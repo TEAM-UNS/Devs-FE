@@ -1,6 +1,7 @@
 export {
   fetchFlag,
   flagsEnabled,
+  identifyUser,
   initAmplitude,
   readCachedFlag,
   resetAnalytics,

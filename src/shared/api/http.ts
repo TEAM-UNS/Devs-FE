@@ -7,6 +7,7 @@ import {
   setTokens,
 } from './tokenStorage'
 import { NotLoggedInError } from './notLoggedInError'
+import { resetAnalytics } from '@/shared/analytics/amplitude'
 
 const REISSUE_PATH = '/user/reissue'
 const REFRESH_TOKEN_HEADER = 'X-Refresh-Token'
@@ -69,7 +70,11 @@ async function refreshAccessToken(): Promise<boolean> {
     const status = axios.isAxiosError(error)
       ? error.response?.status
       : undefined
-    if (status === 401 || status === 403) clearTokens()
+    if (status === 401 || status === 403) {
+      clearTokens()
+      // 로그인이 풀렸으니 이후 이벤트가 이전 사람으로 묶이지 않게 분석 식별도 새로 시작한다
+      resetAnalytics()
+    }
     return false
   }
 }

@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import loginBackgroundSrc from '@/assets/login-background.webp'
-import { trackEvent } from '@/shared/analytics'
+import { identifyUser, trackEvent } from '@/shared/analytics'
 import { ROUTES } from '@/shared/constants'
 import {
   AuthDivider,
@@ -40,6 +40,8 @@ export default function LoginPage() {
   const handleLogin = (data: LoginInput) => {
     loginMutation.mutate(data, {
       onSuccess: () => {
+        // Logged In부터 로그인한 사람으로 묶이게 먼저 식별한다
+        identifyUser()
         // method로 갈라 두면 소셜 로그인을 실제로 쓰는지 알 수 있음
         trackEvent('Logged In', { method: 'email' })
         // replace: 뒤로가기로 로그인 화면에 다시 돌아오지 않게 한다.
