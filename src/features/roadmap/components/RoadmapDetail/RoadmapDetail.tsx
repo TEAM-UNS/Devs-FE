@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { userQueries } from '@/shared/api'
+import { trackEvent } from '@/shared/analytics'
 import { useCompleteRoadmapDay } from '../../hooks/useRoadmapMutations'
 import type { Roadmap } from '../../types'
 import { celebrate } from '../../utils/celebrate'
@@ -68,8 +69,18 @@ export function RoadmapDetail({ roadmap }: RoadmapDetailProps) {
               {
                 onSuccess: () => {
                   setRetrospectDayNo(null)
+                  const finished = finishesRoadmap(
+                    roadmap.days,
+                    retrospectDayNo,
+                  )
+                  // 회고 본문·길이는 보내지 않는다 (개인정보·고유값)
+                  trackEvent('Roadmap Day Completed', {
+                    day_no: retrospectDayNo,
+                    wrote_retrospect: retrospect.trim() !== '',
+                    finished_roadmap: finished,
+                  })
                   // 이번 날로 모든 날을 마쳤으면 로드맵 완료로 크게 터뜨린다
-                  void celebrate(finishesRoadmap(roadmap.days, retrospectDayNo))
+                  void celebrate(finished)
                 },
               },
             )

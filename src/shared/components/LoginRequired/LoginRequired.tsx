@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { trackEvent } from '@/shared/analytics'
 import { buttonClassName } from '@/shared/components/Button'
 import { PageTitle } from '@/shared/components/PageTitle'
 import { ROUTES } from '@/shared/constants'
@@ -46,6 +47,12 @@ export function LoginRequired({
         <Link
           to={ROUTES.login}
           state={{ from: location.pathname + location.search }}
+          // 로그인 없이 둘러보다 가입으로 넘어오는 흐름을 본다. 경로에 식별자가 없어 그대로 보낸다
+          onClick={() =>
+            trackEvent('Login Required CTA Clicked', {
+              page_path: location.pathname,
+            })
+          }
           className={buttonClassName()}
         >
           Devs 시작하기
