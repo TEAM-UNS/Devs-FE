@@ -10,6 +10,7 @@ import OAuthCallbackPage from './OAuthCallbackPage'
 const mocks = vi.hoisted(() => ({ post: vi.fn(), trackEvent: vi.fn() }))
 
 vi.mock('@/shared/analytics', () => ({
+  identifyUser: vi.fn(),
   trackEvent: mocks.trackEvent,
   trackPageView: vi.fn(),
 }))
