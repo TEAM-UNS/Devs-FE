@@ -76,9 +76,10 @@ export function WeekWheel({ weeks, onChange }: WeekWheelProps) {
   }, [weeks, onChange])
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    // 숫자가 아래로 갈수록 커지므로 화면 방향대로 ↑는 위 숫자(-1), ↓는 아래 숫자(+1)
     const next = {
-      ArrowUp: weeks + 1,
-      ArrowDown: weeks - 1,
+      ArrowUp: weeks - 1,
+      ArrowDown: weeks + 1,
       Home: MIN_WEEKS,
       End: MAX_WEEKS,
     }[event.key]
@@ -124,20 +125,21 @@ export function WeekWheel({ weeks, onChange }: WeekWheelProps) {
           })}
         </div>
         <div className="mt-[37.6px] flex w-6 flex-col text-gray-200">
+          {/* ▲는 위 숫자(작은 값), ▼는 아래 숫자(큰 값)로 간다 */}
           <button
             type="button"
-            aria-label="한 주 늘리기"
-            disabled={weeks >= MAX_WEEKS}
-            onClick={() => change(weeks + 1)}
+            aria-label="한 주 줄이기"
+            disabled={weeks <= MIN_WEEKS}
+            onClick={() => change(weeks - 1)}
             className="hover:text-gray-300 disabled:opacity-40"
           >
             <ChevronDownIcon className="size-6 rotate-180" />
           </button>
           <button
             type="button"
-            aria-label="한 주 줄이기"
-            disabled={weeks <= MIN_WEEKS}
-            onClick={() => change(weeks - 1)}
+            aria-label="한 주 늘리기"
+            disabled={weeks >= MAX_WEEKS}
+            onClick={() => change(weeks + 1)}
             className="hover:text-gray-300 disabled:opacity-40"
           >
             <ChevronDownIcon className="size-6" />
