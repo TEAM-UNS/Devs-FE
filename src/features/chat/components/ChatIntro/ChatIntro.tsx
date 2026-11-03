@@ -3,8 +3,8 @@ import { ChatComposer } from '../ChatComposer'
 
 const SUGGESTED_QUESTIONS = [
   '백엔드 중 가장 인기있는 기술 스택',
-  '최근 한달 간 급하락중인 기술 스택',
-  '로드맵 생성 기준은 무엇인가요?',
+  '최근 한달 간 급상승중인 기술 스택',
+  'React와 함께 많이 요구하는 기술 스택',
 ] as const
 
 interface ChatIntroProps {
