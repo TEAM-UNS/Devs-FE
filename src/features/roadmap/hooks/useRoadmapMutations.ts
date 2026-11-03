@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { RETROSPECT_QUERY_KEY } from '@/shared/api'
+import { trackEvent } from '@/shared/analytics'
 import { roadmapQueries } from '../api/roadmapQueries'
 import {
   checkRoadmapItem,
@@ -17,10 +18,15 @@ export function useCreateRoadmap() {
 
   return useMutation({
     mutationFn: (body: RoadmapCreateRequest) => createRoadmap(body),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
+    onSuccess: (_, body) => {
+      trackEvent('Roadmap Created', {
+        target_weeks: body.targetWeeks,
+        skill_count: body.skillIds.length,
+      })
+      return queryClient.invalidateQueries({
         queryKey: roadmapQueries.mine().queryKey,
-      }),
+      })
+    },
   })
 }
 
