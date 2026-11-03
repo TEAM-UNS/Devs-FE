@@ -49,7 +49,7 @@ function Row({ label, value, to, action = '수정', last }: RowProps) {
 }
 
 /**
- * 로드맵 관리 카드 — Figma 659:4119
+ * 내 커리어 관리 카드 — Figma 659:4119 (제목은 Figma의 로드맵 관리에서 바꿨다)
  * 목표직무·관심 스택은 내 정보로 채우고 각 수정 화면으로 보낸다
  * 내 회고 보기는 내 회고 몰아보기(/my/retrospects)로 보낸다
  */
@@ -60,7 +60,9 @@ export function CareerGoalCard({
 }: CareerGoalCardProps) {
   return (
     <section className="flex flex-col gap-2 rounded-sm bg-container px-8 py-6">
-      <h2 className="text-body-lg font-semibold text-gray-1000">로드맵 관리</h2>
+      <h2 className="text-body-lg font-semibold text-gray-1000">
+        내 커리어 관리
+      </h2>
       <ul className="flex flex-col">
         <Row label="목표직무" value={majors || EMPTY} to={ROUTES.myMajorEdit} />
         <Row
