@@ -147,20 +147,20 @@ describe('ChatPage', () => {
   it('새 대화로 질문하면 답변을 이어 붙여 보여주고, 생긴 대화를 주소와 목록에 남긴다', async () => {
     renderPage()
 
-    await ask('React와 함께 많이 요구하는 기술 스택')
+    await ask('React와 함께 요구되는 기술 스택')
 
     expect(
       await screen.findByText('채용 공고 기반 답변입니다.'),
     ).toBeInTheDocument()
     expect(streamChat).toHaveBeenCalledWith(
-      { sessionId: undefined, message: 'React와 함께 많이 요구하는 기술 스택' },
+      { sessionId: undefined, message: 'React와 함께 요구되는 기술 스택' },
       expect.anything(),
     )
     expect(screen.getByTestId('search')).toHaveTextContent('?session=1')
     // 사이드바 제목 + 대화 속 질문
-    expect(
-      screen.getAllByText('React와 함께 많이 요구하는 기술 스택'),
-    ).toHaveLength(2)
+    expect(screen.getAllByText('React와 함께 요구되는 기술 스택')).toHaveLength(
+      2,
+    )
   })
 
   it('이어서 묻는 질문은 지금 대화의 id로 보낸다', async () => {
@@ -355,7 +355,7 @@ describe('ChatPage', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: 'React와 함께 많이 요구하는 기술 스택',
+        name: 'React와 함께 요구되는 기술 스택',
       }),
     )
 
@@ -412,13 +412,13 @@ describe('ChatPage', () => {
 
     await user.click(
       screen.getByRole('button', {
-        name: 'React와 함께 많이 요구하는 기술 스택',
+        name: 'React와 함께 요구되는 기술 스택',
       }),
     )
     await screen.findByText('채용 공고 기반 답변입니다.')
     await user.click(
       screen.getByRole('button', {
-        name: 'React와 함께 많이 요구하는 기술 스택 삭제',
+        name: 'React와 함께 요구되는 기술 스택 삭제',
       }),
     )
     await user.click(screen.getByRole('button', { name: '삭제' }))
