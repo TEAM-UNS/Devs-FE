@@ -295,16 +295,15 @@ describe('ChatPage', () => {
     ).toBeInTheDocument()
   })
 
-  it('스트림 도중 error 이벤트가 오면 코드에 맞는 문구를 보여주고 입력창은 비운다', async () => {
+  it('스트림 도중 error 이벤트가 오면 서버 문구를 보여주고 입력창은 비운다', async () => {
     streamChat.mockImplementation(
       async (request: ChatSendRequest, { onEvent }: { onEvent: Emit }) => {
         openTurn(request, onEvent)
         onEvent({
           event: 'error',
           data: {
-            code: 'LLM_UNAVAILABLE',
-            message: '답변 생성에 실패했습니다.',
-            recoverable: true,
+            code: 'RATE_LIMITED',
+            message: '오늘 사용량을 모두 썼습니다. 내일 다시 이용해주세요.',
           },
         })
       },
@@ -314,7 +313,7 @@ describe('ChatPage', () => {
     await ask('오류 테스트')
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      '답변 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+      '오늘 사용량을 모두 썼습니다. 내일 다시 이용해주세요.',
     )
     // 서버가 질문을 받았으니 기록에 남고, 입력창에는 되돌리지 않는다
     expect(input()).toHaveValue('')

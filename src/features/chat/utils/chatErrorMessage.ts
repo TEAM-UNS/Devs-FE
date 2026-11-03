@@ -8,7 +8,6 @@ export const CHAT_ERROR = {
   rateLimited: '질문이 너무 많습니다. 잠시 후 다시 시도해 주세요.',
   network: '네트워크 연결을 확인한 뒤 다시 시도해 주세요.',
   interrupted: '답변이 중간에 끊겼습니다. 다시 시도해 주세요.',
-  llmUnavailable: '답변 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.',
 } as const
 
 const STATUS_MESSAGES: Readonly<Record<number, string>> = {
@@ -19,11 +18,13 @@ const STATUS_MESSAGES: Readonly<Record<number, string>> = {
 
 /**
  * 스트림 도중 온 error 이벤트의 문구
- * AI 서버는 code를 보내고, 백엔드가 직접 만든 에러는 code 없이 평문만 온다
+ * AI 서버의 message는 모두 사용자용 문장이라(일일 한도 초과, LLM 장애 등) code로 고르지 않고 그대로 보여준다
+ * 백엔드가 직접 만든 평문도 sseParser가 message로 감싸 온다. message가 비었을 때만 기본 문구를 쓴다
  */
-export function streamErrorMessage(code?: string): string {
-  return code === 'LLM_UNAVAILABLE'
-    ? CHAT_ERROR.llmUnavailable
+export function streamErrorMessage(data: { message?: string }): string {
+  const { message } = data
+  return typeof message === 'string' && message.trim() !== ''
+    ? message
     : CHAT_ERROR.default
 }
 
