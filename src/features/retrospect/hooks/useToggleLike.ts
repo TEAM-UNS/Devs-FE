@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { trackEvent } from '@/shared/analytics'
 import { retrospectQueries } from '../api/retrospectQueries'
 import { likeRetrospect, unlikeRetrospect } from '../api/requests'
 import { applyLike } from '../utils/applyLike'
@@ -20,10 +21,12 @@ export function useToggleLike() {
       liked: boolean
     }) =>
       liked ? unlikeRetrospect(retrospectId) : likeRetrospect(retrospectId),
-    onSuccess: (response) =>
+    onSuccess: (response) => {
+      trackEvent('Retrospect Liked', { liked: response.liked })
       queryClient.setQueryData(
         queryKey,
         (current) => current && applyLike(current, response),
-      ),
+      )
+    },
   })
 }

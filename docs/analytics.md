@@ -130,6 +130,11 @@ shared/analytics/amplitude.ts
   아니라 **디바운스 도입 전후의 요청 수를 비교하려는 측정용**이다. 한글은 조합 중인 글자마다 입력이
   바뀌어 요청이 여러 번 간다. 스크롤로 받는 다음 페이지와 검색어 없는 첫 목록은 세지 않고, 캐시에서
   바로 나온 검색어는 요청이 없어 세지 않는다. 검색어 원문은 넣지 않는다(개인정보·고유값 폭발).
+- 핵심 흐름 이벤트(2026-11-04). 전부 서버가 성공을 준 자리에서 보낸다. 회고 본문·길이는 보내지 않는다.
+  - `Roadmap Created{target_weeks, skill_count}` — 로드맵 생성 요청 성공
+  - `Roadmap Day Completed{day_no, wrote_retrospect, finished_roadmap}` — 하루 완료. 며칠째 이탈하는지, 회고를 쓰는지 건너뛰는지
+  - `Retrospect Liked{liked}` — 게시판 좋아요·취소
+  - `Login Required CTA Clicked{page_path}` — 로그인 유도 화면에서 시작하기. 둘러보다 가입으로 넘어오는 흐름
 - 이벤트가 실제로 도착하는 것까지 확인했다(§2의 본문).
 - **초기 로드 JS가 gzip 기준 142KB → 259KB로 늘었다.** 대부분 세션 리플레이(rrweb)다.
   `sampleRate`를 낮춰도 이 용량은 줄지 않는다. 샘플링은 전송량과 요금에만 영향을 준다.
