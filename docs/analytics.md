@@ -135,6 +135,14 @@ shared/analytics/amplitude.ts
   - `Roadmap Day Completed{day_no, wrote_retrospect, finished_roadmap}` — 하루 완료. 며칠째 이탈하는지, 회고를 쓰는지 건너뛰는지
   - `Retrospect Liked{liked}` — 게시판 좋아요·취소
   - `Login Required CTA Clicked{page_path}` — 로그인 유도 화면에서 시작하기. 둘러보다 가입으로 넘어오는 흐름
+- 로그인 사용자 식별(2026-11-04). 전에는 로그인해도 익명 기기로만 묶여 기기를 바꾸면 다른 사람으로 셌다.
+  - 값: 액세스 토큰(JWT)의 `sub`. 백엔드 `JwtProvider`가 사용자 DB id를 넣는다. 이메일은 보내지 않는다.
+    `/user/my`에 id가 없어서 백엔드 작업 없이 쓸 수 있는 값을 골랐다. 대신 토큰 형식에 기대므로
+    백엔드가 `sub`를 바꾸면 `identifyUser`도 함께 고쳐야 한다.
+  - 시점: 로그인 성공 직후(`Logged In`보다 먼저)와, 이미 로그인된 채로 앱을 열었을 때(`main.tsx`).
+    로그아웃은 `resetAnalytics()`로 기기 식별부터 새로 시작한다.
+  - `minIdLength: 1`. Amplitude 서버는 기본으로 5자 미만 사용자 id를 거절하는데 DB id는 `'42'`처럼 짧다.
+    이걸 안 켜면 로그인한 사람의 이벤트가 통째로 버려진다.
 - 이벤트가 실제로 도착하는 것까지 확인했다(§2의 본문).
 - **초기 로드 JS가 gzip 기준 142KB → 259KB로 늘었다.** 대부분 세션 리플레이(rrweb)다.
   `sampleRate`를 낮춰도 이 용량은 줄지 않는다. 샘플링은 전송량과 요금에만 영향을 준다.

@@ -1,4 +1,5 @@
 import * as amplitude from '@amplitude/unified'
+import { getAccessToken } from '@/shared/api/tokenStorage'
 
 /* 초기화가 끝났는지. 실험 플래그는 초기화가 끝나야 붙는 플러그인이라 이걸 기다린다
    개발 빌드·키 없음이면 초기화를 안 하므로 null로 남는다 */
@@ -21,6 +22,9 @@ export function initAmplitude() {
   ready = amplitude
     .initAll(apiKey, {
       analytics: {
+        /* 사용자 id는 DB 번호('42')라 짧다. 서버 기본값(5자 미만 거절)이면 로그인한 사람의 이벤트가
+           통째로 버려지므로 1자부터 받게 한다 */
+        minIdLength: 1,
         /* 페이지 조회는 제목이 들어간 뒤 trackPageView로 직접 보낸다
            객체로 넘기면 클릭·네트워크·웹 바이탈 수집은 기본이 꺼짐이라 true일 때처럼 켜 둔다 */
         autocapture: {
@@ -122,6 +126,35 @@ export async function fetchFlag(
  */
 export function trackEvent(name: string, properties?: Record<string, unknown>) {
   amplitude.track(name, properties)
+}
+
+/**
+ * 액세스 토큰(JWT)의 sub — 백엔드 JwtProvider가 사용자 DB id를 넣는다
+ * 서명은 검증하지 않는다. 분석용 식별이라 충분하고, 토큰 검증은 서버가 한다
+ * 토큰 모양이 아니면 null (분석 때문에 화면이 깨지면 안 된다)
+ */
+export function userIdFromToken(token: string | null): string | null {
+  const payload = token?.split('.')[1]
+  if (!payload) return null
+  try {
+    const json = atob(payload.replaceAll('-', '+').replaceAll('_', '/'))
+    const { sub } = JSON.parse(json) as { sub?: unknown }
+    return typeof sub === 'string' && sub !== '' ? sub : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * 로그인한 사람을 Amplitude에 알린다 — 그 전의 익명 기록도 이 사람에게 이어 붙는다
+ * 로그인 성공 직후와, 이미 로그인된 채로 앱을 열었을 때 부른다. 이메일은 보내지 않는다
+ * 백엔드가 sub에 다른 값을 넣도록 바뀌면 식별이 조용히 달라지니 그때 함께 고친다
+ */
+export function identifyUser() {
+  // 개발·테스트처럼 초기화하지 않았으면 아무것도 하지 않는다
+  if (ready === null) return
+  const userId = userIdFromToken(getAccessToken())
+  if (userId) amplitude.setUserId(userId)
 }
 
 /**

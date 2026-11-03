@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { trackEvent } from '@/shared/analytics'
+import { identifyUser, trackEvent } from '@/shared/analytics'
 import { ROUTES } from '@/shared/constants'
 import { takeOAuthProvider, useOAuthLogin } from '@/features/auth'
 import { PageTitle } from '@/shared/components/PageTitle'
@@ -43,6 +43,8 @@ export default function OAuthCallbackPage() {
        실패 토스트는 여전히 queryClient가 전역으로 띄운다. */
     mutateAsync(provider)
       .then((data) => {
+        // Logged In부터 로그인한 사람으로 묶이게 먼저 식별한다
+        identifyUser()
         // Oauth 로그인 이벤트 수집
         trackEvent('Logged In', { method: provider })
 
