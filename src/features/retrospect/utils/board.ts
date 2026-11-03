@@ -26,3 +26,31 @@ export function retrospectTitle(dayNo: number, mine = false): string {
 export function formatBoardDate(date: string): string {
   return date.replaceAll('-', '.')
 }
+
+export interface MonthGroup {
+  /** '2026-11' */
+  readonly month: string
+  /** '2026년 11월' */
+  readonly label: string
+  readonly retrospects: Retrospect[]
+}
+
+/** 내 회고 타임라인 — 받은 순서(최신순)를 지키며 같은 달끼리 묶는다 */
+export function groupByMonth(retrospects: readonly Retrospect[]): MonthGroup[] {
+  const groups: MonthGroup[] = []
+  for (const retrospect of retrospects) {
+    const month = retrospect.date.slice(0, 7)
+    const last = groups.at(-1)
+    if (last?.month === month) {
+      last.retrospects.push(retrospect)
+    } else {
+      const [year, monthNo] = month.split('-')
+      groups.push({
+        month,
+        label: `${year}년 ${Number(monthNo)}월`,
+        retrospects: [retrospect],
+      })
+    }
+  }
+  return groups
+}

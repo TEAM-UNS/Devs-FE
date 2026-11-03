@@ -4,6 +4,7 @@ import type { Retrospect } from '../../types'
 import { splitIntoRows } from '../../utils/board'
 import { RetrospectDetailModal } from '../RetrospectDetailModal'
 import { RetrospectRow } from '../RetrospectRow'
+import { RetrospectTimeline } from '../RetrospectTimeline'
 
 // Figma 2079:11912 — 줄마다 오른쪽·왼쪽·오른쪽 순으로 흐르고, 출발 위치를 어긋나게 둔다
 const ROW_MOTION = [
@@ -19,12 +20,12 @@ interface RetrospectWallProps {
   /** 받아 온 뒤에만 빈 안내를 띄운다. 로딩 중·실패는 아무것도 그리지 않는다(실패는 공통 에러 토스트) */
   readonly loaded: boolean
   readonly emptyText: string
-  /** 내 회고 — 제목을 '내 로드맵'으로 부르고 좋아요는 개수만 보여준다 */
+  /** 내 회고 — 흐르는 줄 대신 세로 타임라인, 제목은 '내 로드맵', 좋아요는 개수만 보여준다 */
   readonly mine?: boolean
 }
 
 /**
- * 회고가 세 줄로 흐르는 배경 화면 + 누르면 상세 모달
+ * 회고 배경 화면 + 누르면 상세 모달. 게시판은 세 줄로 흐르고, 내 회고는 세로 타임라인
  * 익명 회고 게시판과 내 회고 몰아보기가 같이 쓴다. 두 화면은 머리말과 데이터만 다르다
  */
 export function RetrospectWall({
@@ -61,7 +62,13 @@ export function RetrospectWall({
         {loaded && retrospects.length === 0 && (
           <p className="m-auto text-body-lg text-gray-400">{emptyText}</p>
         )}
-        {rows.length > 0 && (
+        {mine && retrospects.length > 0 && (
+          <RetrospectTimeline
+            retrospects={retrospects}
+            onOpen={({ retrospectId }) => setOpenedId(retrospectId)}
+          />
+        )}
+        {!mine && rows.length > 0 && (
           <div className="mt-[66px] flex flex-col gap-16">
             {rows.map((row, index) => (
               <RetrospectRow
@@ -70,7 +77,6 @@ export function RetrospectWall({
                 direction={ROW_MOTION[index].direction}
                 offset={ROW_MOTION[index].offset}
                 onOpen={({ retrospectId }) => setOpenedId(retrospectId)}
-                mine={mine}
               />
             ))}
           </div>

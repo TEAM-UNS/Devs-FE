@@ -9,8 +9,6 @@ interface RetrospectRowProps {
   /** 줄마다 출발 위치를 어긋나게 하는 비율 (0~1) */
   readonly offset: number
   readonly onOpen: (retrospect: Retrospect) => void
-  /** 내 회고 — 제목을 '내 로드맵'으로 부르고 좋아요는 개수만 보여준다 */
-  readonly mine?: boolean
 }
 
 /* 한 바퀴 절반(원본 묶음)이 화면(1196px)보다 짧으면 끝에서 빈 칸이 보인다
@@ -29,7 +27,6 @@ export function RetrospectRow({
   direction,
   offset,
   onOpen,
-  mine,
 }: RetrospectRowProps) {
   const repeat = Math.ceil(MIN_CARDS_PER_HALF / retrospects.length)
   const half = Array.from({ length: repeat }, () => retrospects).flat()
@@ -57,7 +54,6 @@ export function RetrospectRow({
             retrospect={retrospect}
             onOpen={() => onOpen(retrospect)}
             duplicate={index >= retrospects.length}
-            mine={mine}
           />
         </li>
       ))}
