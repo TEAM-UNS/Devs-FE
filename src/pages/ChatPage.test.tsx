@@ -147,18 +147,18 @@ describe('ChatPage', () => {
   it('새 대화로 질문하면 답변을 이어 붙여 보여주고, 생긴 대화를 주소와 목록에 남긴다', async () => {
     renderPage()
 
-    await ask('로드맵 생성 기준은 무엇인가요?')
+    await ask('React와 함께 요구되는 기술 스택')
 
     expect(
       await screen.findByText('채용 공고 기반 답변입니다.'),
     ).toBeInTheDocument()
     expect(streamChat).toHaveBeenCalledWith(
-      { sessionId: undefined, message: '로드맵 생성 기준은 무엇인가요?' },
+      { sessionId: undefined, message: 'React와 함께 요구되는 기술 스택' },
       expect.anything(),
     )
     expect(screen.getByTestId('search')).toHaveTextContent('?session=1')
     // 사이드바 제목 + 대화 속 질문
-    expect(screen.getAllByText('로드맵 생성 기준은 무엇인가요?')).toHaveLength(
+    expect(screen.getAllByText('React와 함께 요구되는 기술 스택')).toHaveLength(
       2,
     )
   })
@@ -277,12 +277,12 @@ describe('ChatPage', () => {
     renderPage()
 
     await user.click(
-      screen.getByRole('button', { name: '최근 한달 간 급하락중인 기술 스택' }),
+      screen.getByRole('button', { name: '최근 한달 간 급상승중인 기술 스택' }),
     )
     await screen.findByText('채용 공고 기반 답변입니다.')
     await user.click(
       screen.getByRole('button', {
-        name: '최근 한달 간 급하락중인 기술 스택 삭제',
+        name: '최근 한달 간 급상승중인 기술 스택 삭제',
       }),
     )
     await user.click(screen.getByRole('button', { name: '취소' }))
@@ -290,7 +290,7 @@ describe('ChatPage', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(
       screen.getByRole('button', {
-        name: '최근 한달 간 급하락중인 기술 스택 삭제',
+        name: '최근 한달 간 급상승중인 기술 스택 삭제',
       }),
     ).toBeInTheDocument()
   })
@@ -354,7 +354,9 @@ describe('ChatPage', () => {
     renderPage()
 
     await user.click(
-      screen.getByRole('button', { name: '로드맵 생성 기준은 무엇인가요?' }),
+      screen.getByRole('button', {
+        name: 'React와 함께 요구되는 기술 스택',
+      }),
     )
 
     expect(
@@ -381,7 +383,7 @@ describe('ChatPage', () => {
 
     expect(input()).toBeDisabled()
     expect(
-      screen.getByRole('button', { name: '최근 한달 간 급하락중인 기술 스택' }),
+      screen.getByRole('button', { name: '최근 한달 간 급상승중인 기술 스택' }),
     ).toBeDisabled()
   })
 
@@ -390,11 +392,11 @@ describe('ChatPage', () => {
     renderPage()
 
     await user.click(
-      screen.getByRole('button', { name: '최근 한달 간 급하락중인 기술 스택' }),
+      screen.getByRole('button', { name: '최근 한달 간 급상승중인 기술 스택' }),
     )
     await screen.findByText('채용 공고 기반 답변입니다.')
     const deleteButton = screen.getByRole('button', {
-      name: '최근 한달 간 급하락중인 기술 스택 삭제',
+      name: '최근 한달 간 급상승중인 기술 스택 삭제',
     })
 
     await user.click(deleteButton)
@@ -409,12 +411,14 @@ describe('ChatPage', () => {
     renderPage()
 
     await user.click(
-      screen.getByRole('button', { name: '로드맵 생성 기준은 무엇인가요?' }),
+      screen.getByRole('button', {
+        name: 'React와 함께 요구되는 기술 스택',
+      }),
     )
     await screen.findByText('채용 공고 기반 답변입니다.')
     await user.click(
       screen.getByRole('button', {
-        name: '로드맵 생성 기준은 무엇인가요? 삭제',
+        name: 'React와 함께 요구되는 기술 스택 삭제',
       }),
     )
     await user.click(screen.getByRole('button', { name: '삭제' }))

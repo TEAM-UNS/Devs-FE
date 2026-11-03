@@ -80,8 +80,9 @@ export function AppSidebar({ roadmapProgress }: AppSidebarProps) {
                 ) : (
                   <NavLink
                     to={to}
-                    // 마이페이지는 내 회고 몰아보기(/my/retrospects)에서도 켜 둔다 (Figma 2217:8656)
-                    end={to !== ROUTES.myPage}
+                    /* 하위 경로에서도 메뉴를 켜 둔다 — 로드맵 만들기(/roadmap/new), 비교 결과, 내 회고 등
+                       예전엔 메인페이지가 '/'라 모든 경로에 걸려서 end(정확히 일치)를 붙였는데,
+                       메인이 /dashboard로 옮긴 뒤로는 겹치는 메뉴가 없다 */
                     className={({ isActive }) =>
                       cn(
                         ITEM_BASE,

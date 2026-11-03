@@ -3,8 +3,8 @@ import { ChatComposer } from '../ChatComposer'
 
 const SUGGESTED_QUESTIONS = [
   '백엔드 중 가장 인기있는 기술 스택',
-  '최근 한달 간 급하락중인 기술 스택',
-  '로드맵 생성 기준은 무엇인가요?',
+  '최근 한달 간 급상승중인 기술 스택',
+  'React와 함께 요구되는 기술 스택',
 ] as const
 
 interface ChatIntroProps {
@@ -55,7 +55,8 @@ export function ChatIntro({
 }: ChatIntroProps) {
   return (
     <section className="flex min-w-0 flex-1 items-center justify-center bg-canvas px-4 md:px-10">
-      <div className="flex w-[800px] max-w-full -translate-y-[30px] flex-col items-center gap-12">
+      {/* 첫 화면 묶음은 700px (Figma 342:4876). 대화 중 입력창(800px)보다 좁다 */}
+      <div className="flex w-[700px] max-w-full -translate-y-[30px] flex-col items-center gap-12">
         <DevsLogo className="h-8" />
 
         <div className="flex w-full flex-col gap-4">
