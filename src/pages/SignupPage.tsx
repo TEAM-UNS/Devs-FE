@@ -23,8 +23,15 @@ import {
   type SignupStep4Input,
 } from '@/features/auth'
 import { PageTitle } from '@/shared/components/PageTitle'
+import { cn } from '@/shared/utils/cn'
 
 const TOTAL_STEPS = 4
+
+// 단계별 폼 폭 (Figma) — 1·2단계는 레이아웃 기본 520px, 전공 카드 4열은 592px, 기술 스택은 708px
+const STEP_WIDTH: Record<number, string | undefined> = {
+  3: 'max-w-[592px]',
+  4: 'max-w-[708px]',
+}
 
 const SIGNUP_DONE_MESSAGE = '회원가입이 완료되었어요! 로그인해주세요.'
 
@@ -119,8 +126,6 @@ export default function SignupPage() {
   const signupMutation = useMutation({ mutationFn: signup })
 
   const isFirstStep = step === 1
-  // 전공·기술스택 선택 단계(3~4)는 폼이 넓다(708px). 그 외는 520px.
-  const isWideStep = step >= 3
 
   // 1~3단계가 모두 "받은 값을 모으고 다음으로" 라서 핸들러 하나를 함께 쓴다.
   const handleNext = (data: SignupDraft) => {
@@ -166,17 +171,19 @@ export default function SignupPage() {
 
   return (
     <AuthLayout
-      className={isWideStep ? 'max-w-[708px]' : undefined}
+      align="top"
+      className={STEP_WIDTH[step]}
       onBack={isFirstStep ? undefined : handleBack}
     >
       <PageTitle name="회원가입" />
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-9 md:gap-30">
         <Stepper total={TOTAL_STEPS} current={step} />
 
         <div className="flex flex-col gap-12">
           <AuthHeader title="Devs에 오신 것을 환영해요!" />
 
-          <div className="flex flex-col gap-2">
+          {/* 1단계는 로그인 링크가 소셜 버튼 묶음 안에 있어 간격이 16, 나머지는 버튼 바로 아래 8 */}
+          <div className={cn('flex flex-col', isFirstStep ? 'gap-4' : 'gap-2')}>
             <div className="flex flex-col gap-6">
               {step === 1 && (
                 <SignupStep1
