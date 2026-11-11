@@ -31,7 +31,8 @@ export function MajorFilters({
   onSelect,
 }: MajorFiltersProps) {
   return (
-    <div className="flex items-center gap-1.5">
+    // 모바일은 가운데, 패드부터 왼쪽 (Figma 2339:14600 · 2339:13871)
+    <div className="flex items-center justify-center gap-1.5 md:justify-start">
       {options.map(({ value, label }) => (
         <Button
           key={value ?? 'all'}

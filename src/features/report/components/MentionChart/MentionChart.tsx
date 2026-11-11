@@ -69,41 +69,45 @@ export function MentionChart({ bars }: MentionChartProps) {
         </ul>
       </header>
 
-      <div className="flex flex-col gap-1.5">
-        {/* 안쪽 100 + 세로 패딩 24 = Figma 박스 124 (335:2355) */}
-        <div className="flex h-25 justify-center rounded-sm bg-canvas px-6 py-3 box-content">
-          {bars.map(({ name, last, current }) => (
-            <div key={name} className={`${COLUMN} items-end gap-2.5`}>
-              {/* 값은 높이로만 드러나므로 스크린리더용 문구를 따로 붙인다 */}
-              <span
-                className={`${BAR} bg-element`}
-                style={{ height: `${last}%` }}
-                role="img"
-                aria-label={`${name} 지난 주 ${last}`}
-              />
-              <span
-                className={CURRENT_BAR}
-                style={{
-                  height: `${current}%`,
-                  backgroundImage: `linear-gradient(${gradientAngle(current).toFixed(1)}deg, ${CURRENT_STOPS})`,
-                }}
-                role="img"
-                aria-label={`${name} 이번 주 ${current}`}
-              />
-            </div>
-          ))}
-        </div>
+      {/* 열 폭 80은 줄이지 않는다. 다 안 들어가는 모바일은 Figma(2339:14600)처럼 왼쪽부터 놓고
+          옆으로 스크롤한다. w-max min-w-full이라 넉넉하면 가운데, 넘치면 왼쪽 정렬이 된다 */}
+      <div className="overflow-x-auto">
+        <div className="flex w-max min-w-full flex-col gap-1.5">
+          {/* 안쪽 100 + 세로 패딩 24 = Figma 박스 124 (335:2355) */}
+          <div className="flex h-25 justify-center rounded-sm bg-canvas px-6 py-3 box-content">
+            {bars.map(({ name, last, current }) => (
+              <div key={name} className={`${COLUMN} items-end gap-2.5`}>
+                {/* 값은 높이로만 드러나므로 스크린리더용 문구를 따로 붙인다 */}
+                <span
+                  className={`${BAR} bg-element`}
+                  style={{ height: `${last}%` }}
+                  role="img"
+                  aria-label={`${name} 지난 주 ${last}`}
+                />
+                <span
+                  className={CURRENT_BAR}
+                  style={{
+                    height: `${current}%`,
+                    backgroundImage: `linear-gradient(${gradientAngle(current).toFixed(1)}deg, ${CURRENT_STOPS})`,
+                  }}
+                  role="img"
+                  aria-label={`${name} 이번 주 ${current}`}
+                />
+              </div>
+            ))}
+          </div>
 
-        <ul className="flex justify-center px-6">
-          {bars.map(({ name }) => (
-            <li
-              key={name}
-              className={`${COLUMN} truncate text-body-xs text-gray-500`}
-            >
-              {name}
-            </li>
-          ))}
-        </ul>
+          <ul className="flex justify-center px-6">
+            {bars.map(({ name }) => (
+              <li
+                key={name}
+                className={`${COLUMN} truncate text-body-xs text-gray-500`}
+              >
+                {name}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )

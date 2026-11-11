@@ -31,38 +31,69 @@ interface WeekDeckProps {
   onSwipe?: (direction: -1 | 1) => void
 }
 
-/* ── 자리 실측값 (Figma 335:2517 · 335:2275 · 329:1217) ──────────────────────
-   가운데  978x650, 왼쪽 위 = ((무대폭 - 978) / 2, 138)
-   이웃    972x682, 왼쪽 위 = 왼쪽(111 - 972, 459) · 오른쪽(무대폭 - 78, 208)
-   회전 기준점이 왼쪽 위(origin-top-left)라 이동량은 왼쪽 위 좌표의 차이 그대로다. */
-const CARD = { width: 978, height: 650, top: 138 }
-const SIDE = { width: 972, height: 682, leftTop: 459, rightTop: 208 }
+/* ── 이웃 자리 실측값 (Figma 1920 1396:6267 · 패드 2339:13871 · 모바일 2339:14600) ──────
+   세 폭 모두 이웃 카드는 972x682이고 무대 가장자리에서 같은 거리에 놓인다.
+   왼쪽 이웃 왼쪽 위 = (247 - 972, 501) · 오른쪽 이웃 왼쪽 위 = (무대폭 - 213, 249)
+   회전 기준점이 왼쪽 위(origin-top-left)라 이동량은 왼쪽 위 좌표의 차이 그대로다.
+   가운데 카드는 폭마다 크기·여백이 달라(PC 최대 1140 · 패드 770 · 모바일 350) 넘길 때 실제로 잰다. */
+const SIDE = { width: 972, height: 682, leftTop: 501, rightTop: 249 }
 
 /** 왼쪽 이웃의 오른쪽 모서리가 무대 안으로 들어온 만큼 */
-const LEFT_INSET = 111
+const LEFT_INSET = 247
 /** 오른쪽 이웃의 왼쪽 모서리가 무대 안으로 들어온 만큼 */
-const RIGHT_INSET = 78
+const RIGHT_INSET = 213
 
-/* 이웃 카드 안쪽 폭. 박스 폭(972 - 패딩 96)에서 고정해 둔다.
+/** 이웃 카드의 안쪽 여백 (PREVIEW의 p-12) */
+const PREVIEW_PADDING = 48
+
+/* 이웃 카드 안쪽 폭. 박스 폭(972 - 여백 96)에서 고정해 둔다.
  **박스 크기가 애니메이션으로 변해도 글자는 다시 줄바꿈되지 않게** 하기 위한 값이다. */
-const PREVIEW_BODY_WIDTH = SIDE.width - 96
+const PREVIEW_BODY_WIDTH = SIDE.width - PREVIEW_PADDING * 2
 
-/* 나가는 카드의 크기 배율. 흐름 안에 있는 요소라 width/height를 건드리면 아래 문구가
-   밀려난다 — 그래서 이쪽만 transform으로 줄이고, **축마다 다른 배율(비등비)** 을 쓴다.
-   들어오는 쪽과 반대의 선택이다. 나가는 카드는 이동하는 내내 블러가 4px까지 짙어지고
-   실효 불투명도가 10%까지 떨어져 글자 왜곡이 보이지 않는 반면, 배율을 등비로 맞추면
-   옆자리(972x682)보다 36px 짧게 도착해 교체 순간 아래 모서리가 튄다.
-   들어오는 카드는 선명해지므로 정반대다 — 그쪽은 배율을 아예 쓰지 않는다. */
-const TO_SIDE = { x: SIDE.width / CARD.width, y: SIDE.height / CARD.height }
+/** 가운데 카드 자리. 무대 왼쪽 위 기준이고 padding은 카드 안쪽 여백이다 */
+interface CardBox {
+  left: number
+  top: number
+  width: number
+  height: number
+  padding: number
+}
+
+/* transform을 빼고 잰다. 나가는 중인 카드는 transform으로 움직이고 있어
+   getBoundingClientRect로 재면 움직이는 중간 자리가 잡힌다 */
+function measureCard(card: HTMLElement, deck: HTMLElement): CardBox {
+  let left = 0
+  let top = 0
+  for (
+    let node: HTMLElement | null = card;
+    node && node !== deck;
+    node = node.offsetParent as HTMLElement | null
+  ) {
+    left += node.offsetLeft
+    top += node.offsetTop
+  }
+  const surface = card.firstElementChild
+  const padding = surface
+    ? Number.parseFloat(getComputedStyle(surface).paddingLeft)
+    : PREVIEW_PADDING
+
+  return {
+    left,
+    top,
+    width: card.offsetWidth,
+    height: card.offsetHeight,
+    padding,
+  }
+}
 
 /**
- * 자리 간 이동량. 무대 폭에 따라 달라져 CSS 변수로 넘긴다.
+ * 자리 간 이동량. 무대 폭과 가운데 카드 자리에 딸려 있어 CSS 변수로 넘긴다.
  *
  * @param deckWidth 무대 폭(px)
+ * @param card 가운데 카드 자리
  * @param direction 넘기는 방향. +1이면 다음 주차
  */
-function slideVars(deckWidth: number, direction: -1 | 1) {
-  const cardLeft = (deckWidth - CARD.width) / 2
+function slideVars(deckWidth: number, card: CardBox, direction: -1 | 1) {
   const leftSlot = { x: LEFT_INSET - SIDE.width, y: SIDE.leftTop }
   const rightSlot = { x: deckWidth - RIGHT_INSET, y: SIDE.rightTop }
 
@@ -71,17 +102,28 @@ function slideVars(deckWidth: number, direction: -1 | 1) {
   const to = direction === 1 ? leftSlot : rightSlot
 
   return {
+    /* 들어오는 카드는 출발할 때부터 가운데 카드의 여백·안쪽 폭을 쓴다. 이웃 자리 값(48 · 876)으로
+       도착하면 교체되는 순간 글자가 다시 줄바꿈되며 튄다. 출발 때는 흐리고 블러가 걸려 있어
+       바뀌는 게 보이지 않는다 */
     incoming: {
-      '--slide-x': `${cardLeft - from.x}px`,
-      '--slide-y': `${CARD.top - from.y}px`,
-      '--slide-w': `${CARD.width}px`,
-      '--slide-h': `${CARD.height}px`,
+      '--slide-x': `${card.left - from.x}px`,
+      '--slide-y': `${card.top - from.y}px`,
+      '--slide-w': `${card.width}px`,
+      '--slide-h': `${card.height}px`,
+      padding: card.padding,
     } as CSSProperties,
+    incomingBody: { width: card.width - card.padding * 2 } as CSSProperties,
+    /* 나가는 카드의 크기 배율. 흐름 안에 있는 요소라 width/height를 건드리면 아래 문구가
+       밀려난다 — 그래서 이쪽만 transform으로 줄이고, **축마다 다른 배율(비등비)** 을 쓴다.
+       들어오는 쪽과 반대의 선택이다. 나가는 카드는 이동하는 내내 블러가 4px까지 짙어지고
+       실효 불투명도가 10%까지 떨어져 글자 왜곡이 보이지 않는 반면, 배율을 등비로 맞추면
+       옆자리(972x682)와 다른 크기로 도착해 교체 순간 모서리가 튄다.
+       들어오는 카드는 선명해지므로 정반대다 — 그쪽은 배율을 아예 쓰지 않는다. */
     outgoing: {
-      '--slide-x': `${to.x - cardLeft}px`,
-      '--slide-y': `${to.y - CARD.top}px`,
-      '--slide-sx': TO_SIDE.x,
-      '--slide-sy': TO_SIDE.y,
+      '--slide-x': `${to.x - card.left}px`,
+      '--slide-y': `${to.y - card.top}px`,
+      '--slide-sx': SIDE.width / card.width,
+      '--slide-sy': SIDE.height / card.height,
       '--slide-rotate': direction === 1 ? '-15deg' : '15deg',
     } as CSSProperties,
     // 반대쪽 이웃은 진행 방향으로 한 자리만큼 더 밀려나며 사라진다.
@@ -103,7 +145,7 @@ const startsOnControl = (target: EventTarget | null) =>
   target instanceof Element && target.closest(CONTROLS) !== null
 
 /* 이웃 카드의 표면. 이번 주 카드와 **다르다** — 채움이 한 단계 밝은 #343a40(element)이고
-   테두리·그림자가 없다. 패딩 48은 같아 안쪽 폭이 876이 된다.
+   테두리·그림자가 없다. 여백 48(PREVIEW_PADDING)이라 안쪽 폭이 876이 된다.
    역량 패널도 여기서는 표면과 같은 #343a40이라 함께 덮어쓴다. */
 const PREVIEW = [
   'pointer-events-none absolute h-[682px] w-[972px] origin-top-left',
@@ -186,23 +228,32 @@ export function WeekDeck({
   onSwipe,
 }: WeekDeckProps) {
   const deckRef = useRef<HTMLDivElement>(null)
-  const [deckWidth, setDeckWidth] = useState(0)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [geometry, setGeometry] = useState<{
+    deckWidth: number
+    card: CardBox
+  } | null>(null)
 
-  /* 자리 간 이동량이 무대 폭에 딸려 있어 재둔다. 창 크기가 바뀌면 다시 잰다. */
+  /* 자리 간 이동량이 무대 폭과 가운데 카드 자리에 딸려 있어 넘기기 시작할 때 잰다.
+     카드 자리는 창 크기뿐 아니라 칩 행·데이터가 늦게 그려져도 바뀌어서, 미리 재 두면 어긋난다.
+     layout effect라 잰 값이 그려지기 전에 들어가 애니메이션 첫 프레임부터 맞는다 */
   useLayoutEffect(() => {
     const deck = deckRef.current
-    if (!deck) return
+    const card = cardRef.current
+    if (!slidingTo || !deck || !card) return
 
-    const measure = () => setDeckWidth(deck.offsetWidth)
+    const measure = () =>
+      setGeometry({
+        deckWidth: deck.offsetWidth,
+        card: measureCard(card, deck),
+      })
     measure()
+  }, [slidingTo])
 
-    const observer = new ResizeObserver(measure)
-    observer.observe(deck)
-
-    return () => observer.disconnect()
-  }, [])
-
-  const vars = slidingTo && deckWidth ? slideVars(deckWidth, slidingTo) : null
+  const vars =
+    slidingTo && geometry
+      ? slideVars(geometry.deckWidth, geometry.card, slidingTo)
+      : null
 
   /* 누른 지점과 마지막 위치만 기억한다. 끌리는 동안 상태를 바꾸지 않아 리렌더가 없다. */
   const start = useRef<{ x: number; y: number } | null>(null)
@@ -252,11 +303,13 @@ export function WeekDeck({
   const incomingSlot = slidingTo === 1 ? 'next' : 'previous'
 
   const motion = (slot: 'previous' | 'next') => {
-    if (!vars) return { style: {}, surface: '', body: '' }
+    if (!vars)
+      return { style: {}, bodyStyle: PREVIEW_BODY_STYLE, surface: '', body: '' }
 
     const isIncoming = slot === incomingSlot
     return {
       style: isIncoming ? vars.incoming : vars.leaving,
+      bodyStyle: isIncoming ? vars.incomingBody : PREVIEW_BODY_STYLE,
       /* 들어오는 카드는 안쪽 역량 패널 색까지 함께 바꿔야 도착할 때 안 튄다. */
       surface: isIncoming
         ? `animate-slide-in [&_[data-surface=panel]]:animate-panel-focus ${MOTION_OFF}`
@@ -281,7 +334,7 @@ export function WeekDeck({
       className="relative -m-page min-h-[calc(100%+var(--page-pt)+var(--page-pb))] touch-pan-y overflow-hidden p-page"
     >
       {SLOTS.map(({ key, left, top, rotate }) => {
-        const { style, surface, body } = motion(key)
+        const { style, bodyStyle, surface, body } = motion(key)
         return (
           <div
             key={key}
@@ -289,25 +342,23 @@ export function WeekDeck({
             style={{ left, top, ...style }}
             className={`${PREVIEW} ${rotate} ${surface}`}
           >
-            <div
-              style={PREVIEW_BODY_STYLE}
-              className={`${PREVIEW_BODY} ${body}`}
-            >
+            <div style={bodyStyle} className={`${PREVIEW_BODY} ${body}`}>
               {key === 'previous' ? previous : next}
             </div>
           </div>
         )
       })}
 
-      {/* 본문은 이웃 카드 위에 온다. 세로 간격은 Figma 335:2835(12) · 335:2836(6) 기준.
+      {/* 본문은 이웃 카드 위에 온다. 세로 간격은 Figma 1396:6267 기준 — 주차 제목·칩·카드 사이 12, 카드·안내 문구 사이 6.
           움직이는 것은 카드뿐이라, 나가는 애니메이션도 카드에만 건다 — 칩 행에 걸면
           기준점이 카드 위쪽 44px에 잡혀 이웃 자리에 정확히 닿지 않는다. */}
-      <div className="relative mx-auto flex max-w-[978px] flex-col">
+      <div className="relative mx-auto flex max-w-[1140px] flex-col gap-3">
         {header}
         <div className="flex flex-col gap-1.5">
           <div className="flex flex-col gap-3">
             {filters}
             <div
+              ref={cardRef}
               style={vars?.outgoing}
               className={vars ? OUTGOING : undefined}
               onAnimationEnd={(event) => {
