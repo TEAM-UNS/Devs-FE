@@ -26,6 +26,13 @@ export function RootLayout() {
   const roadmap = useQuery({ ...roadmapQueries.mine(), enabled: loggedIn })
   // 1024px 미만에서 햄버거로 여는 사이드바. 버튼과 메뉴가 둘 다 여기 있어 밖으로 꺼내지 않는다
   const [menuOpen, setMenuOpen] = useState(false)
+  /* 뒤로가기처럼 메뉴 밖에서 화면이 바뀌어도 닫는다. 챗봇으로 가면 서랍이 빠져 onClose가 안 불리므로
+     경로 변화를 직접 본다. effect 대신 렌더 중에 맞춰 열린 서랍이 한 번 그려지는 것도 막는다 */
+  const [menuPathname, setMenuPathname] = useState(location.pathname)
+  if (menuPathname !== location.pathname) {
+    setMenuPathname(location.pathname)
+    setMenuOpen(false)
+  }
 
   // 로드맵이 없거나(null) 만드는 중이면 0%. 비로그인이면 null — 로그인 링크
   const sidebar = (

@@ -34,6 +34,17 @@ export function SidebarDrawer({ open, onClose, children }: SidebarDrawerProps) {
     if (!open && dialog.open) dialog.close()
   }, [open])
 
+  // 열린 채 1024px(lg) 이상으로 넓어지면 닫는다. 고정 사이드바가 보여도 모달은 남아 뒤 화면을 계속 막는다
+  useEffect(() => {
+    if (!open) return
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    const handleChange = () => {
+      if (desktop.matches) onClose()
+    }
+    desktop.addEventListener('change', handleChange)
+    return () => desktop.removeEventListener('change', handleChange)
+  }, [open, onClose])
+
   // 배경(::backdrop)을 누르면 클릭 대상이 dialog 자신이 된다. 메뉴 링크는 화면을 옮기면서 닫는다
   const handleClick = (event: MouseEvent<HTMLDialogElement>) => {
     const target = event.target as Element
