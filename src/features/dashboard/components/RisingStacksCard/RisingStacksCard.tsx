@@ -75,6 +75,8 @@ export function RisingStacksCard({
   return (
     <ChartCard
       title="급상승 기술 스택"
+      // 모바일은 세로로 쌓여 높이를 정해 줄 행이 없다 — Figma 390 프레임 높이 308
+      className="h-[308px] md:h-auto"
       description="최근 한 달 동안 급상승한 기술을 그래프 형태로 확인할 수 있습니다."
       action={
         <div className="flex shrink-0 items-center gap-1.5">
