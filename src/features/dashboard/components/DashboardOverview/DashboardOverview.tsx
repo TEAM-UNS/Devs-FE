@@ -55,7 +55,7 @@ function differsFromDefault(filters: DashboardFilters): boolean {
 
 /**
  * 메인페이지 본문 — KPI 카드 4장 + 차트 카드 3종.
- * 폭·간격은 Figma 290:1054(1120px 그리드) 기준이다.
+ * 폭·간격은 Figma 1920(1396:5346)·834(2336:11058)·390(2336:13015) 프레임 기준이다.
  *
  * 필터 시작값은 원격 플래그(필터 기억 실험)로 정한다. 플래그는 기다리지 않는다(useFilterMode)
  */
@@ -189,8 +189,9 @@ export function DashboardOverview() {
     RISING_PERIODS.find((item) => item.value === period)?.label ?? ''
 
   return (
-    <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-6">
-      <div className="grid grid-cols-4 gap-4">
+    <div className="mx-auto flex w-full max-w-[1380px] flex-col gap-6">
+      {/* 모바일은 2×2, 패드부터 한 줄 */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {kpis.map((kpi) => (
           <KpiCard key={kpi.id} {...kpi} />
         ))}
@@ -203,21 +204,24 @@ export function DashboardOverview() {
         bars={bars}
       />
 
-      {/* 하단 두 카드의 폭 비율(490:606)과 높이(316)는 Figma 290:1052 그대로 */}
-      <div className="grid h-[316px] grid-cols-[490fr_606fr] gap-6">
-        <CompanyScaleCard
-          scale={companySizeLabel}
-          prevScale={neighborScale(-1)}
-          nextScale={neighborScale(1)}
-          ranks={ranks}
-          onStep={stepCompanySize}
-        />
+      {/* 하단 두 카드 — PC는 490:866·높이 316, 패드는 반반·337, 모바일은 세로로 쌓는다
+          모바일 순서(급상승 → 기업 규모)를 코드 순서로 두고, 패드부터 기업 규모를 왼쪽으로 올린다.
+          화면에 보이는 순서와 읽는 순서가 어긋나는 쪽을 넓은 화면으로 둔 것 */}
+      <div className="grid gap-6 md:h-[337px] md:grid-cols-2 lg:h-[316px] lg:grid-cols-[490fr_866fr]">
         <RisingStacksCard
           periods={PERIOD_LABELS}
           selectedPeriod={periodLabel}
           onSelectPeriod={selectPeriod}
           series={chart?.series ?? NO_SERIES}
           axisLabels={chart?.axisLabels ?? NO_AXIS}
+        />
+        <CompanyScaleCard
+          className="md:order-first"
+          scale={companySizeLabel}
+          prevScale={neighborScale(-1)}
+          nextScale={neighborScale(1)}
+          ranks={ranks}
+          onStep={stepCompanySize}
         />
       </div>
     </div>

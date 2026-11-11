@@ -86,10 +86,11 @@ export function buildPopularStacksOption(
     animation: animate,
     animationDuration: ANIMATION_DURATION,
     animationEasing: ANIMATION_EASING,
+    // 막대 영역(120)이 카드의 어두운 상자와 겹쳐야 해서 위 여백을 두지 않는다 (상자는 PopularStacksCard의 CSS)
     grid: {
       left: GRID_SIDE,
       right: GRID_SIDE,
-      top: 16,
+      top: 0,
       // 라벨 높이(18) + 막대와의 간격(6)
       bottom: 24,
     },
