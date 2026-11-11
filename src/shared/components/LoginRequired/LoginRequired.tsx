@@ -26,8 +26,8 @@ export function LoginRequired({
   const location = useLocation()
 
   return (
-    /* 배경이 main 끝까지 깔리게 main의 안쪽 여백(p-10)만큼 밖으로 넓힌다 */
-    <div className="relative -m-10 flex h-[calc(100%+5rem)] items-center justify-center overflow-hidden">
+    /* 배경이 main 끝까지 깔리게 main의 안쪽 여백(p-page)만큼 밖으로 넓힌다 */
+    <div className="relative -m-page flex h-[calc(100%+var(--page-pt)+var(--page-pb))] items-center justify-center overflow-hidden">
       <PageTitle name={title} />
       <img
         src={background}

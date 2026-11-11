@@ -44,9 +44,9 @@ export function RetrospectWall({
   )
 
   return (
-    /* 배경이 화면 끝까지 깔리게 main의 안쪽 여백(p-10)만큼 밖으로 넓힌다
+    /* 배경이 화면 끝까지 깔리게 main의 안쪽 여백(p-page)만큼 밖으로 넓힌다
        높이는 최소값만 둬서 화면이 낮으면 main이 세로로 스크롤한다. 흐르는 줄이 넘치는 가로만 자른다 */
-    <div className="relative -m-10 flex min-h-[calc(100%+5rem)] flex-col overflow-x-clip">
+    <div className="relative -m-page flex min-h-[calc(100%+var(--page-pt)+var(--page-pb))] flex-col overflow-x-clip">
       <img
         src={boardBackground}
         alt=""

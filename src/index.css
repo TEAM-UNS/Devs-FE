@@ -426,6 +426,37 @@
     both;
 }
 
+/* 본문 여백 — 폭마다 다르다 (Figma 모바일 20·60 / 패드 32·80 / PC 40·80)
+   PC 좌우는 Figma 1920에서 140이지만, 화면마다 콘텐츠 최대 폭을 가운데 두는 걸로 맞춘다
+   1024px 미만은 위에 햄버거(24)와 간격(12)이 더 붙는다. 햄버거는 흐름 밖에 떠 있어 그만큼 위 여백으로 비워 둔다
+   화면 끝까지 배경을 까는 곳은 -m-page로 이 여백만큼 밖으로 넓힌다. 값을 한 곳에서만 바꾸려고 변수로 둔다 */
+:root {
+  --page-px: 20px;
+  --page-pt: 96px;
+  --page-pb: 60px;
+  @variant md {
+    --page-px: 32px;
+    --page-pt: 116px;
+    --page-pb: 80px;
+  }
+  @variant lg {
+    --page-px: 40px;
+    --page-pt: 80px;
+    --page-pb: 80px;
+  }
+}
+
+@utility p-page {
+  padding: var(--page-pt) var(--page-px) var(--page-pb);
+}
+@utility -m-page {
+  margin: calc(var(--page-pt) * -1) calc(var(--page-px) * -1)
+    calc(var(--page-pb) * -1);
+}
+@utility -mb-page {
+  margin-bottom: calc(var(--page-pb) * -1);
+}
+
 /* Figma는 typo/heading/h1을 모바일 모드에서 24로 둔다
    화면마다 text-h2 md:text-h1로 고치지 않고 토큰 하나만 바꾼다 */
 :root {
