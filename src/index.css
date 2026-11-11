@@ -426,6 +426,14 @@
     both;
 }
 
+/* Figma는 typo/heading/h1을 모바일 모드에서 24로 둔다
+   화면마다 text-h2 md:text-h1로 고치지 않고 토큰 하나만 바꾼다 */
+:root {
+  @variant max-md {
+    --text-h1: 24px;
+  }
+}
+
 /* z-index 명명 유틸리티 — @theme의 --z-* 토큰을 z-{name} 클래스로 감싼다.
    (Tailwind 기본 z-<number>는 그대로 유효; 아래는 시맨틱 레이어 전용) */
 @utility z-base {
