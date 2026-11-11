@@ -266,7 +266,7 @@ export function WeekDeck({
   }
 
   return (
-    /* -m-10/p-10: 바깥 여백을 되돌려 잘리는 범위를 콘텐츠 영역 전체로 넓힌다.
+    /* -m-page/p-page: 바깥 여백을 되돌려 잘리는 범위를 콘텐츠 영역 전체로 넓힌다.
        min-h: Figma의 클리핑 프레임(335:2840)이 여백 포함 1200x900, 즉 콘텐츠 영역 전체다.
        touch-pan-y: 세로 스크롤은 브라우저에 맡기고 가로만 우리가 가져간다. */
     <div
@@ -278,7 +278,7 @@ export function WeekDeck({
       onPointerMove={handlePointerMove}
       onPointerUp={finishSwipe}
       onPointerCancel={finishSwipe}
-      className="relative -m-10 min-h-[calc(100%+5rem)] touch-pan-y overflow-hidden p-10"
+      className="relative -m-page min-h-[calc(100%+var(--page-pt)+var(--page-pb))] touch-pan-y overflow-hidden p-page"
     >
       {SLOTS.map(({ key, left, top, rotate }) => {
         const { style, surface, body } = motion(key)
