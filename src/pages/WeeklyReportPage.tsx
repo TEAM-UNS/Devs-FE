@@ -1,5 +1,4 @@
 import { WeeklyReport } from '@/features/report'
-import { PageContainer } from '@/shared/components/PageContainer'
 import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
@@ -12,9 +11,9 @@ export default function WeeklyReportPage() {
   return (
     <>
       <PageTitle name="주간리포트" />
-      <PageContainer className="h-full">
-        <WeeklyReport />
-      </PageContainer>
+      {/* 공용 1120 틀(PageContainer)을 쓰지 않는다. 카드가 최대 1140이고, 좌우 이웃 카드가
+          본문 영역 끝까지 걸쳐야 해서(Figma 1396:6267) 폭은 WeekDeck이 정한다 */}
+      <WeeklyReport />
     </>
   )
 }

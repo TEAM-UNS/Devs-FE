@@ -6,7 +6,9 @@ interface ReportSummaryProps {
   paragraphs: readonly string[]
 }
 
-const SURFACE = 'flex h-48 rounded-sm bg-canvas p-6'
+/* 2단(PC)은 높이 192 고정에 안에서 스크롤, 1단(패드·모바일)은 Figma처럼 글 길이만큼 늘어난다.
+   1단의 min-h는 요약이 없을 때 안내 문구 상자가 납작해지지 않게 PC 높이를 남긴 것 */
+const SURFACE = 'flex min-h-48 rounded-sm bg-canvas p-6 @3xl:h-48'
 
 /**
  * 카드 하단 AI 요약 리포트 영역

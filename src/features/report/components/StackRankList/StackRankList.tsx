@@ -24,10 +24,9 @@ const DELTA_COLOR: Record<TrendDirection, string> = {
  */
 export function StackRankList({ ranks }: StackRankListProps) {
   return (
-    /* flex-[293]: Figma 폭 293을 그대로 grow 비율로 쓴다. 옆 블록이 541이라
-       둘의 합(834)이 1440에서의 가용 폭과 같아 디자인 값이 정확히 재현되고,
-       폭이 줄어도 293:541 비례가 유지된다. min-w-0이 없으면 내용 폭 아래로 안 줄어든다. */
-    <section className="flex min-w-0 flex-[293] flex-col gap-4">
+    /* 2단일 때 폭 293 고정, 남는 폭은 옆 트렌드 블록이 가진다 (Figma 1920 1396:6267 · 프리뷰 카드 모두)
+       1단은 카드 폭을 다 쓴다 (ReportCard의 @container) */
+    <section className="flex min-w-0 flex-col gap-4 @3xl:w-[293px] @3xl:shrink-0">
       <h2 className="text-body-lg font-semibold text-gray-1000">
         가장 많이 찾은 기술 스택
       </h2>

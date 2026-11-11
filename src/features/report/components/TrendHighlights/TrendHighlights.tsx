@@ -18,8 +18,8 @@ export function TrendHighlights({
   mentions,
 }: TrendHighlightsProps) {
   return (
-    /* flex-[541]: 순위 블록(293)과 짝을 이루는 Figma 폭 비율 */
-    <section className="flex min-w-0 flex-[541] flex-col gap-4">
+    // 2단일 때 순위 블록(293 고정)을 뺀 나머지 폭 (StackRankList 참고)
+    <section className="flex min-w-0 flex-col gap-4 @3xl:flex-1">
       <h2 className="text-body-lg font-semibold text-gray-1000">
         이번 주 주목할 만한 기술 트렌드
       </h2>
