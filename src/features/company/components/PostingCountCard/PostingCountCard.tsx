@@ -17,13 +17,14 @@ export function PostingCountCard({ companies, counts }: PostingCountCardProps) {
   const max = Math.max(1, ...counts.map(({ postingCount }) => postingCount))
 
   return (
-    <CompareSectionCard title="채용 공고 수" className="shrink-0">
+    <CompareSectionCard title="채용 공고 수" className="min-w-0">
       <div className="flex flex-col items-center gap-1.5">
-        <div className="flex h-28 items-end rounded-sm bg-canvas px-9">
+        {/* 열 폭 110은 좁은 카드(모바일)에서 같이 줄어든다 */}
+        <div className="flex h-28 max-w-full items-end rounded-sm bg-canvas px-9">
           {counts.map(({ companyId, postingCount }) => (
             <div
               key={companyId}
-              className="flex w-[110px] flex-col items-center"
+              className="flex w-[110px] min-w-0 flex-col items-center"
             >
               <span className="text-body-xs text-gray-300">
                 {postingCount}건
@@ -38,11 +39,11 @@ export function PostingCountCard({ companies, counts }: PostingCountCardProps) {
             </div>
           ))}
         </div>
-        <div className="flex px-9">
+        <div className="flex max-w-full px-9">
           {counts.map(({ companyId, name }) => (
             <span
               key={companyId}
-              className="w-[110px] truncate text-center text-body-xs text-gray-500"
+              className="w-[110px] min-w-0 truncate text-center text-body-xs text-gray-500"
             >
               {shortName(name)}
             </span>

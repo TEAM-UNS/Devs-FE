@@ -14,7 +14,7 @@ export function MatchRateCard({ companies, rates }: MatchRateCardProps) {
   const emptyRows = Math.max(0, MAX_COMPARE - rates.length)
 
   return (
-    <CompareSectionCard title="회사 매칭률" className="min-w-0 flex-1">
+    <CompareSectionCard title="회사 매칭률" className="min-w-0">
       <ol className="flex flex-col gap-1">
         {rates.map((rate, index) => (
           <li key={rate.companyId} className="flex h-6 items-center gap-2">

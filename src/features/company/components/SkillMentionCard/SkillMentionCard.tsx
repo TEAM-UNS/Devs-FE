@@ -7,6 +7,8 @@ interface SkillMentionCardProps {
   /** 비교하는 기업. 이 순서로 색을 정한다 */
   readonly companies: readonly ComparedCompany[]
   readonly mentions: readonly SkillMention[]
+  /** 비교 결과 그리드에서의 자리 */
+  readonly className?: string
 }
 
 /**
@@ -16,6 +18,7 @@ interface SkillMentionCardProps {
 export function SkillMentionCard({
   companies,
   mentions,
+  className,
 }: SkillMentionCardProps) {
   const totalOf = (mention: SkillMention) =>
     mention.counts.reduce((sum, { postingCount }) => sum + postingCount, 0)
@@ -47,7 +50,7 @@ export function SkillMentionCard({
     <CompareSectionCard
       title="기술스택 언급량 그래프"
       aside={legend}
-      className="min-w-0 flex-1"
+      className={cn('min-w-0', className)}
     >
       <ul className="scrollbar-slim flex h-[124px] flex-col gap-6 overflow-y-auto">
         {mentions.map((mention) => (

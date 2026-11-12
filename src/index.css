@@ -457,6 +457,16 @@
   margin-bottom: calc(var(--page-pb) * -1);
 }
 
+/* 일부 화면은 Figma 모바일에서도 패드 여백(좌우 32 · 위아래 80)을 쓴다 (기업 스택 비교 결과 2339:16962)
+   그 화면이 data-page-margin="wide"를 달면 main의 변수를 바꿔 햄버거 위치까지 같이 옮긴다 */
+main:has([data-page-margin='wide']) {
+  @variant max-md {
+    --page-px: 32px;
+    --page-pt: 116px;
+    --page-pb: 80px;
+  }
+}
+
 /* Figma는 typo/heading을 모바일 모드에서 한 단계씩 줄인다 (h1 32→24 · h2 24→20 · h3 20→18)
    화면마다 text-h2 md:text-h1로 고치지 않고 토큰만 바꾼다 */
 :root {
