@@ -12,7 +12,8 @@ export function RetrospectBoard() {
   return (
     <RetrospectWall
       header={
-        <header className="flex shrink-0 items-end justify-between px-12 pt-[58px]">
+        // 모바일은 제목 아래 버튼을 폭 가득 (Figma 2342:21937)
+        <header className="flex shrink-0 flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-1">
             <h2 className="text-h1 text-white">주간 익명 회고 게시판</h2>
             <p className="text-body-md text-gray-400">
@@ -20,7 +21,10 @@ export function RetrospectBoard() {
               (월요일마다 초기화)
             </p>
           </div>
-          <Link to={ROUTES.roadmap} className={buttonClassName()}>
+          <Link
+            to={ROUTES.roadmap}
+            className={buttonClassName('primary', 'md', 'max-md:w-full')}
+          >
             내 로드맵 확인
           </Link>
         </header>
