@@ -73,7 +73,8 @@ export function CompanySelect({
       </div>
 
       {/* 목록이 화면 아래 끝까지 차도록 main의 아래 여백(p-page)만큼 내려 깐다. 안 그러면 카드가 끝에서 여백만큼 위에서 잘린다 */}
-      <ul className="-mb-page grid min-h-0 w-full flex-1 grid-cols-3 content-start items-start gap-8 overflow-y-auto pb-24">
+      {/* 모바일 1열, 패드부터 3열 (Figma 2339:16289 · 2339:15717 · 1396:6846) */}
+      <ul className="-mb-page grid min-h-0 w-full flex-1 grid-cols-1 content-start items-start gap-8 overflow-y-auto pb-24 md:grid-cols-3">
         {companies.map((company) => (
           <li key={company.id}>
             <CompanyCard
@@ -84,13 +85,14 @@ export function CompanySelect({
           </li>
         ))}
         {/* 이 줄이 보이면 다음 20개를 받는다 */}
-        <li ref={endRef} aria-hidden="true" className="col-span-3 h-px" />
+        <li ref={endRef} aria-hidden="true" className="col-span-full h-px" />
       </ul>
 
+      {/* 모바일은 좌우 여백(20)만 남기고 꽉 채워 아래에서 64, 패드부터는 오른쪽 아래 (Figma 2339:16289) */}
       <Button
         disabled={!canCompare}
         onClick={onCompare}
-        className="fixed right-12 bottom-[42px] enabled:drop-shadow-[0_0_4px_rgba(188,114,244,0.6)]"
+        className="fixed inset-x-5 bottom-16 enabled:drop-shadow-[0_0_4px_rgba(188,114,244,0.6)] md:inset-x-auto md:right-12 md:bottom-[42px]"
       >
         {canCompare
           ? `선택한 ${selected.length}개 기업 스택 비교하기`
