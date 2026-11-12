@@ -3,6 +3,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { useSearchParams } from 'react-router-dom'
 import { trackEvent } from '@/shared/analytics'
+import { SidebarDrawer } from '@/shared/components/AppSidebar'
+import { MenuIcon } from '@/shared/components/icons'
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 import { chatQueries, streamChat } from '../../api'
 import type { ChatMessage, ChatThread } from '../../types/chat'
 import type {
@@ -74,6 +77,11 @@ export function Chat() {
   const deleteTriggerRef = useRef<HTMLButtonElement>(null)
   const newChatButtonRef = useRef<HTMLButtonElement>(null)
   const abortRef = useRef<AbortController>(null)
+  /* 1024px 미만은 대화 목록을 햄버거로 여는 서랍에 넣는다 (다른 화면의 앱 메뉴 서랍과 같은 동작).
+     목록을 화면에 한 번만 그려야 새 대화 버튼 ref가 보이는 쪽을 가리켜서, CSS로 숨기지 않고 폭을 본다 */
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const sessions = useQuery(chatQueries.sessions())
   /* 답변을 받는 동안에는 그 대화의 기록을 다시 부르지 않는다. 서버에 이미 저장된 질문이
@@ -254,6 +262,8 @@ export function Chat() {
   }
 
   function handleDeleteRequest(threadId: number, trigger: HTMLButtonElement) {
+    // 삭제 확인 창은 서랍(top layer) 아래에 깔려 누를 수 없어서 서랍을 먼저 닫는다
+    setMenuOpen(false)
     deleteTriggerRef.current = trigger
     setDeleteTargetId(threadId)
   }
@@ -303,52 +313,87 @@ export function Chat() {
       : undefined
   const showsConversation = activeSessionId !== undefined || showsTurn
 
+  const sidebar = (
+    <ChatHistorySidebar
+      threads={threads}
+      activeThreadId={activeSessionId}
+      // 서랍에서 대화를 고르거나 새 대화를 시작하면 화면이 바뀌므로 서랍을 닫는다
+      onThreadSelect={(sessionId) => {
+        setMenuOpen(false)
+        openSession(sessionId)
+      }}
+      onThreadDelete={handleDeleteRequest}
+      onNewChat={() => {
+        setMenuOpen(false)
+        handleStartNewChat()
+      }}
+      newChatButtonRef={newChatButtonRef}
+    />
+  )
+
   return (
     <div className="flex h-full min-h-0 bg-canvas text-gray-1000">
-      <div className="hidden h-full md:block">
-        <ChatHistorySidebar
-          threads={threads}
-          activeThreadId={activeSessionId}
-          onThreadSelect={openSession}
-          onThreadDelete={handleDeleteRequest}
-          onNewChat={handleStartNewChat}
-          newChatButtonRef={newChatButtonRef}
-        />
+      {isDesktop && <div className="h-full">{sidebar}</div>}
+      {/* 1024px 미만 여백은 Figma 패드·모바일 모두 위아래 80 · 좌우 32 (2339:15323 · 2339:15364).
+          햄버거 바로 아래부터 내용이 시작한다 */}
+      <div className="flex min-w-0 flex-1 flex-col px-8 py-20 lg:p-0">
+        <button
+          ref={menuButtonRef}
+          type="button"
+          aria-label="대화 목록 열기"
+          aria-haspopup="dialog"
+          onClick={() => setMenuOpen(true)}
+          className="flex size-6 shrink-0 text-white focus-visible:outline-2 focus-visible:outline-primary-500 lg:hidden"
+        >
+          <MenuIcon className="size-full" />
+        </button>
+        {showsConversation ? (
+          <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden lg:p-10">
+            <div className="mx-auto flex min-h-0 w-[800px] max-w-full flex-1 flex-col gap-4">
+              <ChatConversation
+                threadId={String(activeSessionId ?? 'new')}
+                messages={messages}
+                pending={pending}
+                pendingLabel={toolLabel}
+              />
+              <ChatComposer
+                value={question}
+                disabled={turn !== undefined}
+                error={activeError ?? draftError}
+                onChange={setQuestion}
+                onSubmit={handleSubmitQuestion}
+              />
+            </div>
+          </section>
+        ) : (
+          <ChatIntro
+            question={question}
+            disabled={turn !== undefined}
+            error={activeError ?? draftError}
+            onQuestionChange={setQuestion}
+            onQuestionSubmit={handleSubmitQuestion}
+            onSuggestionSelect={(selected) =>
+              handleSubmitQuestion(selected, 'suggestion')
+            }
+          />
+        )}
       </div>
-      {showsConversation ? (
-        <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-hidden p-10">
-          <div className="mx-auto flex min-h-0 w-[800px] max-w-full flex-1 flex-col gap-4">
-            <ChatConversation
-              threadId={String(activeSessionId ?? 'new')}
-              messages={messages}
-              pending={pending}
-              pendingLabel={toolLabel}
-            />
-            <ChatComposer
-              value={question}
-              disabled={turn !== undefined}
-              error={activeError ?? draftError}
-              onChange={setQuestion}
-              onSubmit={handleSubmitQuestion}
-            />
-          </div>
-        </section>
-      ) : (
-        <ChatIntro
-          question={question}
-          disabled={turn !== undefined}
-          error={activeError ?? draftError}
-          onQuestionChange={setQuestion}
-          onQuestionSubmit={handleSubmitQuestion}
-          onSuggestionSelect={(selected) =>
-            handleSubmitQuestion(selected, 'suggestion')
-          }
-        />
-      )}
+      {/* 넓은 화면으로 바뀌면 open이 false가 돼 서랍이 닫히고 목록은 왼쪽 자리로 옮겨 간다 */}
+      <SidebarDrawer
+        open={menuOpen && !isDesktop}
+        onClose={() => setMenuOpen(false)}
+      >
+        {!isDesktop && sidebar}
+      </SidebarDrawer>
       {deleteTargetId !== undefined && (
         <ChatDeleteModal
-          restoreFocusTo={deleteTriggerRef.current}
-          fallbackFocusTo={newChatButtonRef.current}
+          // 서랍에서 지웠다면 누른 버튼이 닫힌 서랍 안에 있어 햄버거로 돌려준다
+          restoreFocusTo={
+            isDesktop ? deleteTriggerRef.current : menuButtonRef.current
+          }
+          fallbackFocusTo={
+            isDesktop ? newChatButtonRef.current : menuButtonRef.current
+          }
           onCancel={() => setDeleteTargetId(undefined)}
           onConfirm={handleDeleteThread}
         />

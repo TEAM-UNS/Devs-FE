@@ -121,6 +121,17 @@ async function ask(question: string) {
 
 describe('ChatPage', () => {
   beforeEach(() => {
+    /* jsdom에는 matchMedia가 없다. 이 테스트들은 대화 목록이 왼쪽에 펼쳐진 PC 폭(1024 이상)을 전제로 해서
+       어떤 미디어 쿼리에도 맞는다고 답한다 */
+    window.matchMedia = vi.fn(
+      (query: string) =>
+        ({
+          matches: true,
+          media: query,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }) as unknown as MediaQueryList,
+    )
     server.sessions = []
     server.messages = new Map()
     server.nextId = 1
