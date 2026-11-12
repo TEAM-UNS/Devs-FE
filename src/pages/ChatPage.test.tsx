@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AxiosError, type AxiosResponse } from 'axios'
 import { MemoryRouter, useLocation } from 'react-router-dom'
@@ -119,19 +119,42 @@ async function ask(question: string) {
   await user.click(screen.getByRole('button', { name: '질문 보내기' }))
 }
 
+/**
+ * jsdom에는 matchMedia가 없어 화면 폭을 흉내 낸다. 챗봇이 묻는 건 PC 폭(1024 이상)인지 하나뿐이라
+ * 모든 쿼리에 같은 값으로 답하고, resize로 값을 바꾸면 구독자에게 change를 알린다
+ *
+ * @param desktop PC 폭이면 true
+ */
+function mockViewport(desktop: boolean) {
+  const listeners = new Set<() => void>()
+  let matches = desktop
+  window.matchMedia = vi.fn(
+    (query: string) =>
+      ({
+        get matches() {
+          return matches
+        },
+        media: query,
+        addEventListener: (_type: string, listener: () => void) =>
+          listeners.add(listener),
+        removeEventListener: (_type: string, listener: () => void) =>
+          listeners.delete(listener),
+      }) as unknown as MediaQueryList,
+  )
+  return {
+    resize(next: boolean) {
+      matches = next
+      act(() => listeners.forEach((listener) => listener()))
+    },
+  }
+}
+
+const drawer = () => document.querySelector('dialog')
+
 describe('ChatPage', () => {
   beforeEach(() => {
-    /* jsdom에는 matchMedia가 없다. 이 테스트들은 대화 목록이 왼쪽에 펼쳐진 PC 폭(1024 이상)을 전제로 해서
-       어떤 미디어 쿼리에도 맞는다고 답한다 */
-    window.matchMedia = vi.fn(
-      (query: string) =>
-        ({
-          matches: true,
-          media: query,
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-        }) as unknown as MediaQueryList,
-    )
+    // 아래 테스트들은 대화 목록이 왼쪽에 펼쳐진 PC 폭을 전제로 한다
+    mockViewport(true)
     server.sessions = []
     server.messages = new Map()
     server.nextId = 1
@@ -434,5 +457,63 @@ describe('ChatPage', () => {
     await user.click(screen.getByRole('button', { name: '삭제' }))
 
     expect(screen.getByRole('button', { name: '새 대화 시작' })).toHaveFocus()
+  })
+  describe('1024px 미만', () => {
+    beforeEach(() => {
+      server.sessions = [{ id: 7, title: '지난 대화', lastMessageAt: '' }]
+      server.messages.set(7, [{ id: 1, role: 'user', content: '지난 질문' }])
+    })
+
+    it('햄버거로 대화 목록 서랍을 열고, 대화를 고르면 서랍을 닫고 그 대화를 연다', async () => {
+      mockViewport(false)
+      const user = userEvent.setup()
+      renderPage()
+
+      expect(drawer()).not.toHaveAttribute('open')
+      await user.click(screen.getByRole('button', { name: '대화 목록 열기' }))
+      expect(drawer()).toHaveAttribute('open')
+
+      await user.click(await screen.findByRole('button', { name: '지난 대화' }))
+
+      expect(drawer()).not.toHaveAttribute('open')
+      expect(screen.getByTestId('search')).toHaveTextContent('?session=7')
+      expect(await screen.findByText('지난 질문')).toBeInTheDocument()
+    })
+
+    it('서랍에서 삭제를 누르면 서랍을 닫고, 확인 창을 닫으면 햄버거로 포커스를 돌려준다', async () => {
+      mockViewport(false)
+      const user = userEvent.setup()
+      renderPage()
+
+      const menuButton = screen.getByRole('button', { name: '대화 목록 열기' })
+      await user.click(menuButton)
+      await user.click(
+        await screen.findByRole('button', { name: '지난 대화 삭제' }),
+      )
+
+      expect(drawer()).not.toHaveAttribute('open')
+      expect(
+        screen.getByRole('button', { name: '삭제 모달 닫기' }),
+      ).toHaveFocus()
+
+      await user.keyboard('{Escape}')
+      expect(menuButton).toHaveFocus()
+    })
+
+    it('서랍을 연 채 PC 폭으로 넓어지면 서랍을 닫고 목록을 왼쪽에 둔다', async () => {
+      const viewport = mockViewport(false)
+      const user = userEvent.setup()
+      renderPage()
+
+      await user.click(screen.getByRole('button', { name: '대화 목록 열기' }))
+      expect(drawer()).toHaveAttribute('open')
+
+      viewport.resize(true)
+
+      expect(drawer()).not.toHaveAttribute('open')
+      expect(drawer()).not.toContainElement(
+        await screen.findByRole('button', { name: '지난 대화' }),
+      )
+    })
   })
 })
