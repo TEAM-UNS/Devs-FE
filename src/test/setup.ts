@@ -26,6 +26,17 @@ if (
   }
 }
 
+// close도 없다. 서랍(SidebarDrawer)이 닫힐 때 부르고 onClose는 close 이벤트로 받으므로 이벤트까지 흉내 낸다
+if (
+  typeof HTMLDialogElement !== 'undefined' &&
+  !HTMLDialogElement.prototype.close
+) {
+  HTMLDialogElement.prototype.close = function close() {
+    this.open = false
+    this.dispatchEvent(new Event('close'))
+  }
+}
+
 // findBy*/waitFor 기본 대기시간(1초)을 늘린다. 화면이 서버 응답을 기다렸다가 바뀌는
 // 테스트가 있는데, 병렬 워커가 붐비면 응답 처리 + 리렌더가 1초를 넘겨 간헐적으로 실패했다.
 // 제품 코드의 문제가 아니라 실행 환경 편차라 대기시간만 늘린다.
