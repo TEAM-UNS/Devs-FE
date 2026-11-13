@@ -64,6 +64,14 @@ function LandingRoute() {
   )
 }
 
+function NotFoundRoute() {
+  return (
+    <Suspense fallback={authFallback}>
+      <NotFoundPage />
+    </Suspense>
+  )
+}
+
 function MajorEditRoute() {
   return (
     <Suspense fallback={authFallback}>
@@ -185,7 +193,11 @@ export const routes: RouteObject[] = [
           { path: 'my/retrospects', element: <MyRetrospectsPage /> },
         ],
       },
-      { path: '*', element: <NotFoundPage /> },
     ],
+  },
+  /* 없는 경로는 사이드바 없이 전체 화면 404 (Figma 662:7087). 가드 밖이라 로그인 여부와 상관없이 같다 */
+  {
+    path: '*',
+    element: <NotFoundRoute />,
   },
 ]
