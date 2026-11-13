@@ -34,12 +34,13 @@ export function StepLayout({
 }: StepLayoutProps) {
   return (
     <div className="flex h-full flex-col items-center gap-9">
-      <div className="relative flex w-full shrink-0 justify-center">
+      {/* PC는 '이전'을 단계 표시줄 왼쪽에 겹쳐 두고, 패드·모바일은 그 위 줄로 올린다 (Figma 2342:19707 · 2342:20377) */}
+      <div className="relative flex w-full shrink-0 flex-col items-center gap-5 lg:flex-row lg:justify-center">
         {onPrevious && (
           <button
             type="button"
             onClick={onPrevious}
-            className="absolute top-1/2 left-2 flex -translate-y-1/2 items-center gap-1 text-body-md font-semibold text-gray-300 hover:text-gray-400"
+            className="flex items-center gap-1 self-start text-body-md font-semibold text-gray-300 hover:text-gray-400 lg:absolute lg:top-1/2 lg:left-2 lg:-translate-y-1/2"
           >
             <ArrowIcon className="size-6" />
             이전
@@ -60,7 +61,8 @@ export function StepLayout({
         disabled={nextDisabled}
         onClick={onNext}
         endIcon={nextArrow ? NEXT_ARROW : undefined}
-        className="fixed right-12 bottom-[42px] enabled:drop-shadow-[0_0_4px_rgba(188,114,244,0.6)]"
+        // 모바일은 화면 폭 가득, 아래 64 (Figma 2339:17483)
+        className="fixed inset-x-5 bottom-16 md:inset-x-auto md:right-12 md:bottom-[42px] enabled:drop-shadow-[0_0_4px_rgba(188,114,244,0.6)]"
       >
         {nextLabel}
       </Button>

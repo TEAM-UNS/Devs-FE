@@ -1,5 +1,4 @@
 import { RoadmapCreate } from '@/features/roadmap'
-import { PageContainer } from '@/shared/components/PageContainer'
 import { PageTitle } from '@/shared/components/PageTitle'
 
 /**
@@ -11,9 +10,10 @@ export default function RoadmapCreatePage() {
   return (
     <>
       <PageTitle name="로드맵 만들기" />
-      <PageContainer className="h-full">
+      {/* 다른 화면처럼 페이지 여백 안에서 최대 1380 (Figma 1396:6908) */}
+      <div className="mx-auto h-full w-full max-w-[1380px]">
         <RoadmapCreate />
-      </PageContainer>
+      </div>
     </>
   )
 }

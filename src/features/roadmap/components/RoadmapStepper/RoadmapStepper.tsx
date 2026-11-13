@@ -13,7 +13,10 @@ const CURRENT =
 const DONE = 'border-gray-200 bg-gray-100 text-gray-300'
 const UPCOMING = 'border-gray-200 text-gray-300'
 
-/** 로드맵 생성 단계 표시줄 — Figma 프로그레스(520:4205) */
+/**
+ * 로드맵 생성 단계 표시줄 — Figma 프로그레스(520:4205)
+ * 모바일은 폭이 모자라 라벨을 숨기고 숫자 원(32)만 둔다 (Figma 2339:17452). 라벨은 스크린리더에 남긴다
+ */
 export function RoadmapStepper({ current }: RoadmapStepperProps) {
   return (
     <ol className="flex items-center gap-1.5" aria-label="로드맵 생성 단계">
@@ -30,7 +33,7 @@ export function RoadmapStepper({ current }: RoadmapStepperProps) {
             <span
               aria-current={isCurrent ? 'step' : undefined}
               className={cn(
-                'flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-body-sm',
+                'flex items-center gap-1.5 rounded-full border p-[5px] text-body-sm md:px-4 md:py-1.5',
                 isCurrent ? CURRENT : done ? DONE : UPCOMING,
               )}
             >
@@ -46,7 +49,7 @@ export function RoadmapStepper({ current }: RoadmapStepperProps) {
                   {step}
                 </span>
               )}
-              {label}
+              <span className="max-md:sr-only">{label}</span>
             </span>
           </li>
         )
