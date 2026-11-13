@@ -30,6 +30,24 @@ const retrospect: Retrospect = {
   liked: false,
 }
 
+/**
+ * jsdom에는 matchMedia가 없어 화면 폭을 흉내 낸다. 게시판이 묻는 건 패드 이상(768 이상)인지 하나뿐이라
+ * 모든 쿼리에 같은 값으로 답한다
+ *
+ * @param flowing 패드 이상이면 true — 세 줄로 흐른다
+ */
+function mockViewport(flowing: boolean) {
+  window.matchMedia = vi.fn(
+    (query: string) =>
+      ({
+        matches: flowing,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }) as unknown as MediaQueryList,
+  )
+}
+
 function renderPage() {
   return renderWithQuery(
     <MemoryRouter>
@@ -40,6 +58,7 @@ function renderPage() {
 
 describe('RetrospectBoardPage', () => {
   beforeEach(() => {
+    mockViewport(true)
     server.retrospects = []
     post.mockReset()
     del.mockReset()
@@ -94,5 +113,17 @@ describe('RetrospectBoardPage', () => {
         hidden: true,
       }),
     ).toBeInTheDocument()
+  })
+
+  it('모바일은 흐르는 줄 대신 회고를 한 번씩만 세로로 쌓는다', async () => {
+    mockViewport(false)
+    server.retrospects = [retrospect, { ...retrospect, retrospectId: 8 }]
+    const { container } = renderPage()
+
+    expect(
+      await screen.findAllByRole('button', { name: /회고 보기$/ }),
+    ).toHaveLength(2)
+    // 흐르는 줄은 이음매를 메우려 복사본을 깔지만, 쌓을 때는 복사본이 없다
+    expect(container.querySelectorAll('article')).toHaveLength(2)
   })
 })

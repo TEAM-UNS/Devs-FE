@@ -1,17 +1,9 @@
 import { useState, type ReactNode } from 'react'
 import boardBackground from '@/assets/retrospect/board-bg.webp'
 import type { Retrospect } from '../../types'
-import { splitIntoRows } from '../../utils/board'
 import { RetrospectDetailModal } from '../RetrospectDetailModal'
-import { RetrospectRow } from '../RetrospectRow'
+import { RetrospectFlow } from '../RetrospectFlow'
 import { RetrospectTimeline } from '../RetrospectTimeline'
-
-// Figma 2079:11912 — 줄마다 오른쪽·왼쪽·오른쪽 순으로 흐르고, 출발 위치를 어긋나게 둔다
-const ROW_MOTION = [
-  { direction: 'right', offset: 0 },
-  { direction: 'left', offset: 0.35 },
-  { direction: 'right', offset: 0.7 },
-] as const
 
 interface RetrospectWallProps {
   /** 배경 위 머리말 — 제목·설명·버튼 */
@@ -38,7 +30,6 @@ export function RetrospectWall({
   /* 상세 모달로 연 회고의 id. 객체 대신 id를 들고 목록에서 찾아야
      모달 안에서 누른 좋아요가 바로 반영된다 */
   const [openedId, setOpenedId] = useState<number | null>(null)
-  const rows = splitIntoRows(retrospects)
   const opened = retrospects.find(
     ({ retrospectId }) => retrospectId === openedId,
   )
@@ -55,8 +46,12 @@ export function RetrospectWall({
       {/* Figma Rectangle 12 — 위쪽을 어둡게 눌러 제목이 배경 구슬에 묻히지 않게 한다 */}
       <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-canvas/60 via-canvas/20 via-[25%] to-transparent to-[62%]" />
 
-      <div className="relative flex flex-1 flex-col pb-10">
-        {header}
+      {/* 위아래는 페이지 여백 그대로. 흐르는 줄이 화면 끝까지 지나가야 해서 좌우 여백은 머리말·세로 목록만 갖는다
+          머리말은 다른 화면처럼 1380 안에서 가운데 (Figma 2284:11685) */}
+      <div className="relative flex flex-1 flex-col pt-(--page-pt) pb-(--page-pb)">
+        <div className="px-(--page-px)">
+          <div className="mx-auto w-full max-w-[1380px]">{header}</div>
+        </div>
 
         {/* TODO: 빈 화면은 디자인에 없다. 임시 문구 */}
         {loaded && retrospects.length === 0 && (
@@ -68,18 +63,11 @@ export function RetrospectWall({
             onOpen={({ retrospectId }) => setOpenedId(retrospectId)}
           />
         )}
-        {!mine && rows.length > 0 && (
-          <div className="mt-[66px] flex flex-col gap-16">
-            {rows.map((row, index) => (
-              <RetrospectRow
-                key={index}
-                retrospects={row}
-                direction={ROW_MOTION[index].direction}
-                offset={ROW_MOTION[index].offset}
-                onOpen={({ retrospectId }) => setOpenedId(retrospectId)}
-              />
-            ))}
-          </div>
+        {!mine && retrospects.length > 0 && (
+          <RetrospectFlow
+            retrospects={retrospects}
+            onOpen={({ retrospectId }) => setOpenedId(retrospectId)}
+          />
         )}
       </div>
 

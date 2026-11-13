@@ -15,7 +15,7 @@ export function MyRetrospects() {
   return (
     <RetrospectWall
       header={
-        <header className="flex shrink-0 flex-col gap-3 px-12 pt-12">
+        <header className="flex shrink-0 flex-col gap-3">
           <button
             type="button"
             onClick={goBack}
