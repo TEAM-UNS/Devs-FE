@@ -9,6 +9,7 @@ import type {
   ChatSessionDto,
   ChatStreamEvent,
 } from '@/features/chat/types/chatApi'
+import { useToastStore } from '@/shared/stores/useToastStore'
 import { renderWithQuery } from '@/test/renderWithQuery'
 import ChatPage from './ChatPage'
 
@@ -17,6 +18,8 @@ const server = vi.hoisted(() => ({
   sessions: [] as ChatSessionDto[],
   messages: new Map<number, ChatMessageDto[]>(),
   nextId: 1,
+  /** 켜면 삭제 요청이 500으로 실패한다 */
+  failDelete: false,
 }))
 
 const { trackEvent, streamChat } = vi.hoisted(() => ({
@@ -48,12 +51,25 @@ vi.mock('@/shared/api/http', () => ({
     return Promise.reject(notFound())
   }),
   post: vi.fn(),
+  del: vi.fn((path: string) => {
+    if (server.failDelete) return Promise.reject(serverError())
+    const sessionId = Number(/^\/chat\/sessions\/(\d+)$/.exec(path)?.[1])
+    server.sessions = server.sessions.filter(({ id }) => id !== sessionId)
+    server.messages.delete(sessionId)
+    return Promise.resolve()
+  }),
 }))
 
 vi.mock('@/features/chat/api/streamChat', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/features/chat/api/streamChat')>()),
   streamChat,
 }))
+
+const serverError = () =>
+  new AxiosError('server error', 'ERR_BAD_RESPONSE', undefined, undefined, {
+    status: 500,
+    data: { message: '대화를 삭제하지 못했습니다' },
+  } as AxiosResponse)
 
 type Emit = (event: ChatStreamEvent) => void
 
@@ -158,6 +174,8 @@ describe('ChatPage', () => {
     server.sessions = []
     server.messages = new Map()
     server.nextId = 1
+    server.failDelete = false
+    useToastStore.setState({ toasts: [] })
     trackEvent.mockReset()
     streamChat.mockReset()
     answerWith('채용 공고 기반 답변입니다.')
@@ -304,6 +322,41 @@ describe('ChatPage', () => {
 
     expect(screen.getByText('최근 대화가 없습니다.')).toBeInTheDocument()
     expect(screen.getByAltText('Devs')).toBeInTheDocument()
+  })
+
+  it('삭제한 대화는 서버에서도 지워져 목록을 다시 받아도 돌아오지 않는다', async () => {
+    server.sessions = [{ id: 7, title: '지난 대화', lastMessageAt: '' }]
+    server.messages.set(7, [{ id: 1, role: 'user', content: '지난 질문' }])
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(
+      await screen.findByRole('button', { name: '지난 대화 삭제' }),
+    )
+    await user.click(screen.getByRole('button', { name: '삭제' }))
+
+    await waitFor(() => expect(server.sessions).toHaveLength(0))
+    expect(await screen.findByText('최근 대화가 없습니다.')).toBeInTheDocument()
+  })
+
+  it('삭제가 실패하면 숨겼던 대화를 되돌리고 에러 토스트를 띄운다', async () => {
+    server.sessions = [{ id: 7, title: '지난 대화', lastMessageAt: '' }]
+    server.messages.set(7, [{ id: 1, role: 'user', content: '지난 질문' }])
+    server.failDelete = true
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(
+      await screen.findByRole('button', { name: '지난 대화 삭제' }),
+    )
+    await user.click(screen.getByRole('button', { name: '삭제' }))
+
+    expect(
+      await screen.findByRole('button', { name: '지난 대화' }),
+    ).toBeInTheDocument()
+    expect(useToastStore.getState().toasts).toEqual([
+      expect.objectContaining({ type: 'error' }),
+    ])
   })
 
   it('keeps the chat when deletion is cancelled', async () => {

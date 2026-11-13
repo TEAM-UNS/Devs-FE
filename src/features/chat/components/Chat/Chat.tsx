@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
 import { useSearchParams } from 'react-router-dom'
 import { trackEvent } from '@/shared/analytics'
 import { SidebarDrawer } from '@/shared/components/AppSidebar'
 import { MenuIcon } from '@/shared/components/icons'
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 import { chatQueries, streamChat } from '../../api'
+import { useDeleteChatSession } from '../../hooks/useDeleteChatSession'
 import type { ChatMessage, ChatThread } from '../../types/chat'
 import type {
   ChatSessionListResponse,
@@ -21,6 +21,7 @@ import {
   streamErrorMessage,
   thrownErrorMessage,
 } from '../../utils/chatErrorMessage'
+import { isNotFound } from '../../utils/isNotFound'
 
 const EMPTY_QUESTION_ERROR = '질문을 입력해 주세요.'
 /* 제목은 첫 답변 중에 따로 만들어져서 그 전이나 생성이 실패하면 null이다. 디자인 확정 전 임시 문구 */
@@ -50,9 +51,6 @@ function parseSessionId(value: string | null): number | undefined {
   return Number.isInteger(id) && id > 0 ? id : undefined
 }
 
-const isNotFound = (error: unknown) =>
-  axios.isAxiosError(error) && error.response?.status === 404
-
 /** 챗봇 대화 상태와 화면을 연결 */
 export function Chat() {
   const queryClient = useQueryClient()
@@ -69,7 +67,7 @@ export function Chat() {
   /* 한 번에 한 질문만 보낸다. 진행 중인 턴이 있으면 모든 입력창을 막는다 */
   const [turn, setTurn] = useState<ChatTurn>()
   const [turnError, setTurnError] = useState<TurnError>()
-  /* 삭제 API가 아직 없어 화면에서만 숨긴다. 새로고침하면 다시 보인다 */
+  /* 삭제를 누르면 서버 응답 전에 목록에서 먼저 뺀다. 실패하면 다시 넣는다 */
   const [hiddenSessionIds, setHiddenSessionIds] = useState<ReadonlySet<number>>(
     () => new Set(),
   )
@@ -84,6 +82,7 @@ export function Chat() {
   const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const sessions = useQuery(chatQueries.sessions())
+  const deleteSession = useDeleteChatSession()
   /* 답변을 받는 동안에는 그 대화의 기록을 다시 부르지 않는다. 서버에 이미 저장된 질문이
      기록으로 와서 턴의 질문과 두 번 보이기 때문이다. 답변이 끝나면 새로 불러온다 */
   const isTurnSession = turn !== undefined && turn.sessionId === activeSessionId
@@ -251,7 +250,16 @@ export function Chat() {
   function handleDeleteThread() {
     if (deleteTargetId === undefined) return
 
-    setHiddenSessionIds((current) => new Set(current).add(deleteTargetId))
+    const sessionId = deleteTargetId
+    setHiddenSessionIds((current) => new Set(current).add(sessionId))
+    deleteSession.mutate(sessionId, {
+      onError: () =>
+        setHiddenSessionIds((current) => {
+          const next = new Set(current)
+          next.delete(sessionId)
+          return next
+        }),
+    })
     if (turn?.sessionId === deleteTargetId) {
       abortRef.current?.abort()
       setTurn(undefined)
