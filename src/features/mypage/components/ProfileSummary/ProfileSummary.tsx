@@ -12,8 +12,10 @@ interface ProfileSummaryProps {
   readonly isLoggingOut?: boolean
 }
 
-/* 경력·전공 알약. Figma 659:3988 — 높이 40, 좌우 여백 20, radius 6, container 배경 */
-const PILL = 'flex h-10 items-center gap-2 rounded-sm bg-container px-5'
+/* 경력·전공 알약. Figma 659:3988 — 높이 40, 좌우 여백 20, radius 6, container 배경
+   전공이 길어 한 줄을 넘으면 알약 안에서 줄을 바꾼다. 높이는 최소 40 */
+const PILL =
+  'flex min-h-10 max-w-full items-center gap-2 rounded-sm bg-container px-5 py-2'
 
 /**
  * 프로필 머리말 — 이름·이메일·로그아웃과 경력·전공 요약
@@ -50,24 +52,27 @@ export function ProfileSummary({
         </button>
       </div>
 
-      <div className="flex items-center gap-3">
-        <p className={PILL}>
-          <span className="text-body-md text-gray-300">경력:</span>
-          <span className="text-body-md font-semibold text-gray-400">
-            {career}
-          </span>
-        </p>
-        <p className={PILL}>
-          <span className="text-body-md text-gray-300">전공:</span>
-          <span className="text-body-md font-semibold text-gray-400">
-            {majors}
-          </span>
-        </p>
+      {/* 모바일은 한 줄에 다 안 들어가 알약을 다음 줄로 넘긴다. 화살표는 첫 줄 오른쪽 끝에 남긴다 */}
+      <div className="flex items-start gap-3">
+        <div className="flex min-w-0 flex-1 flex-wrap gap-3">
+          <p className={PILL}>
+            <span className="shrink-0 text-body-md text-gray-300">경력:</span>
+            <span className="text-body-md font-semibold text-gray-400">
+              {career}
+            </span>
+          </p>
+          <p className={PILL}>
+            <span className="shrink-0 text-body-md text-gray-300">전공:</span>
+            <span className="text-body-md font-semibold text-gray-400">
+              {majors}
+            </span>
+          </p>
+        </div>
 
         <Link
           to={ROUTES.myMajorEdit}
           aria-label="전공·경력 수정"
-          className="ml-auto flex size-6 items-center justify-center text-gray-400 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary-500"
+          className="mt-2 flex size-6 shrink-0 items-center justify-center text-gray-400 focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary-500"
         >
           <ArrowIcon className="size-6 rotate-180" />
         </Link>
