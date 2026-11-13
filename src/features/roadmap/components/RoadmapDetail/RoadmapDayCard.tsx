@@ -77,12 +77,18 @@ export function RoadmapDayCard({
             {/* 지난 날도 완료 전이면 서버가 체크·완료를 받아서 안내를 띄운다
                 완료한 지난 날은 Figma(Day 1)처럼 안내 없이 접는다 */}
             {day.allItemsDone && (state === 'current' || !day.completed) && (
+              // 모바일은 안내 없이 버튼만 폭 가득 (Figma I2342:21228;2079:11417)
               <div className="flex items-center justify-between border-t border-element pt-4">
-                <p className="text-body-sm text-gray-400">
+                <p className="text-body-sm text-gray-400 max-md:hidden">
                   Day {day.dayNo} 학습 완료! [로드맵 완료]를 누르고 회고를
                   작성해 보세요.
                 </p>
-                <Button size="sm" disabled={day.completed} onClick={onComplete}>
+                <Button
+                  size="sm"
+                  disabled={day.completed}
+                  onClick={onComplete}
+                  className="max-md:w-full"
+                >
                   {day.completed ? '회고 작성 완료' : '로드맵 완료'}
                 </Button>
               </div>
