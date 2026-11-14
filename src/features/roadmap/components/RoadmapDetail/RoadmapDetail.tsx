@@ -99,7 +99,7 @@ export function RoadmapDetail({ roadmap }: RoadmapDetailProps) {
       {finishStep === 'retrospect' && lastDay && (
         <RetrospectModal
           title={`“${title}” 로드맵 완주를 축하합니다!`}
-          description="이번 여정을 통해 얻은 배움이나 소감을 간단히 기록해 보세요. (선택 작성)"
+          description="이번 여정을 통해 얻은 배움이나 소감을 간단히 기록해 보세요. 마지막 회고도 익명으로 게시판에 공유돼요. (선택 작성)"
           placeholder={
             '마지막 회고에요.\n가장 뿌듯했던 순간이나, 다음 로드맵에서 보완하고 싶은 점을 자유롭게 적어주세요.'
           }
