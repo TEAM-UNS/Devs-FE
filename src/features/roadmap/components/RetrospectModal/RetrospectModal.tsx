@@ -5,6 +5,9 @@ import { RETROSPECT_MAX_LENGTH } from '../../constants/create'
 
 interface RetrospectModalProps {
   readonly title: string
+  /** 제목 아래 안내. 기본은 하루 회고 문구 */
+  readonly description?: string
+  readonly placeholder?: string
   /** 보내는 중이면 작성완료를 잠가 두 번 보내지 않게 한다 */
   readonly submitting: boolean
   readonly onClose: () => void
@@ -17,6 +20,8 @@ interface RetrospectModalProps {
  */
 export function RetrospectModal({
   title,
+  description = '오늘의 회고는 익명으로 게시판에 공유돼요. (선택 작성)',
+  placeholder = '오늘의 회고를 작성해주세요',
   submitting,
   onClose,
   onSubmit,
@@ -70,16 +75,14 @@ export function RetrospectModal({
               <h2 id="retrospect-title" className="text-h2 text-white">
                 {title}
               </h2>
-              <p className="text-body-md text-gray-400">
-                오늘의 회고는 익명으로 게시판에 공유돼요. (선택 작성)
-              </p>
+              <p className="text-body-md text-gray-400">{description}</p>
             </div>
             <textarea
               aria-label="회고"
               value={retrospect}
               onChange={(event) => setRetrospect(event.currentTarget.value)}
               maxLength={RETROSPECT_MAX_LENGTH}
-              placeholder="오늘의 회고를 작성해주세요"
+              placeholder={placeholder}
               className="h-[300px] w-full resize-none rounded-md border border-element bg-canvas px-6 py-5 text-body-md text-white outline-none placeholder:text-gray-300 focus:border-gray-300"
             />
           </div>

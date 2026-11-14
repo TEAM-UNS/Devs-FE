@@ -1,16 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { userQueries } from '@/shared/api'
 import { trackEvent } from '@/shared/analytics'
+import { Button } from '@/shared/components/Button'
+import { TrophyIcon } from '@/shared/components/icons'
+import { ROUTES } from '@/shared/constants'
 import { useCompleteRoadmapDay } from '../../hooks/useRoadmapMutations'
 import type { Roadmap } from '../../types'
 import { celebrate } from '../../utils/celebrate'
 import {
+  canFinishRoadmap,
   currentDayNo,
   dayState,
   finishesRoadmap,
   lockedMessage,
 } from '../../utils/roadmapDay'
+import { FinishModal } from '../FinishModal'
 import { RetrospectModal } from '../RetrospectModal'
 import { RoadmapProgressBar } from '../RoadmapProgressBar'
 import { RoadmapDayCard } from './RoadmapDayCard'
@@ -26,6 +32,15 @@ export function RoadmapDetail({ roadmap }: RoadmapDetailProps) {
   const complete = useCompleteRoadmapDay()
   const me = useQuery(userQueries.me())
   const today = currentDayNo(roadmap.days)
+  /* 마지막 날이 열리면 제목 옆 '로드맵 완주'가 마지막 날 완료를 맡는다 (Figma 2398:31785)
+     완주 모달에서 쓴 마지막 회고는 완주 회고 API가 생기기 전까지 마지막 날 회고로 보낸다 */
+  const finishable = canFinishRoadmap(roadmap.days)
+  const lastDay = roadmap.days.at(-1)
+  // 완주 모달 단계. retrospect = 마지막 회고, done = 새 로드맵 안내
+  const [finishStep, setFinishStep] = useState<'retrospect' | 'done' | null>(
+    null,
+  )
+  const navigate = useNavigate()
   // 이름을 아직 모르거나 직무가 지워졌으면 빼고 부른다
   const owner = me.data ? `${me.data.name}의` : '내'
   const title = [owner, roadmap.fieldName, '로드맵'].filter(Boolean).join(' ')
@@ -38,10 +53,30 @@ export function RoadmapDetail({ roadmap }: RoadmapDetailProps) {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-h2 text-white">{title}</h2>
-          {roadmap.summary && (
-            <p className="text-body-md text-gray-400">{roadmap.summary}</p>
+        {/* 완주 버튼은 패드·PC에서 제목 오른쪽, 모바일은 제목 아래 폭 가득 (Figma 2398:31837) */}
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-3">
+          <div className="flex min-w-0 flex-col gap-2">
+            <h2 className="text-h2 text-white">{title}</h2>
+            {roadmap.summary && (
+              <p className="text-body-md text-gray-400">{roadmap.summary}</p>
+            )}
+          </div>
+          {finishable && lastDay && (
+            <Button
+              startIcon={<TrophyIcon className="size-6" />}
+              /* 마지막 날 할 일을 다 했을 때만 회고를 받는다
+                 이미 마쳤거나, 할 일이 남아 서버가 그날 완료를 거절하면 안내로 바로 간다 */
+              onClick={() =>
+                setFinishStep(
+                  !lastDay.completed && lastDay.allItemsDone
+                    ? 'retrospect'
+                    : 'done',
+                )
+              }
+              className="shrink-0 max-md:w-full"
+            >
+              로드맵 완주
+            </Button>
           )}
         </div>
         <ol className="flex flex-col gap-5">
@@ -51,11 +86,50 @@ export function RoadmapDetail({ roadmap }: RoadmapDetailProps) {
               day={day}
               state={dayState(day, today)}
               lockedMessage={lockedMessage(day.dayNo, today)}
-              onComplete={() => setRetrospectDayNo(day.dayNo)}
+              onComplete={
+                finishable && day.dayNo === lastDay?.dayNo
+                  ? undefined
+                  : () => setRetrospectDayNo(day.dayNo)
+              }
             />
           ))}
         </ol>
       </div>
+
+      {finishStep === 'retrospect' && lastDay && (
+        <RetrospectModal
+          title={`“${title}” 로드맵 완주를 축하합니다!`}
+          description="이번 여정을 통해 얻은 배움이나 소감을 간단히 기록해 보세요. (선택 작성)"
+          placeholder={
+            '마지막 회고에요.\n가장 뿌듯했던 순간이나, 다음 로드맵에서 보완하고 싶은 점을 자유롭게 적어주세요.'
+          }
+          submitting={complete.isPending}
+          onClose={() => setFinishStep(null)}
+          onSubmit={(retrospect) =>
+            complete.mutate(
+              { dayNo: lastDay.dayNo, retrospect },
+              {
+                onSuccess: () => {
+                  setFinishStep('done')
+                  trackEvent('Roadmap Day Completed', {
+                    day_no: lastDay.dayNo,
+                    wrote_retrospect: retrospect.trim() !== '',
+                    finished_roadmap: true,
+                  })
+                  void celebrate(true)
+                },
+              },
+            )
+          }
+        />
+      )}
+
+      {finishStep === 'done' && (
+        <FinishModal
+          onClose={() => setFinishStep(null)}
+          onConfirm={() => navigate(ROUTES.roadmapNew)}
+        />
+      )}
 
       {retrospectDayNo !== null && (
         <RetrospectModal

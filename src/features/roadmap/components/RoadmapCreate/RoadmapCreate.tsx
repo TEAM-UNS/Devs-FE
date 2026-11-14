@@ -7,6 +7,7 @@ import { roadmapQueries } from '../../api/roadmapQueries'
 import { MIN_WEEKS } from '../../constants/create'
 import { useCreateRoadmap } from '../../hooks/useRoadmapMutations'
 import { STEP_PARAM, parseStep, reachableStep } from '../../utils/createStep'
+import { canFinishRoadmap } from '../../utils/roadmapDay'
 import { ConditionStep } from '../ConditionStep'
 import { MajorStep } from '../MajorStep'
 import { PeriodStep } from '../PeriodStep'
@@ -34,8 +35,12 @@ export function RoadmapCreate() {
   if (mine.isPending || mine.isError) return null
 
   /* 새로 만들면 서버가 기존 로드맵을 지운다. 경고할 화면이 없어서, 쓰고 있거나 만드는 중인 로드맵이
-     있으면 생성 흐름에 들이지 않는다. 실패한 로드맵은 다시 만들 수 있게 둔다 */
-  if (mine.data && mine.data.status !== 'failed') {
+     있으면 생성 흐름에 들이지 않는다. 실패했거나 완주할 수 있는(마지막 날이 열린) 로드맵은 다시 만들 수 있게 둔다 */
+  if (
+    mine.data &&
+    mine.data.status !== 'failed' &&
+    !canFinishRoadmap(mine.data.days)
+  ) {
     return <Navigate to={ROUTES.roadmap} replace />
   }
 
