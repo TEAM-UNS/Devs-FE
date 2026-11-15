@@ -22,6 +22,15 @@ export function lockedMessage(dayNo: number, today: number | null): string {
   return daysLeft <= 1 ? '다음 날에 열립니다.' : `${daysLeft}일 뒤에 열립니다.`
 }
 
+/**
+ * '로드맵 완주'를 누를 수 있는지 — 마지막 날이 열리면 된다
+ * 응답에 오늘 날짜가 없어 마지막 날이 지났는지는 모른다. 그날을 놓쳐도 끝낼 수 있도록 할 일 완료는 묻지 않는다
+ */
+export function canFinishRoadmap(days: readonly RoadmapDay[]): boolean {
+  const lastDay = days.at(-1)
+  return lastDay !== undefined && !lastDay.locked
+}
+
 /** 이 날을 마치면 로드맵의 모든 날이 끝나는지 — 로드맵 완료 연출 여부 */
 export function finishesRoadmap(
   days: readonly RoadmapDay[],

@@ -191,8 +191,9 @@ describe('RoadmapPage', () => {
     )
 
     expect(patch).toHaveBeenCalledWith('/roadmap/items/11', { done: true })
+    // 마지막 날이 다 끝나 학습률 100%가 되면 Day 완료 대신 로드맵 완주가 뜬다
     expect(
-      await screen.findByRole('button', { name: '로드맵 완료' }),
+      await screen.findByRole('button', { name: '로드맵 완주' }),
     ).toBeInTheDocument()
     await waitFor(() =>
       expect(
@@ -213,8 +214,17 @@ describe('RoadmapPage', () => {
     ],
   }
 
-  it('회고를 비워 두면 건너뛰고 완료하고, 마지막 날이면 크게 축하한다', async () => {
-    server.roadmaps = [readyToComplete]
+  it('회고를 비워 두면 건너뛰고 완료하고, 마지막 날이 아니면 짧게 축하한다', async () => {
+    // 마지막 날은 '로드맵 완주'가 맡아서, 뒤에 잠긴 날을 하나 둬 오늘을 마지막 날이 아니게 한다
+    server.roadmaps = [
+      {
+        ...readyToComplete,
+        days: [
+          ...readyToComplete.days,
+          { ...completed.days[0], dayNo: 2, locked: true },
+        ],
+      },
+    ]
     post.mockResolvedValue(undefined)
     renderPage()
 
@@ -243,7 +253,87 @@ describe('RoadmapPage', () => {
     expect(post).toHaveBeenCalledWith('/roadmap/days/1/complete', {
       retrospect: '',
     })
-    await waitFor(() => expect(celebrate).toHaveBeenCalledWith(true))
+    await waitFor(() => expect(celebrate).toHaveBeenCalledWith(false))
+  })
+
+  describe('로드맵 완주', () => {
+    const finishable: Roadmap = { ...readyToComplete, learningRate: 100 }
+    const finished: Roadmap = {
+      ...finishable,
+      days: [{ ...finishable.days[0], completed: true }],
+    }
+
+    it('마지막 날 완료 대신 로드맵 완주로 마지막 회고를 보내고, 확인하면 새 로드맵 만들기로 간다', async () => {
+      server.roadmaps = [finishable, finished]
+      post.mockResolvedValue(undefined)
+      renderPage()
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: '로드맵 완주' }),
+      )
+      expect(
+        screen.queryByRole('button', { name: '로드맵 완료' }),
+      ).not.toBeInTheDocument()
+
+      const retrospect = await screen.findByRole('dialog', {
+        name: '“김데브의 프론트엔드 로드맵” 로드맵 완주를 축하합니다!',
+        hidden: true,
+      })
+      await userEvent.click(
+        within(retrospect).getByRole('button', {
+          name: '건너뛰고 완료하기',
+          hidden: true,
+        }),
+      )
+
+      expect(post).toHaveBeenCalledWith('/roadmap/days/1/complete', {
+        retrospect: '',
+      })
+      await waitFor(() => expect(celebrate).toHaveBeenCalledWith(true))
+      const done = await screen.findByRole('dialog', {
+        name: '이제 새로운 로드맵을 시작할 수 있어요.',
+        hidden: true,
+      })
+      await userEvent.click(
+        within(done).getByRole('button', { name: '확인', hidden: true }),
+      )
+
+      expect(await screen.findByText('생성 흐름')).toBeInTheDocument()
+    })
+
+    it('마지막 날 할 일이 남아 있어도 완주할 수 있고, 회고 없이 안내를 바로 띄운다', async () => {
+      // 서버는 할 일이 남은 날의 완료를 거절하므로 회고를 받지 않는다
+      server.roadmaps = [completed]
+      renderPage()
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: '로드맵 완주' }),
+      )
+
+      expect(
+        await screen.findByRole('dialog', {
+          name: '이제 새로운 로드맵을 시작할 수 있어요.',
+          hidden: true,
+        }),
+      ).toBeInTheDocument()
+      expect(post).not.toHaveBeenCalled()
+    })
+
+    it('마지막 날까지 마쳤으면 회고 없이 새 로드맵 안내를 바로 띄운다', async () => {
+      server.roadmaps = [finished]
+      renderPage()
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: '로드맵 완주' }),
+      )
+
+      expect(
+        await screen.findByRole('dialog', {
+          name: '이제 새로운 로드맵을 시작할 수 있어요.',
+          hidden: true,
+        }),
+      ).toBeInTheDocument()
+    })
   })
 
   it('회고까지 마친 오늘은 체크가 보라로 남되 바꿀 수 없다', async () => {

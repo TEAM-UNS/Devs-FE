@@ -3,6 +3,7 @@ import type { RoadmapDay } from '../types'
 import {
   currentDayNo,
   dayState,
+  canFinishRoadmap,
   finishesRoadmap,
   lockedMessage,
 } from './roadmapDay'
@@ -51,5 +52,13 @@ describe('finishesRoadmap', () => {
     expect(finishesRoadmap([done(1), day(2, false), day(3, true)], 2)).toBe(
       false,
     )
+  })
+})
+
+describe('canFinishRoadmap', () => {
+  it('마지막 날이 열렸으면 그날 할 일과 상관없이 완주할 수 있다', () => {
+    expect(canFinishRoadmap([day(1, false), day(2, false)])).toBe(true)
+    expect(canFinishRoadmap([day(1, false), day(2, true)])).toBe(false)
+    expect(canFinishRoadmap([])).toBe(false)
   })
 })

@@ -73,6 +73,29 @@ describe('RoadmapCreatePage', () => {
     },
   )
 
+  it('완주한 로드맵이 있으면 새로 만들 수 있다', async () => {
+    server.roadmap = {
+      ...roadmap('completed'),
+      learningRate: 100,
+      days: [
+        {
+          dayNo: 1,
+          weekNo: 1,
+          locked: false,
+          allItemsDone: true,
+          completed: true,
+          retrospect: null,
+          items: [],
+        },
+      ],
+    }
+    renderPage()
+
+    expect(
+      await screen.findByRole('heading', { name: '목표 직무 설정' }),
+    ).toBeInTheDocument()
+  })
+
   it('실패한 로드맵은 다시 만들 수 있다', async () => {
     server.roadmap = roadmap('failed')
     renderPage()
