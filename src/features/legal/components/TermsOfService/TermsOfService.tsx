@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ROUTES } from '@/shared/constants'
+import { CONTACT_EMAIL, ROUTES } from '@/shared/constants'
 import {
   ExternalLink,
   LegalBullets,
@@ -12,8 +12,6 @@ import {
 /* 문구는 팀이 정리한 서비스 이용약관(2026/10/29 시행) 그대로다. 바꿀 때는 팀 확인을 받는다 */
 
 const SERVICE_URL = 'https://kangyu.shop/'
-// 랜딩 푸터 Contact와 같은 팀 메일
-const CONTACT_EMAIL = 'teamuns2026@gmail.com'
 
 /** 서비스 이용약관 */
 export function TermsOfService() {

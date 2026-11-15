@@ -5,6 +5,12 @@ import { describe, expect, it, vi } from 'vitest'
 import { renderWithQuery } from '@/test/renderWithQuery'
 import { routes } from './routes'
 
+// 화면 오류를 흉내 낸다 — 소개 페이지는 비로그인도 들어갈 수 있어 가드에 막히지 않는다
+vi.mock('@/pages/AboutPage', () => ({
+  default: () => {
+    throw new Error('렌더링 실패')
+  },
+}))
 vi.mock('@/shared/analytics', () => ({
   trackEvent: vi.fn(),
   trackPageView: vi.fn(),
@@ -40,5 +46,26 @@ describe('없는 경로', () => {
     )
 
     expect(router.state.location.pathname).toBe('/dashboard')
+  })
+})
+
+describe('화면 오류', () => {
+  it('페이지를 그리다 오류가 나면 500 화면을 띄운다', async () => {
+    // 라우터와 React가 잡은 오류를 콘솔에 남기는 건 이 테스트에서 의도한 것이다
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    renderAt('/about')
+
+    expect(
+      await screen.findByRole('heading', { name: '500' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '메인으로 가기' })).toHaveAttribute(
+      'href',
+      '/dashboard',
+    )
+    expect(screen.getByRole('link', { name: '고객센터' })).toHaveAttribute(
+      'href',
+      'mailto:teamuns2026@gmail.com',
+    )
   })
 })
