@@ -37,10 +37,13 @@ const NAV_ITEMS: {
 ]
 
 // 항목 골격. 활성 항목만 좌측 2px 보더가 붙어 내용이 2px 안쪽으로 밀린다 — Figma 274:1470 렌더 그대로.
-// TODO: hover 상태는 Figma에 스펙이 없어 비워 뒀다. 디자이너 확정 후 hover: 색을 넣는다.
 const ITEM_BASE = 'flex w-full items-center gap-2 px-5 py-2 text-body-sm'
 const ITEM_ACTIVE = 'border-l-2 border-primary-400 font-semibold text-gray-1000'
 const ITEM_IDLE = 'text-gray-400'
+// 고를 수 있는 항목만 — hover는 흰 글자, 누르는 동안은 element 배경 (디자인 시스템 메뉴 520:3158)
+// 막힌 메뉴는 눌리지 않으니 붙이지 않는다
+const ITEM_INTERACTIVE =
+  'hover:text-gray-1000 active:bg-element active:text-gray-1000'
 
 // 키보드 포커스 링 — Figma엔 없지만 a11y용으로 추가 (모션/색은 앱 토큰).
 const FOCUS_RING =
@@ -87,7 +90,7 @@ export function AppSidebar({ roadmapProgress }: AppSidebarProps) {
                       cn(
                         ITEM_BASE,
                         FOCUS_RING,
-                        isActive ? ITEM_ACTIVE : ITEM_IDLE,
+                        isActive ? ITEM_ACTIVE : [ITEM_IDLE, ITEM_INTERACTIVE],
                       )
                     }
                   >
