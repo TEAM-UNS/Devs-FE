@@ -7,13 +7,20 @@ interface TopSkillsCardProps {
   /** 비교하는 기업. 이 순서로 색을 정한다 */
   readonly companies: readonly ComparedCompany[]
   readonly topSkills: readonly CompanyTopSkills[]
+  /** 비교 결과 그리드에서의 자리 */
+  readonly className?: string
 }
 
 /** 기업별 인기 스택 비교 — Figma 432:6022. 기업 수만큼 같은 폭으로 나눈다 */
-export function TopSkillsCard({ companies, topSkills }: TopSkillsCardProps) {
+export function TopSkillsCard({
+  companies,
+  topSkills,
+  className,
+}: TopSkillsCardProps) {
   return (
-    <CompareSectionCard title="기업별 인기 스택 비교">
-      <div className="flex gap-9 rounded-sm bg-canvas px-6 py-3">
+    <CompareSectionCard title="기업별 인기 스택 비교" className={className}>
+      {/* 모바일은 기업을 세로로 쌓는다 (Figma 2339:16962, 간격 36) */}
+      <div className="flex flex-col gap-9 rounded-sm bg-canvas px-6 py-3 md:flex-row">
         {topSkills.map((company) => (
           <div
             key={company.companyId}

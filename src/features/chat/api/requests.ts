@@ -1,4 +1,4 @@
-import { get } from '@/shared/api'
+import { del, get } from '@/shared/api'
 import type {
   ChatMessageListResponse,
   ChatSessionListResponse,
@@ -14,4 +14,9 @@ export async function fetchChatMessages(
   sessionId: number,
 ): Promise<ChatMessageListResponse> {
   return get<ChatMessageListResponse>(`/chat/sessions/${sessionId}/messages`)
+}
+
+/** 대화와 그 메시지를 지운다. 남의 대화거나 없는 대화면 404 */
+export async function deleteChatSession(sessionId: number): Promise<void> {
+  return del<void>(`/chat/sessions/${sessionId}`)
 }

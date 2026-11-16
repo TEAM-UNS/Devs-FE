@@ -8,10 +8,10 @@ import { toMajorOption } from '../SignupStep3/majors'
 import { TechStackSection } from './TechStackSection'
 import type { TechStackGroup } from './techStacks'
 
-// 패널은 Figma에서 높이 280px 고정이고 그룹이 그보다 길다 → 안에서 세로 스크롤된다.
+// 패널은 Figma에서 높이 고정(모바일 406 / md 이상 280)이고 그룹이 그보다 길다 → 안에서 세로 스크롤된다.
 // py-5 = 스크롤바 트랙을 위아래 20px씩 들여놓기 위한 여백 (아래 SCROLL_STYLES 참고).
 const PANEL_STYLES =
-  'flex h-70 flex-col rounded-md border border-element bg-container py-5'
+  'flex h-[406px] flex-col rounded-sm border border-element bg-container py-5 md:h-70'
 
 // 스크롤은 패널이 아니라 이 안쪽 요소가 맡는다. 네이티브 스크롤바는 스크롤 요소의 경계에
 // 붙으므로, Figma처럼 막대를 패널 안쪽으로 들여놓으려면 스크롤 요소 자체를 들여야 한다.

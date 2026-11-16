@@ -14,6 +14,8 @@ interface CompanyScaleCardProps {
   ranks: readonly StackRank[]
   /** 이전/다음 규모로 이동. 넘기지 않으면 화살표는 표시만 된다 */
   onStep?: (direction: -1 | 1) => void
+  /** 배치 조정용 클래스 (그리드 안 순서 등) */
+  className?: string
 }
 
 // 순위별 게이지 색 — Figma 427:5437~5469 순서 그대로.
@@ -80,6 +82,7 @@ export function CompanyScaleCard({
   nextScale,
   ranks,
   onStep,
+  className,
 }: CompanyScaleCardProps) {
   // 처음 그릴 때는 넘김이 없어 라벨이 제자리에 있다
   const [slide, setSlide] = useState<Slide | null>(null)
@@ -100,7 +103,7 @@ export function CompanyScaleCard({
       title="기업 규모별 기술 스택 분석"
       description="기업 규모별로 요구하는 기술 스택을 분석하여 그래프로 확인 할 수 있습니다."
       // gap-[19px]는 Figma 274:1862 값 그대로다 (4px 그리드에서 벗어난 값)
-      className="gap-[19px]"
+      className={cn('gap-[19px]', className)}
     >
       <div className="flex flex-col items-center gap-5">
         <div className="flex items-center gap-3">
@@ -174,7 +177,7 @@ export function CompanyScaleCard({
           <EmptyMessage className="h-[152px] w-full" />
         ) : (
           // 게이지 목록은 카드 안에서 좌측 정렬된 420px (Figma 274:1871)
-          <ol className="flex w-[420px] flex-col gap-2 self-start">
+          <ol className="flex w-full max-w-[420px] flex-col gap-2 self-start">
             {ranks.map(({ id, name, percent }, index) => (
               <li
                 key={id}

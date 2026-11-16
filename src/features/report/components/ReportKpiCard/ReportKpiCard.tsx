@@ -16,7 +16,9 @@ import type { TrendHighlight } from '../../types'
  */
 export function ReportKpiCard({ label, name, trend, percent }: TrendHighlight) {
   return (
-    <article className="flex min-w-0 flex-1 items-start justify-between gap-2 rounded-sm bg-element px-5 py-4">
+    /* 카드 폭이 137인 모바일(Figma 2339:14600)은 증감률이 이름 아래로 내려간다.
+       기준은 리포트 카드 안쪽 폭(ReportCard의 @container)이다 */
+    <article className="flex min-w-0 flex-1 items-start justify-between gap-2 rounded-sm bg-element px-5 py-4 @max-md:flex-col">
       {/* 제목과 이름은 붙어 있다 (Figma gap 0) */}
       <div className="flex min-w-0 flex-col">
         <span className="text-body-sm text-gray-1000">{label}</span>

@@ -35,7 +35,8 @@ export function PeriodStep({
     >
       <SelectionSummary groups={summary} />
 
-      <div className="flex flex-1 flex-col items-center justify-between pt-[124px] pb-28">
+      {/* 패드·PC는 남는 높이에 휠과 프리셋을 벌려 두고, 모바일은 간격 60으로 붙인다 (Figma 2342:20377) */}
+      <div className="flex flex-col items-center gap-[60px] pt-[60px] md:flex-1 md:justify-between md:gap-0 md:pt-[124px] md:pb-28">
         <WeekWheel weeks={weeks} onChange={onWeeksChange} />
 
         <div className="flex flex-col items-center gap-3">
@@ -53,7 +54,7 @@ export function PeriodStep({
             ))}
           </ul>
           {/* Figma 562:4544 — 토큰에 없는 #6a6a6a */}
-          <p className="text-body-md text-[#6a6a6a]">
+          <p className="text-center text-body-xs text-[#6a6a6a] md:text-body-md">
             프리셋을 선택하거나 마우스 휠·버튼으로 기간을 조절하세요.
           </p>
         </div>

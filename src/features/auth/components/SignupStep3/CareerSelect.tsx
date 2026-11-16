@@ -42,11 +42,12 @@ export function CareerSelect({
   )
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2">
       <span className="text-body-md text-white">경력 선택</span>
-      <div className="flex items-start gap-3">
+      {/* 모바일은 토글 아래로 드롭다운이 내려간다 (Figma 390 프레임) */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-start">
         {/* 세그먼트 토글: element 트랙(6px 패딩) + 균등 세그먼트 2개 */}
-        <div className="flex h-12 w-60 shrink-0 rounded-sm bg-element p-1.5">
+        <div className="flex h-12 shrink-0 rounded-sm bg-element p-1.5 md:w-60">
           <button
             type="button"
             aria-pressed={careerType === 'none'}

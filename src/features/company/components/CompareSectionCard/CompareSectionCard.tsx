@@ -23,7 +23,8 @@ export function CompareSectionCard({
         className,
       )}
     >
-      <div className="flex items-center justify-between">
+      {/* 모바일은 범례가 제목 아래로 내려간다 (Figma 2339:16962, 간격 4) */}
+      <div className="flex items-center justify-between max-md:flex-col max-md:items-start max-md:gap-1">
         <h2 className="text-body-lg font-semibold text-gray-1000">{title}</h2>
         {aside}
       </div>

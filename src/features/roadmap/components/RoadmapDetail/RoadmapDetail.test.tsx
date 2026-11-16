@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { renderWithQuery } from '@/test/renderWithQuery'
 import type { Roadmap } from '../../types'
@@ -39,9 +40,14 @@ const roadmap: Roadmap = {
 
 describe('RoadmapDetail 하루 완료 기록', () => {
   it('회고를 쓰고 마치면 며칠째인지·회고 작성 여부·로드맵 완료 여부를 기록한다', async () => {
-    renderWithQuery(<RoadmapDetail roadmap={roadmap} />)
+    renderWithQuery(
+      <MemoryRouter>
+        <RoadmapDetail roadmap={roadmap} />
+      </MemoryRouter>,
+    )
 
-    await userEvent.click(screen.getByRole('button', { name: '로드맵 완료' }))
+    // 마지막 날은 '로드맵 완주'가 완료를 맡는다
+    await userEvent.click(screen.getByRole('button', { name: '로드맵 완주' }))
     await userEvent.type(screen.getByLabelText('회고'), '오늘 배운 것')
     await userEvent.click(screen.getByRole('button', { name: '작성완료' }))
 

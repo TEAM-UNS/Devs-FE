@@ -54,9 +54,11 @@ export function ChatIntro({
   onSuggestionSelect,
 }: ChatIntroProps) {
   return (
-    <section className="flex min-w-0 flex-1 items-center justify-center bg-canvas px-4 md:px-10">
-      {/* 첫 화면 묶음은 700px (Figma 342:4876). 대화 중 입력창(800px)보다 좁다 */}
-      <div className="flex w-[700px] max-w-full -translate-y-[30px] flex-col items-center gap-12">
+    // 1024px 미만 좌우 여백은 감싸는 Chat이 둔다
+    <section className="flex min-w-0 flex-1 items-center justify-center bg-canvas lg:px-10">
+      {/* 첫 화면 묶음은 700px (Figma 342:4876). 대화 중 입력창(800px)보다 좁다
+          PC는 30px 위로 올리고, 패드·모바일은 Figma에서 정가운데다 (2339:15323 · 2339:15364) */}
+      <div className="flex w-[700px] max-w-full flex-col items-center gap-12 lg:-translate-y-[30px]">
         <DevsLogo className="h-8" />
 
         <div className="flex w-full flex-col gap-4">
@@ -68,7 +70,8 @@ export function ChatIntro({
             onSubmit={onQuestionSubmit}
           />
 
-          <div className="flex flex-wrap items-center justify-center gap-2 md:justify-between">
+          {/* 추천 질문은 모바일에서 한 줄씩 꽉 차게 쌓는다 (Figma 2339:15364, 간격 11) */}
+          <div className="flex flex-col gap-[11px] md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-2">
             {SUGGESTED_QUESTIONS.map((question) => (
               <SuggestedQuestionButton
                 key={question}

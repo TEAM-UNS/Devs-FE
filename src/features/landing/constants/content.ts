@@ -221,6 +221,4 @@ export const TEAM_MEMBERS = [
   { role: 'Design', name: '최하은' },
 ] as const
 
-export const CONTACT_EMAIL = 'teamuns2026@gmail.com'
-
 export const GITHUB_URL = 'https://github.com/TEAM-UNS'

@@ -37,3 +37,6 @@ export const MEDIA_QUERIES = {
   tablet: '(min-width: 768px) and (max-width: 1023px)',
   desktop: '(min-width: 1024px)',
 } as const
+
+/** 문의 메일. 랜딩 푸터·약관·오류 화면이 같이 쓴다 */
+export const CONTACT_EMAIL = 'teamuns2026@gmail.com'

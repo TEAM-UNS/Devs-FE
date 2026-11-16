@@ -73,7 +73,7 @@ export function StackStep({
           </ul>
         )}
       </SearchField>
-      <ul className="grid min-h-0 w-full flex-1 grid-cols-3 content-start gap-8 overflow-y-auto pt-2 pb-24">
+      <ul className="grid min-h-0 w-full flex-1 grid-cols-1 content-start md:grid-cols-3 gap-8 overflow-y-auto pt-2 pb-24">
         {visible.map(({ id, name }) => (
           <li key={id}>
             <SelectCard

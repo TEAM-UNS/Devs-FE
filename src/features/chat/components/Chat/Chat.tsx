@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
 import { useSearchParams } from 'react-router-dom'
 import { trackEvent } from '@/shared/analytics'
+import { SidebarDrawer } from '@/shared/components/AppSidebar'
+import { MenuIcon } from '@/shared/components/icons'
+import { useMediaQuery } from '@/shared/hooks/useMediaQuery'
 import { chatQueries, streamChat } from '../../api'
+import { useDeleteChatSession } from '../../hooks/useDeleteChatSession'
 import type { ChatMessage, ChatThread } from '../../types/chat'
 import type {
   ChatSessionListResponse,
@@ -18,6 +21,7 @@ import {
   streamErrorMessage,
   thrownErrorMessage,
 } from '../../utils/chatErrorMessage'
+import { isNotFound } from '../../utils/isNotFound'
 
 const EMPTY_QUESTION_ERROR = '질문을 입력해 주세요.'
 /* 제목은 첫 답변 중에 따로 만들어져서 그 전이나 생성이 실패하면 null이다. 디자인 확정 전 임시 문구 */
@@ -47,9 +51,6 @@ function parseSessionId(value: string | null): number | undefined {
   return Number.isInteger(id) && id > 0 ? id : undefined
 }
 
-const isNotFound = (error: unknown) =>
-  axios.isAxiosError(error) && error.response?.status === 404
-
 /** 챗봇 대화 상태와 화면을 연결 */
 export function Chat() {
   const queryClient = useQueryClient()
@@ -66,7 +67,7 @@ export function Chat() {
   /* 한 번에 한 질문만 보낸다. 진행 중인 턴이 있으면 모든 입력창을 막는다 */
   const [turn, setTurn] = useState<ChatTurn>()
   const [turnError, setTurnError] = useState<TurnError>()
-  /* 삭제 API가 아직 없어 화면에서만 숨긴다. 새로고침하면 다시 보인다 */
+  /* 삭제를 누르면 서버 응답 전에 목록에서 먼저 뺀다. 실패하면 다시 넣는다 */
   const [hiddenSessionIds, setHiddenSessionIds] = useState<ReadonlySet<number>>(
     () => new Set(),
   )
@@ -74,8 +75,14 @@ export function Chat() {
   const deleteTriggerRef = useRef<HTMLButtonElement>(null)
   const newChatButtonRef = useRef<HTMLButtonElement>(null)
   const abortRef = useRef<AbortController>(null)
+  /* 1024px 미만은 대화 목록을 햄버거로 여는 서랍에 넣는다 (다른 화면의 앱 메뉴 서랍과 같은 동작).
+     목록을 화면에 한 번만 그려야 새 대화 버튼 ref가 보이는 쪽을 가리켜서, CSS로 숨기지 않고 폭을 본다 */
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   const sessions = useQuery(chatQueries.sessions())
+  const deleteSession = useDeleteChatSession()
   /* 답변을 받는 동안에는 그 대화의 기록을 다시 부르지 않는다. 서버에 이미 저장된 질문이
      기록으로 와서 턴의 질문과 두 번 보이기 때문이다. 답변이 끝나면 새로 불러온다 */
   const isTurnSession = turn !== undefined && turn.sessionId === activeSessionId
@@ -243,7 +250,16 @@ export function Chat() {
   function handleDeleteThread() {
     if (deleteTargetId === undefined) return
 
-    setHiddenSessionIds((current) => new Set(current).add(deleteTargetId))
+    const sessionId = deleteTargetId
+    setHiddenSessionIds((current) => new Set(current).add(sessionId))
+    deleteSession.mutate(sessionId, {
+      onError: () =>
+        setHiddenSessionIds((current) => {
+          const next = new Set(current)
+          next.delete(sessionId)
+          return next
+        }),
+    })
     if (turn?.sessionId === deleteTargetId) {
       abortRef.current?.abort()
       setTurn(undefined)
@@ -254,6 +270,8 @@ export function Chat() {
   }
 
   function handleDeleteRequest(threadId: number, trigger: HTMLButtonElement) {
+    // 삭제 확인 창은 서랍(top layer) 아래에 깔려 누를 수 없어서 서랍을 먼저 닫는다
+    setMenuOpen(false)
     deleteTriggerRef.current = trigger
     setDeleteTargetId(threadId)
   }
@@ -303,52 +321,87 @@ export function Chat() {
       : undefined
   const showsConversation = activeSessionId !== undefined || showsTurn
 
+  const sidebar = (
+    <ChatHistorySidebar
+      threads={threads}
+      activeThreadId={activeSessionId}
+      // 서랍에서 대화를 고르거나 새 대화를 시작하면 화면이 바뀌므로 서랍을 닫는다
+      onThreadSelect={(sessionId) => {
+        setMenuOpen(false)
+        openSession(sessionId)
+      }}
+      onThreadDelete={handleDeleteRequest}
+      onNewChat={() => {
+        setMenuOpen(false)
+        handleStartNewChat()
+      }}
+      newChatButtonRef={newChatButtonRef}
+    />
+  )
+
   return (
     <div className="flex h-full min-h-0 bg-canvas text-gray-1000">
-      <div className="hidden h-full md:block">
-        <ChatHistorySidebar
-          threads={threads}
-          activeThreadId={activeSessionId}
-          onThreadSelect={openSession}
-          onThreadDelete={handleDeleteRequest}
-          onNewChat={handleStartNewChat}
-          newChatButtonRef={newChatButtonRef}
-        />
+      {isDesktop && <div className="h-full">{sidebar}</div>}
+      {/* 1024px 미만 여백은 Figma 패드·모바일 모두 위아래 80 · 좌우 32 (2339:15323 · 2339:15364).
+          햄버거 바로 아래부터 내용이 시작한다 */}
+      <div className="flex min-w-0 flex-1 flex-col px-8 py-20 lg:p-0">
+        <button
+          ref={menuButtonRef}
+          type="button"
+          aria-label="대화 목록 열기"
+          aria-haspopup="dialog"
+          onClick={() => setMenuOpen(true)}
+          className="flex size-6 shrink-0 text-white focus-visible:outline-2 focus-visible:outline-primary-500 lg:hidden"
+        >
+          <MenuIcon className="size-full" />
+        </button>
+        {showsConversation ? (
+          <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-4 overflow-hidden lg:p-10">
+            <div className="mx-auto flex min-h-0 w-[800px] max-w-full flex-1 flex-col gap-4">
+              <ChatConversation
+                threadId={String(activeSessionId ?? 'new')}
+                messages={messages}
+                pending={pending}
+                pendingLabel={toolLabel}
+              />
+              <ChatComposer
+                value={question}
+                disabled={turn !== undefined}
+                error={activeError ?? draftError}
+                onChange={setQuestion}
+                onSubmit={handleSubmitQuestion}
+              />
+            </div>
+          </section>
+        ) : (
+          <ChatIntro
+            question={question}
+            disabled={turn !== undefined}
+            error={activeError ?? draftError}
+            onQuestionChange={setQuestion}
+            onQuestionSubmit={handleSubmitQuestion}
+            onSuggestionSelect={(selected) =>
+              handleSubmitQuestion(selected, 'suggestion')
+            }
+          />
+        )}
       </div>
-      {showsConversation ? (
-        <section className="flex min-w-0 flex-1 flex-col gap-4 overflow-hidden p-10">
-          <div className="mx-auto flex min-h-0 w-[800px] max-w-full flex-1 flex-col gap-4">
-            <ChatConversation
-              threadId={String(activeSessionId ?? 'new')}
-              messages={messages}
-              pending={pending}
-              pendingLabel={toolLabel}
-            />
-            <ChatComposer
-              value={question}
-              disabled={turn !== undefined}
-              error={activeError ?? draftError}
-              onChange={setQuestion}
-              onSubmit={handleSubmitQuestion}
-            />
-          </div>
-        </section>
-      ) : (
-        <ChatIntro
-          question={question}
-          disabled={turn !== undefined}
-          error={activeError ?? draftError}
-          onQuestionChange={setQuestion}
-          onQuestionSubmit={handleSubmitQuestion}
-          onSuggestionSelect={(selected) =>
-            handleSubmitQuestion(selected, 'suggestion')
-          }
-        />
-      )}
+      {/* 넓은 화면으로 바뀌면 open이 false가 돼 서랍이 닫히고 목록은 왼쪽 자리로 옮겨 간다 */}
+      <SidebarDrawer
+        open={menuOpen && !isDesktop}
+        onClose={() => setMenuOpen(false)}
+      >
+        {!isDesktop && sidebar}
+      </SidebarDrawer>
       {deleteTargetId !== undefined && (
         <ChatDeleteModal
-          restoreFocusTo={deleteTriggerRef.current}
-          fallbackFocusTo={newChatButtonRef.current}
+          // 서랍에서 지웠다면 누른 버튼이 닫힌 서랍 안에 있어 햄버거로 돌려준다
+          restoreFocusTo={
+            isDesktop ? deleteTriggerRef.current : menuButtonRef.current
+          }
+          fallbackFocusTo={
+            isDesktop ? newChatButtonRef.current : menuButtonRef.current
+          }
           onCancel={() => setDeleteTargetId(undefined)}
           onConfirm={handleDeleteThread}
         />

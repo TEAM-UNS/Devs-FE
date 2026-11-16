@@ -4,12 +4,14 @@ import { CompareSectionCard } from '../CompareSectionCard'
 
 interface CommonSkillsCardProps {
   readonly skills: readonly CommonSkill[]
+  /** 비교 결과 그리드에서의 자리 */
+  readonly className?: string
 }
 
 /** 공통 요구 기술 — Figma 432:6116. 모든 기업이 요구하면 배지를 보라로 강조한다 */
-export function CommonSkillsCard({ skills }: CommonSkillsCardProps) {
+export function CommonSkillsCard({ skills, className }: CommonSkillsCardProps) {
   return (
-    <CompareSectionCard title="공통 요구 기술" className="w-[346px] shrink-0">
+    <CompareSectionCard title="공통 요구 기술" className={className}>
       <ul className="scrollbar-slim flex h-[124px] flex-col gap-2 overflow-y-auto">
         {skills.map((skill) => (
           <li
