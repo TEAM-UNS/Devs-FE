@@ -250,6 +250,9 @@ describe('WeeklyReport', () => {
     expect(
       currentCard().queryByText('2026년 7월 1주차 요약 리포트가 없습니다.'),
     ).not.toBeInTheDocument()
+    expect(
+      currentCard().getByText('요약 리포트를 불러오는 중…'),
+    ).toBeInTheDocument()
   })
 
   it('전공 필터는 처음에 전체가 선택돼 있고 하나만 선택되며 URL에 남는다', async () => {

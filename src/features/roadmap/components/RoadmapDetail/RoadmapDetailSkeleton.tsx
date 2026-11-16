@@ -6,7 +6,8 @@ import { Skeleton } from '@/shared/components/Skeleton'
  */
 export function RoadmapDetailSkeleton() {
   return (
-    <div className="flex h-full flex-col gap-12">
+    <div role="status" className="flex h-full flex-col gap-12">
+      <span className="sr-only">로드맵을 불러오는 중…</span>
       <div className="flex items-center gap-3">
         <Skeleton className="h-7 w-24 shrink-0" />
         <Skeleton className="h-3 flex-1 rounded-full" />

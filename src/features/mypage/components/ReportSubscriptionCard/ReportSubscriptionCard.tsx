@@ -30,7 +30,7 @@ export function ReportSubscriptionCard() {
   const { data: majorList } = useQuery(majorQueries.list())
   const update = useUpdateReportSubscription()
 
-  if (isPending) return <SettingCardSkeleton />
+  if (isPending) return <SettingCardSkeleton title="리포트 구독" />
   // TODO: 에러 화면은 프로필과 같이 따로 정한다. 그 전까지는 실패하면 그리지 않는다
   if (!subscription) return null
 

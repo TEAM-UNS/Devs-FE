@@ -31,6 +31,10 @@ export function ReportSummary({
         data-surface="panel"
         className={`${SURFACE} flex-col gap-3`}
       >
+        {/* 블록은 보조 기술에서 숨겨져 있어, 기다리는 중이라는 것만 읽힌다 */}
+        <p role="status" className="sr-only">
+          요약 리포트를 불러오는 중…
+        </p>
         <Skeleton className="h-7 w-56 max-w-full" />
         <Skeleton className="h-5" />
         <Skeleton className="h-5" />
