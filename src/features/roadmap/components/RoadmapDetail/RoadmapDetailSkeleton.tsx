@@ -23,7 +23,7 @@ export function RoadmapDetailSkeleton() {
                 <Skeleton className="h-7 w-20" />
               </div>
               <div className="ml-1.5 border-l border-dashed border-element pl-4">
-                <Skeleton className="h-28 bg-container" />
+                <Skeleton className="h-28" />
               </div>
             </div>
           ))}

@@ -31,11 +31,11 @@ export function MyPageSkeleton() {
             <Skeleton className="h-9 w-24" />
             <Skeleton className="h-6 w-48" />
           </div>
-          <Skeleton className="h-11 w-[120px] rounded-full bg-container" />
+          <Skeleton className="h-11 w-[120px] rounded-full" />
         </div>
         <div className="flex flex-wrap gap-3">
-          <Skeleton className="h-10 w-36 bg-container" />
-          <Skeleton className="h-10 w-56 bg-container" />
+          <Skeleton className="h-10 w-36" />
+          <Skeleton className="h-10 w-56" />
         </div>
       </div>
 
