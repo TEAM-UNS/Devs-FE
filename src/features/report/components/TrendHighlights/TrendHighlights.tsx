@@ -30,7 +30,7 @@ export function TrendHighlights({
       <div className="flex flex-col gap-6">
         <div className="flex gap-3">
           {loading?.highlights
-            ? // 최대 증가·감소 두 장 — 카드와 같은 element 색이라 카드 자리처럼 보인다
+            ? // 최대 증가·감소 두 장, 카드와 같은 크기
               Array.from({ length: 2 }, (_, index) => (
                 <Skeleton key={index} className="h-[76px] flex-1" />
               ))

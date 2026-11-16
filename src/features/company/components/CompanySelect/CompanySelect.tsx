@@ -83,7 +83,7 @@ export function CompanySelect({
           // 기업 카드(로고 줄 + 설명 두 줄)와 같은 높이, 3열 세 줄
           Array.from({ length: 9 }, (_, index) => (
             <li key={index}>
-              <Skeleton className="h-[136px] bg-container" />
+              <Skeleton className="h-[136px]" />
             </li>
           ))}
         {companies.map((company) => (
