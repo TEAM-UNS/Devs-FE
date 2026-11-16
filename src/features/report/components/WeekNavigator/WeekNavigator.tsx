@@ -1,9 +1,12 @@
 import { ArrowIcon } from '@/shared/components/icons'
+import { Skeleton } from '@/shared/components/Skeleton'
 import type { WeekRange } from '../../types'
 
 interface WeekNavigatorProps {
-  /** 응답 전에는 없다. 그동안 라벨·날짜 자리는 비워 둔다 */
+  /** 응답 전·실패면 없다. 실패하면 라벨·날짜 자리는 비워 둔다 */
   week?: WeekRange
+  /** 응답 전이면 라벨·날짜 자리에 스켈레톤을 둔다 */
+  loading?: boolean
   /** 이전/다음 주차로 이동. 넘기지 않으면 화살표는 표시만 된다 */
   onStep?: (direction: -1 | 1) => void
   /** 더 과거로 갈 수 있는지 (기본 true) */
@@ -38,6 +41,7 @@ const STEP_BUTTON = [
  */
 export function WeekNavigator({
   week,
+  loading = false,
   onStep,
   canPrevious = true,
   canNext = true,
@@ -60,7 +64,7 @@ export function WeekNavigator({
           key={week?.label}
           className="min-h-lh animate-label-swap text-h2 text-gray-1000 motion-reduce:animate-none"
         >
-          {week?.label}
+          {loading ? <Skeleton className="h-lh w-32" /> : week?.label}
         </h1>
         <button
           type="button"
@@ -78,7 +82,11 @@ export function WeekNavigator({
         key={week?.start}
         className="min-h-lh animate-label-swap text-body-sm text-gray-400 motion-reduce:animate-none"
       >
-        {week && `${week.start} ~ ${week.end}`}
+        {loading ? (
+          <Skeleton className="h-lh w-44" />
+        ) : (
+          week && `${week.start} ~ ${week.end}`
+        )}
       </p>
     </div>
   )

@@ -1,9 +1,12 @@
+import { Skeleton } from '@/shared/components/Skeleton'
 import { TrendMark, type TrendDirection } from '@/shared/components/TrendMark'
 import { cn } from '@/shared/utils/cn'
 import type { StackRank } from '../../types'
 
 interface StackRankListProps {
   ranks: readonly StackRank[]
+  /** 응답 전이면 순위 줄 자리에 스켈레톤을 둔다 */
+  loading?: boolean
 }
 
 // 증감 숫자 색 — 방향별로 삼각형과 같은 색을 쓴다 (Figma 335:2280).
@@ -22,7 +25,7 @@ const DELTA_COLOR: Record<TrendDirection, string> = {
  *
  * @param ranks 순위 순서대로 정렬된 스택 목록
  */
-export function StackRankList({ ranks }: StackRankListProps) {
+export function StackRankList({ ranks, loading = false }: StackRankListProps) {
   return (
     /* 2단일 때 폭 293 고정, 남는 폭은 옆 트렌드 블록이 가진다 (Figma 1920 1396:6267 · 프리뷰 카드 모두)
        1단은 카드 폭을 다 쓴다 (ReportCard의 @container) */
@@ -31,36 +34,45 @@ export function StackRankList({ ranks }: StackRankListProps) {
         가장 많이 찾은 기술 스택
       </h2>
 
-      <ol className="flex flex-col gap-2">
-        {ranks.map(({ id, name, count, trend, delta }, index) => (
-          <li key={id} className="flex h-6 items-center justify-between">
-            <span className="flex min-w-0 items-center gap-2">
-              <span className="text-body-xs text-gray-400">
-                {String(index + 1).padStart(2, '0')}
+      {loading ? (
+        // 순위 여덟 줄 — Figma 리포트 카드의 줄 수
+        <div className="flex flex-col gap-2">
+          {Array.from({ length: 8 }, (_, index) => (
+            <Skeleton key={index} className="h-6" />
+          ))}
+        </div>
+      ) : (
+        <ol className="flex flex-col gap-2">
+          {ranks.map(({ id, name, count, trend, delta }, index) => (
+            <li key={id} className="flex h-6 items-center justify-between">
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="text-body-xs text-gray-400">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                {/* 좁아지면 이름이 건수를 밀어내지 않도록 말줄임 */}
+                <span className="truncate text-body-sm font-semibold text-gray-1000">
+                  {name}
+                </span>
               </span>
-              {/* 좁아지면 이름이 건수를 밀어내지 않도록 말줄임 */}
-              <span className="truncate text-body-sm font-semibold text-gray-1000">
-                {name}
-              </span>
-            </span>
 
-            <span className="flex shrink-0 items-center gap-3">
-              <span className="text-body-xs text-gray-400">
-                {count.toLocaleString()}건
+              <span className="flex shrink-0 items-center gap-3">
+                <span className="text-body-xs text-gray-400">
+                  {count.toLocaleString()}건
+                </span>
+                <span
+                  className={cn(
+                    'flex items-center gap-1 text-body-xs',
+                    DELTA_COLOR[trend],
+                  )}
+                >
+                  <TrendMark direction={trend} />
+                  {delta}
+                </span>
               </span>
-              <span
-                className={cn(
-                  'flex items-center gap-1 text-body-xs',
-                  DELTA_COLOR[trend],
-                )}
-              >
-                <TrendMark direction={trend} />
-                {delta}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ol>
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
   )
 }

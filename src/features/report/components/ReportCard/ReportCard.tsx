@@ -5,7 +5,7 @@ import { TrendHighlights } from '../TrendHighlights'
 
 type ReportCardProps = Pick<
   WeekReport,
-  'week' | 'ranks' | 'highlights' | 'mentions' | 'summary'
+  'week' | 'ranks' | 'highlights' | 'mentions' | 'summary' | 'loading'
 >
 
 /* 이번 주 카드의 표면 — Figma 335:2275.
@@ -36,6 +36,7 @@ export function ReportCardBody({
   highlights,
   mentions,
   summary,
+  loading,
 }: ReportCardProps) {
   return (
     /* data-card-body: 주차를 넘길 때 WeekDeck이 이 내용의 밝기를 함께 낮춘다.
@@ -47,11 +48,19 @@ export function ReportCardBody({
       {/* 간격은 Figma PC 24·48, 패드·모바일 36 */}
       <div className="flex flex-col gap-9 @3xl:gap-6">
         <div className="flex flex-col gap-9 @3xl:flex-row @3xl:gap-12">
-          <StackRankList ranks={ranks} />
-          <TrendHighlights highlights={highlights} mentions={mentions} />
+          <StackRankList ranks={ranks} loading={loading.ranks} />
+          <TrendHighlights
+            highlights={highlights}
+            mentions={mentions}
+            loading={loading}
+          />
         </div>
 
-        <ReportSummary week={week} paragraphs={summary} />
+        <ReportSummary
+          week={week}
+          paragraphs={summary}
+          loading={loading.summary}
+        />
       </div>
     </div>
   )

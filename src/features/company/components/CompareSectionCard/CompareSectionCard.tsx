@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Skeleton } from '@/shared/components/Skeleton'
 import { cn } from '@/shared/utils/cn'
 
 interface CompareSectionCardProps {
@@ -6,6 +7,10 @@ interface CompareSectionCardProps {
   /** 제목 오른쪽 (범례 등) */
   readonly aside?: ReactNode
   readonly className?: string
+  /** 응답 전이면 내용 자리에 스켈레톤을 둔다. 제목은 그대로 보인다 */
+  readonly loading?: boolean
+  /** 스켈레톤 높이 — 카드마다 내용 높이가 달라 쓰는 쪽이 정한다 */
+  readonly skeletonClassName?: string
   readonly children: ReactNode
 }
 
@@ -14,6 +19,8 @@ export function CompareSectionCard({
   title,
   aside,
   className,
+  loading = false,
+  skeletonClassName,
   children,
 }: CompareSectionCardProps) {
   return (
@@ -28,7 +35,11 @@ export function CompareSectionCard({
         <h2 className="text-body-lg font-semibold text-gray-1000">{title}</h2>
         {aside}
       </div>
-      {children}
+      {loading ? (
+        <Skeleton className={cn('h-40', skeletonClassName)} />
+      ) : (
+        children
+      )}
     </section>
   )
 }

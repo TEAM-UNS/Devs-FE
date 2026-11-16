@@ -1,1 +1,1 @@
-export { KpiCard } from './KpiCard'
+export { KpiCard, KpiCardSkeleton } from './KpiCard'

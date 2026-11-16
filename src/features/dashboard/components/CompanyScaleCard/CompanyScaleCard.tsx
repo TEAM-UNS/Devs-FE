@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ArrowIcon } from '@/shared/components/icons'
+import { Skeleton } from '@/shared/components/Skeleton'
 import { cn } from '@/shared/utils/cn'
 import type { StackRank } from '../../types'
 import { ChartCard } from '../ChartCard'
@@ -16,6 +17,8 @@ interface CompanyScaleCardProps {
   onStep?: (direction: -1 | 1) => void
   /** 배치 조정용 클래스 (그리드 안 순서 등) */
   className?: string
+  /** 응답 전이면 순위 줄 자리에 스켈레톤을 둔다 */
+  loading?: boolean
 }
 
 // 순위별 게이지 색 — Figma 427:5437~5469 순서 그대로.
@@ -83,6 +86,7 @@ export function CompanyScaleCard({
   ranks,
   onStep,
   className,
+  loading = false,
 }: CompanyScaleCardProps) {
   // 처음 그릴 때는 넘김이 없어 라벨이 제자리에 있다
   const [slide, setSlide] = useState<Slide | null>(null)
@@ -173,7 +177,14 @@ export function CompanyScaleCard({
           </button>
         </div>
 
-        {ranks.length === 0 ? (
+        {loading ? (
+          // 순위 다섯 줄(24) + 간격(8) = 152, 빈 상태와 같은 높이
+          <div className="flex w-full max-w-[420px] flex-col gap-2 self-start">
+            {Array.from({ length: 5 }, (_, index) => (
+              <Skeleton key={index} className="h-6" />
+            ))}
+          </div>
+        ) : ranks.length === 0 ? (
           <EmptyMessage className="h-[152px] w-full" />
         ) : (
           // 게이지 목록은 카드 안에서 좌측 정렬된 420px (Figma 274:1871)
