@@ -31,6 +31,7 @@ export function RetrospectBoard() {
       }
       retrospects={retrospects.data ?? []}
       loaded={retrospects.isSuccess}
+      loading={retrospects.isPending}
       emptyText="이번 주 회고가 아직 없어요"
     />
   )

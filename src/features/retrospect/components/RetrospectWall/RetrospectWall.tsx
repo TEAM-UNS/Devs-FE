@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import boardBackground from '@/assets/retrospect/board-bg.webp'
+import { Skeleton } from '@/shared/components/Skeleton'
+import { cn } from '@/shared/utils/cn'
 import type { Retrospect } from '../../types'
 import { RetrospectDetailModal } from '../RetrospectDetailModal'
 import { RetrospectFlow } from '../RetrospectFlow'
@@ -11,9 +13,52 @@ interface RetrospectWallProps {
   readonly retrospects: readonly Retrospect[]
   /** 받아 온 뒤에만 빈 안내를 띄운다. 로딩 중·실패는 아무것도 그리지 않는다(실패는 공통 에러 토스트) */
   readonly loaded: boolean
+  /** 첫 응답 전이면 카드 자리에 스켈레톤을 둔다 */
+  readonly loading: boolean
   readonly emptyText: string
   /** 내 회고 — 흐르는 줄 대신 세로 타임라인, 제목은 '내 로드맵', 좋아요는 개수만 보여준다 */
   readonly mine?: boolean
+}
+
+// 회고 카드(180 높이, 유리 표면)와 같은 크기·색. 배경 그림 위라 회색 대신 카드처럼 반투명 흰색을 쓴다
+const CARD_SKELETON = 'h-[180px] rounded-md bg-white/6'
+
+/**
+ * 첫 응답 전 카드 자리 — 게시판은 패드부터 흐르는 세 줄, 모바일과 내 회고는 세로 목록 모양
+ * 흐르는 줄처럼 화면 밖까지 이어 두고 벽의 overflow-x-clip이 자른다
+ */
+function WallSkeleton({ mine }: { readonly mine: boolean }) {
+  const column = (
+    <div
+      className={cn(
+        'mt-12 flex flex-col gap-6 px-(--page-px)',
+        !mine && 'md:hidden',
+      )}
+    >
+      {Array.from({ length: 3 }, (_, index) => (
+        <Skeleton key={index} className={CARD_SKELETON} />
+      ))}
+    </div>
+  )
+  if (mine) return column
+
+  return (
+    <>
+      {column}
+      <div className="mt-12 hidden flex-col gap-16 md:flex">
+        {Array.from({ length: 3 }, (_, row) => (
+          <div key={row} className="flex gap-6">
+            {Array.from({ length: 6 }, (_, index) => (
+              <Skeleton
+                key={index}
+                className={cn(CARD_SKELETON, 'w-[360px] shrink-0')}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
+  )
 }
 
 /**
@@ -24,6 +69,7 @@ export function RetrospectWall({
   header,
   retrospects,
   loaded,
+  loading,
   emptyText,
   mine = false,
 }: RetrospectWallProps) {
@@ -53,6 +99,7 @@ export function RetrospectWall({
           <div className="mx-auto w-full max-w-[1380px]">{header}</div>
         </div>
 
+        {loading && <WallSkeleton mine={mine} />}
         {/* TODO: 빈 화면은 디자인에 없다. 임시 문구 */}
         {loaded && retrospects.length === 0 && (
           <p className="m-auto text-body-lg text-gray-400">{emptyText}</p>

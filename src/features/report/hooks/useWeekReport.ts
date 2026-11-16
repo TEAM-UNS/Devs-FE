@@ -62,5 +62,15 @@ export function useWeekReport(
     highlights: toTrendHighlights(increase.data, decrease.data),
     mentions: toMentionBars(mentions.data),
     summary: summary.data?.llmReport ? [summary.data.llmReport] : [],
+    // isPending은 요청을 끈(enabled: false) 이웃 카드에서도 켜져 있어 isLoading을 쓴다
+    loading: {
+      week: weekRange.isLoading,
+      collected: collected.isLoading,
+      ranks: popular.isLoading,
+      // 두 카드 중 하나라도 오면 온 카드부터 보여 준다 — 한 구역이 늦어도 나머지는 먼저 보인다
+      highlights: increase.isLoading && decrease.isLoading,
+      mentions: mentions.isLoading,
+      summary: summary.isLoading,
+    },
   }
 }

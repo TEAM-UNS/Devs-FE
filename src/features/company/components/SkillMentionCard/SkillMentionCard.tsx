@@ -9,6 +9,8 @@ interface SkillMentionCardProps {
   readonly mentions: readonly SkillMention[]
   /** 비교 결과 그리드에서의 자리 */
   readonly className?: string
+  /** 응답 전이면 내용 자리에 스켈레톤을 둔다 */
+  readonly loading?: boolean
 }
 
 /**
@@ -19,6 +21,7 @@ export function SkillMentionCard({
   companies,
   mentions,
   className,
+  loading = false,
 }: SkillMentionCardProps) {
   const totalOf = (mention: SkillMention) =>
     mention.counts.reduce((sum, { postingCount }) => sum + postingCount, 0)
@@ -48,6 +51,8 @@ export function SkillMentionCard({
 
   return (
     <CompareSectionCard
+      loading={loading}
+      skeletonClassName="h-56"
       title="기술스택 언급량 그래프"
       aside={legend}
       className={cn('min-w-0', className)}

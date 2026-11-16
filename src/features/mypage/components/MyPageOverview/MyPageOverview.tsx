@@ -3,6 +3,7 @@ import { userQueries } from '@/shared/api'
 import { useLogout } from '@/shared/hooks/useLogout'
 import { toMyProfile } from '../../utils/toMyProfile'
 import { CareerGoalCard } from '../CareerGoalCard'
+import { MyPageSkeleton } from '../MyPageSkeleton'
 import { ProfileSummary } from '../ProfileSummary'
 import { ReportSubscriptionCard } from '../ReportSubscriptionCard'
 import { SkillStackCard } from '../SkillStackCard'
@@ -19,10 +20,11 @@ interface MyPageOverviewProps {
  * @returns 프로필과 설정 카드가 배치된 마이페이지 화면
  */
 export function MyPageOverview({ retrospectCount }: MyPageOverviewProps) {
-  const { data } = useQuery(userQueries.me())
+  const { data, isPending } = useQuery(userQueries.me())
   const logout = useLogout()
 
-  // TODO: 로딩·에러 화면은 따로 정한다. 그 전까지는 응답이 오기 전엔 아무것도 그리지 않는다
+  if (isPending) return <MyPageSkeleton />
+  // TODO: 에러 화면은 따로 정한다. 그 전까지는 실패하면 아무것도 그리지 않는다
   if (!data) return null
 
   const profile = toMyProfile(data)

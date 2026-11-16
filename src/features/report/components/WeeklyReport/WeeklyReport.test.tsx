@@ -223,14 +223,13 @@ describe('WeeklyReport', () => {
     )
   })
 
-  it.each(['생성 중', '404', '대기 중'])(
+  it.each(['생성 중', '404'])(
     'AI 요약이 %s이면 빈 상태를 표시하고 다른 구역은 먼저 보인다',
     async (state) => {
-      llmReport = () => {
-        if (state === '404') return Promise.reject(notFound())
-        if (state === '대기 중') return new Promise(() => {})
-        return Promise.resolve({ llmReport: null })
-      }
+      llmReport = () =>
+        state === '404'
+          ? Promise.reject(notFound())
+          : Promise.resolve({ llmReport: null })
       renderReport()
 
       expect(await currentCard().findByText('Next.js')).toBeInTheDocument()
@@ -242,6 +241,16 @@ describe('WeeklyReport', () => {
       expect(useToastStore.getState().toasts).toEqual([])
     },
   )
+
+  it('AI 요약을 기다리는 동안은 빈 상태 문구 대신 스켈레톤을 두고 다른 구역은 먼저 보인다', async () => {
+    llmReport = () => new Promise(() => {}) // 영영 도착하지 않는다
+    renderReport()
+
+    expect(await currentCard().findByText('Next.js')).toBeInTheDocument()
+    expect(
+      currentCard().queryByText('2026년 7월 1주차 요약 리포트가 없습니다.'),
+    ).not.toBeInTheDocument()
+  })
 
   it('전공 필터는 처음에 전체가 선택돼 있고 하나만 선택되며 URL에 남는다', async () => {
     renderReport()

@@ -6,12 +6,23 @@ interface CommonSkillsCardProps {
   readonly skills: readonly CommonSkill[]
   /** 비교 결과 그리드에서의 자리 */
   readonly className?: string
+  /** 응답 전이면 내용 자리에 스켈레톤을 둔다 */
+  readonly loading?: boolean
 }
 
 /** 공통 요구 기술 — Figma 432:6116. 모든 기업이 요구하면 배지를 보라로 강조한다 */
-export function CommonSkillsCard({ skills, className }: CommonSkillsCardProps) {
+export function CommonSkillsCard({
+  skills,
+  className,
+  loading = false,
+}: CommonSkillsCardProps) {
   return (
-    <CompareSectionCard title="공통 요구 기술" className={className}>
+    <CompareSectionCard
+      title="공통 요구 기술"
+      className={className}
+      loading={loading}
+      skeletonClassName="h-56"
+    >
       <ul className="scrollbar-slim flex h-[124px] flex-col gap-2 overflow-y-auto">
         {skills.map((skill) => (
           <li

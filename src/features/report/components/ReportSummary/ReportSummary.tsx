@@ -1,9 +1,12 @@
+import { Skeleton } from '@/shared/components/Skeleton'
 import type { WeekRange } from '../../types'
 
 interface ReportSummaryProps {
   /** 응답 전에는 없다 */
   week?: WeekRange
   paragraphs: readonly string[]
+  /** 응답 전이면 제목·본문 줄 자리에 스켈레톤을 둔다 */
+  loading?: boolean
 }
 
 /* 2단(PC)은 높이 192 고정에 안에서 스크롤, 1단(패드·모바일)은 Figma처럼 글 길이만큼 늘어난다.
@@ -16,7 +19,26 @@ const SURFACE = 'flex min-h-48 rounded-sm bg-canvas p-6 @3xl:h-48'
  * @param week 제목·빈 상태 문구에 넣을 주차
  * @param paragraphs 요약 문단들
  */
-export function ReportSummary({ week, paragraphs }: ReportSummaryProps) {
+export function ReportSummary({
+  week,
+  paragraphs,
+  loading = false,
+}: ReportSummaryProps) {
+  if (loading) {
+    return (
+      <section
+        aria-label="요약 리포트"
+        data-surface="panel"
+        className={`${SURFACE} flex-col gap-3`}
+      >
+        <Skeleton className="h-7 w-56 max-w-full" />
+        <Skeleton className="h-5" />
+        <Skeleton className="h-5" />
+        <Skeleton className="h-5 w-2/3" />
+      </section>
+    )
+  }
+
   // 연도도 서버 값을 쓴다. 해가 바뀌는 주는 목요일이 속한 해로 센다
   const weekName = week ? `${week.year}년 ${week.label}` : ''
 

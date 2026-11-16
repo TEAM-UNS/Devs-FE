@@ -5,12 +5,16 @@ import { roadmapQueries } from '@/features/roadmap'
 import { getAccessToken } from '@/shared/api'
 import { AppSidebar, SidebarDrawer } from '@/shared/components/AppSidebar'
 import { MenuIcon } from '@/shared/components/icons'
-import { RouteFallback } from '@/shared/components/RouteFallback'
 import { ROUTES } from '@/shared/constants'
 import { cn } from '@/shared/utils/cn'
 
-// fallback 엘리먼트를 모듈 스코프에 한 번만 만들어 재사용
-const routeFallback = <RouteFallback />
+/* 화면 코드는 금방 받으므로 본문은 비워 두고 사이드바만 보인다. 데이터를 기다리는 동안의 스켈레톤은
+   각 화면이 카드 자리마다 그린다. 모듈 스코프에 한 번만 만들어 재사용 */
+const routeFallback = (
+  <div role="status">
+    <span className="sr-only">페이지를 불러오는 중…</span>
+  </div>
+)
 
 /**
  * `<Outlet />` 영역만 교체되며 로딩된다(단 하나의 `<Suspense>` 경계)

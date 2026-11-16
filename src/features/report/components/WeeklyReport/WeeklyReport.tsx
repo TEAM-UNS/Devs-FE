@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { trackEvent } from '@/shared/analytics'
 import { userQueries } from '@/shared/api'
+import { Skeleton } from '@/shared/components/Skeleton'
 import { useWeekReport } from '../../hooks/useWeekReport'
 import type { MajorOption } from '../../types'
 import {
@@ -154,9 +155,7 @@ export function WeeklyReport() {
   /* 헤더는 **도착할 주차**를 먼저 보여준다. 이동이 끝난 뒤에 바꾸면 카드는 이미 새 주차인데
      글자만 400ms 늦게 툭 바뀌어 따로 노는 것처럼 보인다.
      도착지는 항상 위 셋 중 하나라 새로 만들지 않고 골라 쓴다. */
-  const shownWeek = (
-    slidingTo === 1 ? next : slidingTo === -1 ? previous : report
-  ).week
+  const shown = slidingTo === 1 ? next : slidingTo === -1 ? previous : report
 
   return (
     <div className="h-full">
@@ -169,7 +168,8 @@ export function WeeklyReport() {
         header={
           /* 주차 네비와 본문 사이 간격은 0이다 (Figma 335:2838 V gap0) */
           <WeekNavigator
-            week={shownWeek}
+            week={shown.week}
+            loading={shown.loading.week}
             onStep={handleStep}
             canPrevious={canPrevious}
             canNext={canNext}
@@ -183,10 +183,15 @@ export function WeeklyReport() {
           />
         }
         footer={
-          <p className="text-center text-body-sm text-gray-200">
-            이 주에 수집된 {collectedCount.toLocaleString()}개의 공고를 분석한
-            결과입니다.
-          </p>
+          // 응답 전에 '0개'로 보이지 않게 문구 자리를 스켈레톤으로 둔다
+          report.loading.collected ? (
+            <Skeleton className="mx-auto h-5 w-72 max-w-full" />
+          ) : (
+            <p className="text-center text-body-sm text-gray-200">
+              이 주에 수집된 {collectedCount.toLocaleString()}개의 공고를 분석한
+              결과입니다.
+            </p>
+          )
         }
       >
         <ReportCard {...report} />

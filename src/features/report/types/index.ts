@@ -50,4 +50,15 @@ export interface WeekReport {
   highlights: TrendHighlight[]
   mentions: MentionBar[]
   summary: string[]
+  /** 구역마다 첫 응답을 기다리는 중인지. 요청하지 않는 주차(이웃 카드)는 false */
+  loading: ReportLoading
+}
+
+export interface ReportLoading {
+  week: boolean
+  collected: boolean
+  ranks: boolean
+  highlights: boolean
+  mentions: boolean
+  summary: boolean
 }

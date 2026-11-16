@@ -1,6 +1,7 @@
 import { Button } from '@/shared/components/Button'
 import { Chip } from '@/shared/components/Chip'
 import { SearchIcon } from '@/shared/components/icons'
+import { Skeleton } from '@/shared/components/Skeleton'
 import { MIN_COMPARE } from '../../constants/compare'
 import { useReachEnd } from '../../hooks/useReachEnd'
 import type { Company, ComparedCompany } from '../../types'
@@ -18,6 +19,8 @@ interface CompanySelectProps {
   readonly onKeywordChange: (keyword: string) => void
   readonly onToggle: (company: ComparedCompany) => void
   readonly onCompare: () => void
+  /** 검색 결과 첫 페이지를 기다리는 중이면 카드 자리에 스켈레톤을 둔다 */
+  readonly loading: boolean
 }
 
 /**
@@ -32,6 +35,7 @@ export function CompanySelect({
   canLoadMore,
   onLoadMore,
   onToggle,
+  loading,
   onCompare,
 }: CompanySelectProps) {
   const canCompare = selected.length >= MIN_COMPARE
@@ -75,6 +79,13 @@ export function CompanySelect({
       {/* 목록이 화면 아래 끝까지 차도록 main의 아래 여백(p-page)만큼 내려 깐다. 안 그러면 카드가 끝에서 여백만큼 위에서 잘린다 */}
       {/* 모바일 1열, 패드부터 3열 (Figma 2339:16289 · 2339:15717 · 1396:6846) */}
       <ul className="-mb-page grid min-h-0 w-full flex-1 grid-cols-1 content-start items-start gap-8 overflow-y-auto pb-24 md:grid-cols-3">
+        {loading &&
+          // 기업 카드(로고 줄 + 설명 두 줄)와 같은 높이, 3열 세 줄
+          Array.from({ length: 9 }, (_, index) => (
+            <li key={index}>
+              <Skeleton className="h-[136px] bg-container" />
+            </li>
+          ))}
         {companies.map((company) => (
           <li key={company.id}>
             <CompanyCard
