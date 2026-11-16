@@ -1,12 +1,8 @@
 import { Link } from 'react-router-dom'
 import { DevsLogo } from '@/shared/components/icons'
-import { ROUTES } from '@/shared/constants'
+import { CONTACT_EMAIL, ROUTES } from '@/shared/constants'
 import githubIcon from '@/assets/landing/footer-github.webp'
-import {
-  CONTACT_EMAIL,
-  GITHUB_URL,
-  TEAM_MEMBERS,
-} from '../../constants/content'
+import { GITHUB_URL, TEAM_MEMBERS } from '../../constants/content'
 
 // 라벨과 값 사이 세로 구분선
 const DIVIDER = <span className="h-4 w-px bg-gray-200" aria-hidden="true" />

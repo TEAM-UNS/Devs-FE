@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { lazy, Suspense } from 'react'
 import type { RouteObject } from 'react-router-dom'
+import ServerErrorPage from '@/pages/ServerErrorPage'
 import { RouteFallback } from '@/shared/components/RouteFallback'
 import { ROUTES } from '@/shared/constants'
 import { AuthGate } from './AuthGate'
@@ -113,7 +114,7 @@ function OnboardingRoute() {
   )
 }
 
-export const routes: RouteObject[] = [
+const pageRoutes: RouteObject[] = [
   {
     path: '/login',
     element: <LoginRoute />,
@@ -199,5 +200,14 @@ export const routes: RouteObject[] = [
   {
     path: '*',
     element: <NotFoundRoute />,
+  },
+]
+
+/* 화면을 그리다 오류가 나면 라우터 기본 화면 대신 500 화면(Figma 662:7195)을 띄운다
+   페이지 파일을 못 받아 난 오류도 여기로 오므로, 이 화면만은 lazy로 나누지 않는다 */
+export const routes: RouteObject[] = [
+  {
+    errorElement: <ServerErrorPage />,
+    children: pageRoutes,
   },
 ]
