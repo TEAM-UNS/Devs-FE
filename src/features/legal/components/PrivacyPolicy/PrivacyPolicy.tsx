@@ -23,7 +23,7 @@ const GOOGLE_PRIVACY_CONTACT = (
 export function PrivacyPolicy() {
   return (
     <LegalDocument
-      title="UNS(Devs) 개인정보 처리방침"
+      title="Devs 개인정보 처리방침"
       intro={
         <>
           TEAM UNS(이하 &quot;팀&quot;)는 채용공고 기반 기술 트렌드 분석 서비스

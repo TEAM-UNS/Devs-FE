@@ -26,7 +26,7 @@ describe('법률 문서', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'UNS(Devs) 개인정보 처리방침',
+        name: 'Devs 개인정보 처리방침',
       }),
     ).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(12)
