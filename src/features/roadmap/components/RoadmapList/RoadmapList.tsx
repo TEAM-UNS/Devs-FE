@@ -137,7 +137,12 @@ export function RoadmapList() {
           onClose={() => setDeleting(null)}
           onConfirm={() =>
             remove.mutate(deleting.roadmapId, {
-              onSuccess: () => setDeleting(null),
+              /* 지운 로드맵의 창일 때만 닫는다. 기다리는 동안 취소하고 다른 로드맵의 창을 열었으면
+                 앞 요청이 끝나도 지금 열린 창은 그대로 둔다 */
+              onSuccess: (_, roadmapId) =>
+                setDeleting((current) =>
+                  current?.roadmapId === roadmapId ? null : current,
+                ),
             })
           }
         />

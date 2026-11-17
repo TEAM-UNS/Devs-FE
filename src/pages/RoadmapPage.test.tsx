@@ -125,6 +125,44 @@ describe('RoadmapPage', () => {
     ).toBeInTheDocument()
   })
 
+  it('앞 삭제가 끝나도 그사이 연 다른 로드맵의 확인 창은 닫지 않는다', async () => {
+    server.roadmaps = [summary(1), summary(2, { majorName: '백엔드' })]
+    let finish = () => {}
+    // 백엔드 삭제 응답을 붙잡아 두었다가 다른 창을 연 뒤에 끝낸다
+    del.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = () => {
+            server.roadmaps = server.roadmaps.filter(
+              ({ roadmapId }) => roadmapId !== 2,
+            )
+            resolve()
+          }
+        }),
+    )
+    renderPage()
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: '백엔드 로드맵 삭제' }),
+    )
+    await userEvent.click(screen.getByRole('button', { name: '삭제' }))
+    await userEvent.click(screen.getByRole('button', { name: '취소' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: '프론트엔드 로드맵 삭제' }),
+    )
+    finish()
+
+    // 앞 요청이 끝나 목록에서 빠질 때까지 기다린 뒤에도 지금 창은 그대로다
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('heading', { name: '백엔드 로드맵' }),
+      ).not.toBeInTheDocument(),
+    )
+    expect(
+      screen.getByRole('dialog', { name: '프론트엔드 로드맵을 삭제할까요?' }),
+    ).toBeInTheDocument()
+  })
+
   it('확인 창에서 취소하면 지우지 않는다', async () => {
     server.roadmaps = [summary(1)]
     renderPage()
