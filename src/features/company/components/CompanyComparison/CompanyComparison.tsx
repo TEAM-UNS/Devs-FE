@@ -13,6 +13,14 @@ import { PostingCountCard } from '../PostingCountCard'
 import { SkillMentionCard } from '../SkillMentionCard'
 import { TopSkillsCard } from '../TopSkillsCard'
 
+export interface CompareLoading {
+  readonly topSkills: boolean
+  readonly commonSkills: boolean
+  readonly mentions: boolean
+  readonly matchRates: boolean
+  readonly postingCounts: boolean
+}
+
 interface CompanyComparisonProps {
   /** 비교하는 기업. 고른 순서대로 차트 색이 정해진다 */
   readonly companies: readonly ComparedCompany[]
@@ -22,6 +30,8 @@ interface CompanyComparisonProps {
   readonly matchRates: readonly CompanyMatchRate[]
   readonly postingCounts: readonly CompanyPostingCount[]
   readonly onRecompare: () => void
+  /** 구역마다 첫 응답을 기다리는 중인지 — 먼저 온 카드부터 보인다 */
+  readonly loading: CompareLoading
 }
 
 /** 기업 스택 비교 결과 — Figma 427:5220(3개)·489:2381(5개) */
@@ -33,6 +43,7 @@ export function CompanyComparison({
   matchRates,
   postingCounts,
   onRecompare,
+  loading,
 }: CompanyComparisonProps) {
   return (
     /* 코드 순서는 모바일 순서(언급량 → 인기 스택 → 공통 기술 → 매칭률 → 공고 수, Figma 2339:16962)다.
@@ -42,21 +53,32 @@ export function CompanyComparison({
       <SkillMentionCard
         companies={companies}
         mentions={mentions}
+        loading={loading.mentions}
         className="md:col-start-2 md:row-start-2"
       />
       <TopSkillsCard
         companies={companies}
         topSkills={topSkills}
+        loading={loading.topSkills}
         className="md:col-span-2 md:row-start-1"
       />
       <CommonSkillsCard
         skills={commonSkills}
+        loading={loading.commonSkills}
         className="md:col-start-1 md:row-start-2"
       />
       {/* 매칭률:공고 수 = 패드 288:500, PC 반반 */}
       <div className="grid gap-6 md:col-span-2 md:grid-cols-[288fr_500fr] lg:grid-cols-2">
-        <MatchRateCard companies={companies} rates={matchRates} />
-        <PostingCountCard companies={companies} counts={postingCounts} />
+        <MatchRateCard
+          companies={companies}
+          rates={matchRates}
+          loading={loading.matchRates}
+        />
+        <PostingCountCard
+          companies={companies}
+          counts={postingCounts}
+          loading={loading.postingCounts}
+        />
       </div>
 
       {/* 모바일은 목록 끝에 꽉 차게 놓고, 패드부터는 오른쪽 아래에 띄운다 */}

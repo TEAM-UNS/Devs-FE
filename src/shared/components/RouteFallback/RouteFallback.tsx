@@ -1,21 +1,14 @@
-// ─────────────────────────────────────────────────────────────
-// ⚠️ 레퍼런스 스캐폴드 — 디자인 시스템의 로딩 컴포넌트로 대체 예정.
-// 로딩 fallback이라는 "역할"은 유지되고 시각 표현만 교체된다.
-// ─────────────────────────────────────────────────────────────
 /**
- * 라우트 lazy 청크를 내려받는 동안 Suspense fallback으로 보여줄 로딩 상태.
+ * 사이드바 없는 화면(랜딩·로그인·회원가입)의 코드를 내려받는 동안 보여줄 로딩 상태
+ * 화면 코드는 금방 받으므로 뼈대를 그리지 않고 배경만 깐다
  * 도메인 지식이 없는 순수 UI라서 shared에 위치한다.
  *
- * @returns 접근성 속성(role="status")을 가진 로딩 표시 엘리먼트
+ * @returns 화면 배경과 보조 기술용 로딩 안내
  */
 export function RouteFallback() {
   return (
-    <div
-      className="flex items-center justify-center p-12"
-      role="status"
-      aria-live="polite"
-    >
-      <span className="text-sm text-gray-500">페이지를 불러오는 중…</span>
+    <div role="status" className="min-h-dvh bg-canvas">
+      <span className="sr-only">페이지를 불러오는 중…</span>
     </div>
   )
 }

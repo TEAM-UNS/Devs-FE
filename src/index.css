@@ -208,6 +208,20 @@
     }
   }
 
+  /* shimmer: 스켈레톤 위로 밝은 빛이 왼쪽에서 오른쪽으로 지나간다 (#254, 디자인 시안 없는 임시 값)
+     배경 그림을 블록의 두 배 폭으로 깔고 위치만 옮긴다. 빛(그림 가운데)이 블록 왼쪽 밖(150%)에서 오른쪽 밖(-50%)까지 간다
+     흐르는 동작이라 속도 변화 없이 linear로 둔다 */
+  --animate-shimmer: shimmer 1.5s linear infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+
   /* 주차 넘김 — 이웃 카드가 옆자리에서 가운데로 들어오고, 보던 카드는 반대쪽 옆자리로 나간다.
      자리마다 위치·기울기·크기·투명도·블러가 모두 달라(WeekDeck.tsx 실측표) 한 번에 바꾼다.
      이동량은 무대 폭에 따라 달라지므로 --slide-* 변수로 받아 쓴다(WeekDeck이 계산해 넣는다).

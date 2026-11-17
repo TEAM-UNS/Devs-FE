@@ -17,7 +17,7 @@ const SERVICE_URL = 'https://kangyu.shop/'
 export function TermsOfService() {
   return (
     <LegalDocument
-      title="UNS(Devs) 서비스 이용약관"
+      title="Devs 서비스 이용약관"
       intro={
         <>
           이 약관은 TEAM UNS(이하 &quot;팀&quot;)가 운영하는 채용공고 기반 기술

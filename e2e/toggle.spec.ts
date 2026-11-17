@@ -1,4 +1,5 @@
 import { expect, test, type Locator } from '@playwright/test'
+import { mockApi } from './mockApi'
 
 async function knobOffset(toggle: Locator) {
   return toggle.evaluate((input) => {
@@ -17,6 +18,7 @@ test('구독 토글 상태에 따라 동그라미 위치와 색상이 바뀐다'
     localStorage.setItem('uns-access-token', 'e2e-access-token')
     localStorage.setItem('uns-refresh-token', 'e2e-refresh-token')
   })
+  await mockApi(page)
   await page.route('**/user/my', (route) =>
     route.fulfill({
       json: {

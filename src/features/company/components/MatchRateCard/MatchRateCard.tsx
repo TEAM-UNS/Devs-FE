@@ -7,14 +7,24 @@ interface MatchRateCardProps {
   /** 비교하는 기업. 이 순서로 색을 정한다 */
   readonly companies: readonly ComparedCompany[]
   readonly rates: readonly CompanyMatchRate[]
+  /** 응답 전이면 내용 자리에 스켈레톤을 둔다 */
+  readonly loading?: boolean
 }
 
 /** 회사 매칭률 — Figma 435:6328. 비교 상한(5)까지 빈 줄로 채운다 */
-export function MatchRateCard({ companies, rates }: MatchRateCardProps) {
+export function MatchRateCard({
+  companies,
+  rates,
+  loading = false,
+}: MatchRateCardProps) {
   const emptyRows = Math.max(0, MAX_COMPARE - rates.length)
 
   return (
-    <CompareSectionCard title="회사 매칭률" className="min-w-0">
+    <CompareSectionCard
+      title="회사 매칭률"
+      className="min-w-0"
+      loading={loading}
+    >
       <ol className="flex flex-col gap-1">
         {rates.map((rate, index) => (
           <li key={rate.companyId} className="flex h-6 items-center gap-2">

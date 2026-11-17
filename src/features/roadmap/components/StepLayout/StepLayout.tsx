@@ -7,7 +7,7 @@ interface StepLayoutProps {
   readonly step: number
   readonly title: string
   readonly description: string
-  /** 없으면 '이전'을 숨긴다 (1단계) */
+  /** 없으면 '이전'을 숨긴다 */
   readonly onPrevious?: () => void
   readonly nextLabel: string
   /** 다음 버튼 오른쪽 화살표. 마지막 단계(생성하기)엔 없다 */

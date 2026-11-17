@@ -22,7 +22,7 @@ import {
   toStackRanks,
 } from '../../utils/toDashboardData'
 import { CompanyScaleCard } from '../CompanyScaleCard'
-import { KpiCard } from '../KpiCard'
+import { KpiCard, KpiCardSkeleton } from '../KpiCard'
 import { PopularStacksCard } from '../PopularStacksCard'
 import { RisingStacksCard } from '../RisingStacksCard'
 
@@ -192,9 +192,11 @@ export function DashboardOverview() {
     <div className="mx-auto flex w-full max-w-[1380px] flex-col gap-6">
       {/* 모바일은 2×2, 패드부터 한 줄 */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {kpis.map((kpi) => (
-          <KpiCard key={kpi.id} {...kpi} />
-        ))}
+        {summary.isPending
+          ? Array.from({ length: 4 }, (_, index) => (
+              <KpiCardSkeleton key={index} />
+            ))
+          : kpis.map((kpi) => <KpiCard key={kpi.id} {...kpi} />)}
       </div>
 
       <PopularStacksCard
@@ -202,6 +204,7 @@ export function DashboardOverview() {
         selectedFilter={selectedFilter}
         onSelectFilter={selectFilter}
         bars={bars}
+        loading={popular.isPending}
       />
 
       {/* 하단 두 카드 — PC는 490:866·높이 316, 패드는 반반·337, 모바일은 세로로 쌓는다
@@ -214,6 +217,7 @@ export function DashboardOverview() {
           onSelectPeriod={selectPeriod}
           series={chart?.series ?? NO_SERIES}
           axisLabels={chart?.axisLabels ?? NO_AXIS}
+          loading={rising.isPending}
         />
         <CompanyScaleCard
           className="md:order-first"
@@ -222,6 +226,7 @@ export function DashboardOverview() {
           nextScale={neighborScale(1)}
           ranks={ranks}
           onStep={stepCompanySize}
+          loading={companies.isPending}
         />
       </div>
     </div>

@@ -7,17 +7,27 @@ interface PostingCountCardProps {
   /** 비교하는 기업. 이 순서로 색을 정한다 */
   readonly companies: readonly ComparedCompany[]
   readonly counts: readonly CompanyPostingCount[]
+  /** 응답 전이면 내용 자리에 스켈레톤을 둔다 */
+  readonly loading?: boolean
 }
 
 /* 가장 많은 기업의 막대 높이 — Figma 435:6458 */
 const MAX_BAR_PX = 78
 
 /** 채용 공고 수 세로 막대 — Figma 435:6401. 기업 하나에 110px 칸, 카드는 칸 수만큼 넓어진다 */
-export function PostingCountCard({ companies, counts }: PostingCountCardProps) {
+export function PostingCountCard({
+  companies,
+  counts,
+  loading = false,
+}: PostingCountCardProps) {
   const max = Math.max(1, ...counts.map(({ postingCount }) => postingCount))
 
   return (
-    <CompareSectionCard title="채용 공고 수" className="min-w-0">
+    <CompareSectionCard
+      title="채용 공고 수"
+      className="min-w-0"
+      loading={loading}
+    >
       <div className="flex flex-col items-center gap-1.5">
         {/* 열 폭 110은 좁은 카드(모바일)에서 같이 줄어든다 */}
         <div className="flex h-28 max-w-full items-end rounded-sm bg-canvas px-9">

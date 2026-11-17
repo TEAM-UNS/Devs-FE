@@ -10,6 +10,7 @@ import {
 } from '../../api/subscription'
 import { SUBSCRIPTION_LABELS } from '../../constants/subscription'
 import { useUpdateReportSubscription } from '../../hooks/useUpdateReportSubscription'
+import { SettingCardSkeleton } from '../MyPageSkeleton'
 
 /**
  * 리포트 구독 카드. 전체 구독과 분야별 구독은 같이 켤 수 없다
@@ -21,13 +22,16 @@ import { useUpdateReportSubscription } from '../../hooks/useUpdateReportSubscrip
  * @returns 구독 토글과 분야 칩이 담긴 카드
  */
 export function ReportSubscriptionCard() {
-  const { data: subscription, isRefetchError } = useQuery(
-    subscriptionQueries.detail(),
-  )
+  const {
+    data: subscription,
+    isPending,
+    isRefetchError,
+  } = useQuery(subscriptionQueries.detail())
   const { data: majorList } = useQuery(majorQueries.list())
   const update = useUpdateReportSubscription()
 
-  // TODO: 로딩·에러 화면은 프로필과 같이 따로 정한다. 그 전까지는 응답 전엔 그리지 않는다
+  if (isPending) return <SettingCardSkeleton title="리포트 구독" />
+  // TODO: 에러 화면은 프로필과 같이 따로 정한다. 그 전까지는 실패하면 그리지 않는다
   if (!subscription) return null
 
   const { totalReport, majorReport, majorIds } = subscription

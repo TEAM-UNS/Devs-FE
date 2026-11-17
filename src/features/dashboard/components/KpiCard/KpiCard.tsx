@@ -1,4 +1,5 @@
 import type { KpiMetric } from '../../types'
+import { Skeleton } from '@/shared/components/Skeleton'
 import { TrendMark } from '@/shared/components/TrendMark'
 
 /**
@@ -42,5 +43,19 @@ export function KpiCard({
         </span>
       </div>
     </article>
+  )
+}
+
+/** 요약 응답 전 KPI 카드 자리 — 아이콘·제목·숫자·설명 줄을 같은 간격으로 둔다 */
+export function KpiCardSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 rounded-sm bg-container px-5 py-4 md:px-6">
+      <Skeleton className="size-8 xl:hidden" />
+      <div className="flex flex-col gap-2">
+        <Skeleton className="h-6 w-20" />
+        <Skeleton className="h-9 w-24" />
+        <Skeleton className="h-5 w-32 max-w-full" />
+      </div>
+    </div>
   )
 }

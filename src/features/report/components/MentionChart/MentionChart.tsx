@@ -1,7 +1,10 @@
+import { Skeleton } from '@/shared/components/Skeleton'
 import type { MentionBar } from '../../types'
 
 interface MentionChartProps {
   bars: readonly MentionBar[]
+  /** 응답 전이면 막대 상자와 라벨 줄 자리에 스켈레톤을 둔다 */
+  loading?: boolean
 }
 
 /*
@@ -51,7 +54,7 @@ const COLUMN = 'flex w-20 justify-center'
  *
  * @param bars 기술별 지난 주·이번 주 비율(0~100)
  */
-export function MentionChart({ bars }: MentionChartProps) {
+export function MentionChart({ bars, loading = false }: MentionChartProps) {
   return (
     <section className="flex flex-col gap-1.5">
       <header className="flex items-center justify-between gap-4">
@@ -69,46 +72,53 @@ export function MentionChart({ bars }: MentionChartProps) {
         </ul>
       </header>
 
-      {/* 열 폭 80은 줄이지 않는다. 다 안 들어가는 모바일은 Figma(2339:14600)처럼 왼쪽부터 놓고
+      {loading ? (
+        // 막대 상자 124 + 간격 6 + 라벨 줄 18
+        <Skeleton className="h-[148px]" />
+      ) : (
+        <>
+          {/* 열 폭 80은 줄이지 않는다. 다 안 들어가는 모바일은 Figma(2339:14600)처럼 왼쪽부터 놓고
           옆으로 스크롤한다. w-max min-w-full이라 넉넉하면 가운데, 넘치면 왼쪽 정렬이 된다 */}
-      <div className="overflow-x-auto">
-        <div className="flex w-max min-w-full flex-col gap-1.5">
-          {/* 안쪽 100 + 세로 패딩 24 = Figma 박스 124 (335:2355) */}
-          <div className="flex h-25 justify-center rounded-sm bg-canvas px-6 py-3 box-content">
-            {bars.map(({ name, last, current }) => (
-              <div key={name} className={`${COLUMN} items-end gap-2.5`}>
-                {/* 값은 높이로만 드러나므로 스크린리더용 문구를 따로 붙인다 */}
-                <span
-                  className={`${BAR} bg-element`}
-                  style={{ height: `${last}%` }}
-                  role="img"
-                  aria-label={`${name} 지난 주 ${last}`}
-                />
-                <span
-                  className={CURRENT_BAR}
-                  style={{
-                    height: `${current}%`,
-                    backgroundImage: `linear-gradient(${gradientAngle(current).toFixed(1)}deg, ${CURRENT_STOPS})`,
-                  }}
-                  role="img"
-                  aria-label={`${name} 이번 주 ${current}`}
-                />
+          <div className="overflow-x-auto">
+            <div className="flex w-max min-w-full flex-col gap-1.5">
+              {/* 안쪽 100 + 세로 패딩 24 = Figma 박스 124 (335:2355) */}
+              <div className="flex h-25 justify-center rounded-sm bg-canvas px-6 py-3 box-content">
+                {bars.map(({ name, last, current }) => (
+                  <div key={name} className={`${COLUMN} items-end gap-2.5`}>
+                    {/* 값은 높이로만 드러나므로 스크린리더용 문구를 따로 붙인다 */}
+                    <span
+                      className={`${BAR} bg-element`}
+                      style={{ height: `${last}%` }}
+                      role="img"
+                      aria-label={`${name} 지난 주 ${last}`}
+                    />
+                    <span
+                      className={CURRENT_BAR}
+                      style={{
+                        height: `${current}%`,
+                        backgroundImage: `linear-gradient(${gradientAngle(current).toFixed(1)}deg, ${CURRENT_STOPS})`,
+                      }}
+                      role="img"
+                      aria-label={`${name} 이번 주 ${current}`}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <ul className="flex justify-center px-6">
-            {bars.map(({ name }) => (
-              <li
-                key={name}
-                className={`${COLUMN} truncate text-body-xs text-gray-500`}
-              >
-                {name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+              <ul className="flex justify-center px-6">
+                {bars.map(({ name }) => (
+                  <li
+                    key={name}
+                    className={`${COLUMN} truncate text-body-xs text-gray-500`}
+                  >
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </>
+      )}
     </section>
   )
 }

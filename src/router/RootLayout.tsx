@@ -1,16 +1,19 @@
-import { useQuery } from '@tanstack/react-query'
 import { Suspense, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-import { roadmapQueries } from '@/features/roadmap'
+import { useLatestRoadmapProgress } from '@/features/roadmap'
 import { getAccessToken } from '@/shared/api'
 import { AppSidebar, SidebarDrawer } from '@/shared/components/AppSidebar'
 import { MenuIcon } from '@/shared/components/icons'
-import { RouteFallback } from '@/shared/components/RouteFallback'
 import { ROUTES } from '@/shared/constants'
 import { cn } from '@/shared/utils/cn'
 
-// fallback 엘리먼트를 모듈 스코프에 한 번만 만들어 재사용
-const routeFallback = <RouteFallback />
+/* 화면 코드는 금방 받으므로 본문은 비워 두고 사이드바만 보인다. 데이터를 기다리는 동안의 스켈레톤은
+   각 화면이 카드 자리마다 그린다. 모듈 스코프에 한 번만 만들어 재사용 */
+const routeFallback = (
+  <div role="status">
+    <span className="sr-only">페이지를 불러오는 중…</span>
+  </div>
+)
 
 /**
  * `<Outlet />` 영역만 교체되며 로딩된다(단 하나의 `<Suspense>` 경계)
@@ -21,9 +24,8 @@ export function RootLayout() {
   const loggedIn = Boolean(getAccessToken())
   // 비로그인 챗봇은 잠금 안내라, 다른 화면처럼 앱 사이드바를 둬서 메뉴로 나갈 수 있게 한다
   const isChatPage = location.pathname === ROUTES.chat && loggedIn
-  /* 사이드바 진행도는 내 로드맵 학습률. 로드맵 화면과 같은 캐시라 항목을 체크하면 같이 바뀐다
-     로그인 전에는 부르지 않는다 — 401만 돌아와 에러 토스트가 뜬다 */
-  const roadmap = useQuery({ ...roadmapQueries.mine(), enabled: loggedIn })
+  // 사이드바 진행도는 가장 최근 로드맵의 학습률. 로그인 전에는 부르지 않는다
+  const roadmapProgress = useLatestRoadmapProgress(loggedIn)
   // 1024px 미만에서 햄버거로 여는 사이드바. 버튼과 메뉴가 둘 다 여기 있어 밖으로 꺼내지 않는다
   const [menuOpen, setMenuOpen] = useState(false)
   /* 뒤로가기처럼 메뉴 밖에서 화면이 바뀌어도 닫는다. 챗봇으로 가면 서랍이 빠져 onClose가 안 불리므로
@@ -34,11 +36,9 @@ export function RootLayout() {
     setMenuOpen(false)
   }
 
-  // 로드맵이 없거나(null) 만드는 중이면 0%. 비로그인이면 null — 로그인 링크
+  // 비로그인이면 null — 로그인 링크
   const sidebar = (
-    <AppSidebar
-      roadmapProgress={loggedIn ? (roadmap.data?.learningRate ?? 0) : null}
-    />
+    <AppSidebar roadmapProgress={loggedIn ? roadmapProgress : null} />
   )
 
   // TODO: ThemeToggle이 있던 자리

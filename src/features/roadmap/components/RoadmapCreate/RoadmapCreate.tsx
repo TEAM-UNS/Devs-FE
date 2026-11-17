@@ -1,13 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  Navigate,
+  generatePath,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 import { majorLabel, majorQueries } from '@/shared/api'
 import { ROUTES } from '@/shared/constants'
-import { roadmapQueries } from '../../api/roadmapQueries'
 import { MIN_WEEKS } from '../../constants/create'
 import { useCreateRoadmap } from '../../hooks/useRoadmapMutations'
 import { STEP_PARAM, parseStep, reachableStep } from '../../utils/createStep'
-import { canFinishRoadmap } from '../../utils/roadmapDay'
 import { ConditionStep } from '../ConditionStep'
 import { MajorStep } from '../MajorStep'
 import { PeriodStep } from '../PeriodStep'
@@ -24,25 +27,11 @@ export function RoadmapCreate() {
   const [weeks, setWeeks] = useState(MIN_WEEKS)
   const [comment, setComment] = useState('')
   const navigate = useNavigate()
-  const mine = useQuery(roadmapQueries.mine())
   const majors = useQuery(majorQueries.list())
   const create = useCreateRoadmap()
 
   const urlStep = parseStep(searchParams)
   const step = Math.min(urlStep, reachableStep(majorId, skillIds.length))
-
-  // TODO: 로딩 화면은 스켈레톤(#65) 디자인 확인 후. 실패는 공통 에러 토스트
-  if (mine.isPending || mine.isError) return null
-
-  /* 새로 만들면 서버가 기존 로드맵을 지운다. 경고할 화면이 없어서, 쓰고 있거나 만드는 중인 로드맵이
-     있으면 생성 흐름에 들이지 않는다. 실패했거나 완주할 수 있는(마지막 날이 열린) 로드맵은 다시 만들 수 있게 둔다 */
-  if (
-    mine.data &&
-    mine.data.status !== 'failed' &&
-    !canFinishRoadmap(mine.data.days)
-  ) {
-    return <Navigate to={ROUTES.roadmap} replace />
-  }
 
   if (step !== urlStep) {
     return <Navigate to={{ search: `?${STEP_PARAM}=${step}` }} replace />
@@ -82,8 +71,17 @@ export function RoadmapCreate() {
         targetWeeks: weeks,
         additionalComment: comment.trim() || undefined,
       },
-      // 만드는 중 화면은 /roadmap이 그린다. 생성 흐름은 기록에서 지워 뒤로가기로 돌아오지 않게 한다
-      { onSuccess: () => navigate(ROUTES.roadmap, { replace: true }) },
+      /* 만드는 중 화면은 새 로드맵의 상세 주소가 그린다. 로드맵은 여러 개 가질 수 있어 기존 것과 상관없이 만든다
+         생성 흐름은 기록에서 지워 뒤로가기로 돌아오지 않게 한다 */
+      {
+        onSuccess: ({ roadmapId }) =>
+          navigate(
+            generatePath(ROUTES.roadmapDetail, {
+              roadmapId: String(roadmapId),
+            }),
+            { replace: true },
+          ),
+      },
     )
   }
 
@@ -94,6 +92,8 @@ export function RoadmapCreate() {
           majors={majorList}
           selectedId={majorId}
           onSelect={handleSelectMajor}
+          // 로드맵이 여러 개라 목록에서 들어온다. 1단계에서 나가면 목록으로 돌아간다 (Figma 1단계엔 '이전'이 없다)
+          onPrevious={() => navigate(ROUTES.roadmap)}
           onNext={() => goTo(2)}
         />
       )

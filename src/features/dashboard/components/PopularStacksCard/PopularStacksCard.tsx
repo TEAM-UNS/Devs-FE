@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { Chip } from '@/shared/components/Chip'
 import { CheckIcon } from '@/shared/components/icons'
+import { Skeleton } from '@/shared/components/Skeleton'
 import { useEChart } from '../../hooks/useEChart'
 import type { StackBar } from '../../types'
 import { buildPopularStacksOption } from '../../utils/popularStacksOption'
@@ -14,6 +15,8 @@ interface PopularStacksCardProps {
   /** 필터 칩을 눌렀을 때 호출된다. 넘기지 않으면 칩은 선택 상태를 표시만 한다 */
   onSelectFilter?: (filter: string) => void
   bars: readonly StackBar[]
+  /** 응답 전이면 막대 상자 자리에 스켈레톤을 덮는다 */
+  loading?: boolean
 }
 
 const CHECK_ICON = <CheckIcon className="size-full" />
@@ -24,6 +27,7 @@ export function PopularStacksCard({
   selectedFilter,
   onSelectFilter,
   bars,
+  loading = false,
 }: PopularStacksCardProps) {
   const chartRef = useEChart(buildPopularStacksOption(bars))
 
@@ -72,6 +76,10 @@ export function PopularStacksCard({
             className="absolute inset-x-0 top-0 h-[120px] rounded-sm bg-canvas"
           />
           <div ref={chartRef} className="relative h-[144px] w-full" />
+          {/* 차트 div는 그대로 둔다 — useEChart가 마운트 때 한 번만 인스턴스를 만든다(#61) */}
+          {loading && (
+            <Skeleton className="absolute inset-x-0 top-0 h-[120px]" />
+          )}
         </div>
       </div>
     </ChartCard>

@@ -1,10 +1,12 @@
-import type { MentionBar, TrendHighlight } from '../../types'
+import { Skeleton } from '@/shared/components/Skeleton'
+import type { MentionBar, ReportLoading, TrendHighlight } from '../../types'
 import { MentionChart } from '../MentionChart'
 import { ReportKpiCard } from '../ReportKpiCard'
 
 interface TrendHighlightsProps {
   highlights: readonly TrendHighlight[]
   mentions: readonly MentionBar[]
+  loading?: Pick<ReportLoading, 'highlights' | 'mentions'>
 }
 
 /**
@@ -16,6 +18,7 @@ interface TrendHighlightsProps {
 export function TrendHighlights({
   highlights,
   mentions,
+  loading,
 }: TrendHighlightsProps) {
   return (
     // 2단일 때 순위 블록(293 고정)을 뺀 나머지 폭 (StackRankList 참고)
@@ -26,12 +29,17 @@ export function TrendHighlights({
 
       <div className="flex flex-col gap-6">
         <div className="flex gap-3">
-          {highlights.map((highlight) => (
-            <ReportKpiCard key={highlight.label} {...highlight} />
-          ))}
+          {loading?.highlights
+            ? // 최대 증가·감소 두 장, 카드와 같은 크기
+              Array.from({ length: 2 }, (_, index) => (
+                <Skeleton key={index} className="h-[76px] flex-1" />
+              ))
+            : highlights.map((highlight) => (
+                <ReportKpiCard key={highlight.label} {...highlight} />
+              ))}
         </div>
 
-        <MentionChart bars={mentions} />
+        <MentionChart bars={mentions} loading={loading?.mentions} />
       </div>
     </section>
   )

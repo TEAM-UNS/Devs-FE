@@ -58,6 +58,7 @@ export function StackCompareSelect() {
       selected={selected}
       keyword={keyword}
       onKeywordChange={setKeyword}
+      loading={list.isPending}
       canLoadMore={list.hasNextPage && !list.isFetchingNextPage}
       onLoadMore={list.fetchNextPage}
       onToggle={handleToggle}
@@ -109,6 +110,13 @@ export function StackCompareResult() {
       mentions={mentions.data?.skills ?? []}
       matchRates={matchRates.data?.companies ?? []}
       postingCounts={postingCounts.data?.companies ?? []}
+      loading={{
+        topSkills: topSkills.isPending,
+        commonSkills: commonSkills.isPending,
+        mentions: mentions.isPending,
+        matchRates: matchRates.isPending,
+        postingCounts: postingCounts.isPending,
+      }}
       onRecompare={() =>
         navigate(ROUTES.stackCompare, {
           state: {

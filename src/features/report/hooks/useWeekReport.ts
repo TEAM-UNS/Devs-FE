@@ -55,12 +55,26 @@ export function useWeekReport(
     enabled,
   })
 
+  const highlights = toTrendHighlights(increase.data, decrease.data)
+
   return {
     week: toWeekRange(weekRange.data),
     collectedCount: toCollectedCount(collected.data),
     ranks: toStackRanks(popular.data),
-    highlights: toTrendHighlights(increase.data, decrease.data),
+    highlights,
     mentions: toMentionBars(mentions.data),
     summary: summary.data?.llmReport ? [summary.data.llmReport] : [],
+    // isPending은 요청을 끈(enabled: false) 이웃 카드에서도 켜져 있어 isLoading을 쓴다
+    loading: {
+      week: weekRange.isLoading,
+      collected: collected.isLoading,
+      ranks: popular.isLoading,
+      /* 보여 줄 카드가 하나라도 오면 온 카드부터 보여 준다 — 한 구역이 늦어도 나머지는 먼저 보인다
+         먼저 끝난 쪽이 비었거나 실패해 카드가 없으면, 남은 요청을 기다리는 동안 스켈레톤을 둔다 */
+      highlights:
+        highlights.length === 0 && (increase.isLoading || decrease.isLoading),
+      mentions: mentions.isLoading,
+      summary: summary.isLoading,
+    },
   }
 }

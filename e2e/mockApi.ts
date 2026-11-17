@@ -6,6 +6,8 @@ import type { Page } from '@playwright/test'
  * 여기서는 화면이 그려지는 데 필요한 최소 모양만 돌려준다.
  */
 const RESPONSES: Record<string, unknown> = {
+  // 로그인하면 사이드바 진행도가 어느 화면에서나 로드맵 목록을 부른다
+  '/roadmap': [],
   '/majors': {
     categories: [
       { id: 1, major: 'FRONTEND', techStacks: [{ id: 1, name: 'React' }] },
@@ -44,7 +46,7 @@ const RESPONSES: Record<string, unknown> = {
   },
 }
 
-/** 대시보드가 부르는 조회 API를 목 응답으로 바꿔 끼운다 */
+/** 대시보드·사이드바가 부르는 조회 API를 목 응답으로 바꿔 끼운다. 화면별 응답은 이 뒤에 등록해 덮어쓴다 */
 export async function mockApi(page: Page) {
   for (const [path, body] of Object.entries(RESPONSES)) {
     await page.route(`**${path}?**`, (route) => route.fulfill({ json: body }))

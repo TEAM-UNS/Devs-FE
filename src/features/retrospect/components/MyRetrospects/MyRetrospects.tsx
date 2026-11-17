@@ -34,6 +34,7 @@ export function MyRetrospects() {
       }
       retrospects={retrospects.data ?? []}
       loaded={retrospects.isSuccess}
+      loading={retrospects.isPending}
       emptyText="아직 작성한 회고가 없어요"
       mine
     />

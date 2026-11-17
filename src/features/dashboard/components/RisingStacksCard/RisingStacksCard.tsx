@@ -1,6 +1,7 @@
 import { useRef, type MouseEvent } from 'react'
 import { Chip } from '@/shared/components/Chip'
 import { CheckIcon } from '@/shared/components/icons'
+import { Skeleton } from '@/shared/components/Skeleton'
 import { cn } from '@/shared/utils/cn'
 import { useEChart } from '../../hooks/useEChart'
 import type { RisingSeries } from '../../types'
@@ -21,6 +22,8 @@ interface RisingStacksCardProps {
   series: readonly RisingSeries[]
   /** 시점 라벨. 축엔 안 보이고 툴팁에만 쓰인다 */
   axisLabels: readonly string[]
+  /** 응답 전이면 빈 상태 문구 대신 그래프 상자를 스켈레톤으로 채운다 */
+  loading?: boolean
 }
 
 const CHECK_ICON = <CheckIcon className="size-full" />
@@ -36,6 +39,7 @@ export function RisingStacksCard({
   onSelectPeriod,
   series,
   axisLabels,
+  loading = false,
 }: RisingStacksCardProps) {
   const hasData = series.some(({ values }) => values.length > 0)
 
@@ -110,7 +114,11 @@ export function RisingStacksCard({
             onMouseMoveCapture={handleMouseMoveCapture}
             onMouseLeave={handleMouseLeave}
           />
-          {!hasData && <EmptyMessage className="absolute inset-0" />}
+          {loading ? (
+            <Skeleton className="absolute inset-0" />
+          ) : (
+            !hasData && <EmptyMessage className="absolute inset-0" />
+          )}
         </div>
         <ul className="flex items-center gap-2">
           {series.map(({ id, label }, index) => (

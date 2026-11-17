@@ -6,6 +6,8 @@ import type { DayState } from '../../utils/roadmapDay'
 import { RoadmapItemCheckbox } from './RoadmapItemCheckbox'
 
 interface RoadmapDayCardProps {
+  /** 체크 응답을 이 로드맵의 상세 캐시에 반영한다 */
+  readonly roadmapId: number
   readonly day: RoadmapDay
   readonly state: DayState
   /** 잠긴 날 안내 문구 */
@@ -20,6 +22,7 @@ const DOT =
 
 /** 로드맵 하루 — 머리줄(완료 체크·점 + Day N)과 점선 옆 카드. Figma 2079:11270 */
 export function RoadmapDayCard({
+  roadmapId,
   day,
   state,
   lockedMessage,
@@ -67,6 +70,7 @@ export function RoadmapDayCard({
               {day.items.map((item) => (
                 <li key={item.itemId}>
                   <RoadmapItemCheckbox
+                    roadmapId={roadmapId}
                     item={item}
                     readOnly={day.completed}
                     dimmed={past}
