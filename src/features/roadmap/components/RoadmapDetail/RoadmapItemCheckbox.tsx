@@ -3,6 +3,7 @@ import { useCheckRoadmapItem } from '../../hooks/useRoadmapMutations'
 import type { RoadmapItem } from '../../types'
 
 interface RoadmapItemCheckboxProps {
+  readonly roadmapId: number
   readonly item: RoadmapItem
   /** 회고까지 마친 날은 서버가 체크를 막는다 */
   readonly readOnly: boolean
@@ -12,11 +13,12 @@ interface RoadmapItemCheckboxProps {
 
 /** 학습 항목 하나. 보내는 동안은 그 항목만 잠그고, 응답이 오면 캐시 값으로 바뀐다 */
 export function RoadmapItemCheckbox({
+  roadmapId,
   item,
   readOnly,
   dimmed,
 }: RoadmapItemCheckboxProps) {
-  const check = useCheckRoadmapItem()
+  const check = useCheckRoadmapItem(roadmapId)
 
   return (
     // Checkbox의 비활성 글자색은 회색이라 Figma(완료한 날도 흰 제목)에 맞게 덮어쓴다

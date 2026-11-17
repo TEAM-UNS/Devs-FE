@@ -26,6 +26,7 @@ const TechStackEditPage = lazy(() => import('@/pages/TechStackEditPage'))
 const StackComparePage = lazy(() => import('@/pages/StackComparePage'))
 const RoadmapPage = lazy(() => import('@/pages/RoadmapPage'))
 const RoadmapCreatePage = lazy(() => import('@/pages/RoadmapCreatePage'))
+const RoadmapDetailPage = lazy(() => import('@/pages/RoadmapDetailPage'))
 const RetrospectBoardPage = lazy(() => import('@/pages/RetrospectBoardPage'))
 const StackCompareResultPage = lazy(
   () => import('@/pages/StackCompareResultPage'),
@@ -177,6 +178,7 @@ const pageRoutes: RouteObject[] = [
         children: [
           { path: 'roadmap', element: <RoadmapPage /> },
           { path: 'roadmap/new', element: <RoadmapCreatePage /> },
+          { path: 'roadmap/:roadmapId', element: <RoadmapDetailPage /> },
         ],
       },
       {

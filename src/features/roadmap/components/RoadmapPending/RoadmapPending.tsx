@@ -16,7 +16,7 @@ const FAILED_FALLBACK = '잠시 후 다시 만들어 주세요.'
 
 /**
  * 아직 다 만들어지지 않은 로드맵. 진행률을 3초마다 묻고, 끝나면 막대를 100까지 채운 뒤
- * 내 로드맵을 다시 받아 상세로 넘어간다
+ * 그 로드맵과 목록을 다시 받아 상세로 넘어간다
  * 화면을 나갔다 와도 서버 상태로 이어서 보여준다
  */
 export function RoadmapPending({ roadmapId }: RoadmapPendingProps) {
@@ -33,10 +33,13 @@ export function RoadmapPending({ roadmapId }: RoadmapPendingProps) {
   useEffect(() => {
     if (filled) {
       void queryClient.invalidateQueries({
-        queryKey: roadmapQueries.mine().queryKey,
+        queryKey: roadmapQueries.detail(roadmapId).queryKey,
+      })
+      void queryClient.invalidateQueries({
+        queryKey: roadmapQueries.list().queryKey,
       })
     }
-  }, [filled, queryClient])
+  }, [filled, queryClient, roadmapId])
 
   // 끝난 생성의 시작 시각은 더 쓸 일이 없다
   useEffect(() => {

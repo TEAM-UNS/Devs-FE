@@ -29,7 +29,7 @@ interface RoadmapDetailProps {
 export function RoadmapDetail({ roadmap }: RoadmapDetailProps) {
   // 회고 모달을 연 날의 번호. null이면 닫힘
   const [retrospectDayNo, setRetrospectDayNo] = useState<number | null>(null)
-  const complete = useCompleteRoadmapDay()
+  const complete = useCompleteRoadmapDay(roadmap.roadmapId)
   const me = useQuery(userQueries.me())
   const today = currentDayNo(roadmap.days)
   /* 마지막 날이 열리면 제목 옆 '로드맵 완주'가 마지막 날 완료를 맡는다 (Figma 2398:31785)
@@ -82,6 +82,7 @@ export function RoadmapDetail({ roadmap }: RoadmapDetailProps) {
         <ol className="flex flex-col gap-5">
           {roadmap.days.map((day) => (
             <RoadmapDayCard
+              roadmapId={roadmap.roadmapId}
               key={day.dayNo}
               day={day}
               state={dayState(day, today)}
