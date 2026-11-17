@@ -1,93 +1,51 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { AxiosError, type AxiosResponse } from 'axios'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { Roadmap, RoadmapStatusResponse } from '@/features/roadmap/types'
+import type { RoadmapSummary } from '@/features/roadmap/types'
 import { renderWithQuery } from '@/test/renderWithQuery'
 import RoadmapPage from './RoadmapPage'
 
-/* 메모리 위의 가짜 서버. 조회 응답을 테스트마다 갈아 끼운다 */
-const server = vi.hoisted(() => ({
-  roadmaps: [] as (Roadmap | null)[],
-  status: null as RoadmapStatusResponse | null,
-}))
+/* 메모리 위의 가짜 서버. 삭제하면 목록에서 빠진다 */
+const server = vi.hoisted(() => ({ roadmaps: [] as RoadmapSummary[] }))
 
-const { patch, post, celebrate } = vi.hoisted(() => ({
-  patch: vi.fn(),
-  post: vi.fn(),
-  celebrate: vi.fn(),
-}))
-
-vi.mock('@/features/roadmap/utils/celebrate', () => ({ celebrate }))
+const { del } = vi.hoisted(() => ({ del: vi.fn() }))
 
 vi.mock('@/shared/analytics', () => ({
   trackEvent: vi.fn(),
   trackPageView: vi.fn(),
 }))
 
-const notFound = () =>
-  new AxiosError('not found', 'ERR_BAD_REQUEST', undefined, undefined, {
-    status: 404,
-    data: { message: '로드맵을 찾을 수 없습니다.' },
-  } as AxiosResponse)
-
 vi.mock('@/shared/api/http', () => ({
-  get: vi.fn((path: string) => {
-    if (path === '/user/my') return Promise.resolve({ name: '김데브' })
-    if (path === '/roadmap') {
-      // 부를 때마다 다음 응답으로 넘어가고, 마지막 응답은 계속 준다
-      const next =
-        server.roadmaps.length > 1
-          ? server.roadmaps.shift()
-          : server.roadmaps[0]
-      return next ? Promise.resolve(next) : Promise.reject(notFound())
-    }
-    if (path.endsWith('/status')) {
-      return server.status
-        ? Promise.resolve(server.status)
-        : Promise.reject(new AxiosError('server error'))
-    }
-    return Promise.reject(notFound())
-  }),
-  post,
-  patch,
+  get: vi.fn((path: string) =>
+    path === '/roadmap'
+      ? Promise.resolve(server.roadmaps)
+      : Promise.reject(new Error(`unexpected ${path}`)),
+  ),
+  del,
+  post: vi.fn(),
+  patch: vi.fn(),
 }))
 
-const completed: Roadmap = {
-  roadmapId: 7,
+const summary = (
+  roadmapId: number,
+  overrides: Partial<RoadmapSummary> = {},
+): RoadmapSummary => ({
+  roadmapId,
+  majorId: 1,
+  majorName: '프론트엔드',
+  targetWeeks: 4,
   status: 'completed',
-  fieldName: '프론트엔드',
-  summary: '요약',
-  learningRate: 0,
-  days: [
-    {
-      dayNo: 1,
-      weekNo: 1,
-      locked: false,
-      allItemsDone: false,
-      completed: false,
-      retrospect: null,
-      items: [
-        { itemId: 11, title: 'JSX 학습', description: null, done: false },
-      ],
-    },
-  ],
-}
-
-const generating: Roadmap = {
-  ...completed,
-  status: 'generating',
-  learningRate: 0,
-  days: [],
-}
+  date: '2026-11-01',
+  ...overrides,
+})
 
 function renderPage() {
   return renderWithQuery(
     <MemoryRouter initialEntries={['/roadmap']}>
       <Routes>
         <Route path="/roadmap" element={<RoadmapPage />} />
-        <Route path="/roadmap/new" element={<p>생성 흐름</p>} />
+        <Route path="/roadmap/:roadmapId" element={<p>로드맵 상세</p>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -96,261 +54,124 @@ function renderPage() {
 describe('RoadmapPage', () => {
   beforeEach(() => {
     server.roadmaps = []
-    server.status = null
-    patch.mockReset()
-    post.mockReset()
-    celebrate.mockReset()
-  })
-
-  it('로드맵이 없으면(404) 생성 흐름으로 보낸다', async () => {
-    renderPage()
-
-    expect(await screen.findByText('생성 흐름')).toBeInTheDocument()
-  })
-
-  it('만드는 중이던 로드맵이 다 만들어지면 상세로 넘어간다', async () => {
-    server.roadmaps = [generating, completed]
-    server.status = {
-      roadmapId: 7,
-      status: 'completed',
-      generatedWeeks: 1,
-      targetWeeks: 1,
-      progress: 100,
-      errorMessage: null,
-    }
-    renderPage()
-
-    // 막대를 100까지 채운 뒤 넘어간다
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: '김데브의 프론트엔드 로드맵' },
-        { timeout: 3000 },
-      ),
-    ).toBeInTheDocument()
-  })
-
-  it('만들기에 실패했으면 서버 안내와 다시 만들기를 보여준다', async () => {
-    server.roadmaps = [{ ...generating, status: 'failed' }]
-    server.status = {
-      roadmapId: 7,
-      status: 'failed',
-      generatedWeeks: 0,
-      targetWeeks: 1,
-      progress: 0,
-      errorMessage: '로드맵 생성 요청에 실패했습니다.',
-    }
-    renderPage()
-
-    expect(
-      await screen.findByText('로드맵 생성 요청에 실패했습니다.'),
-    ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '다시 만들기' })).toHaveAttribute(
-      'href',
-      '/roadmap/new',
-    )
-  })
-
-  it('진행률 조회가 실패하면 다시 확인할 수 있다', async () => {
-    server.roadmaps = [generating, completed]
-    renderPage()
-
-    const retry = await screen.findByRole('button', { name: '다시 확인하기' })
-    server.status = {
-      roadmapId: 7,
-      status: 'completed',
-      generatedWeeks: 1,
-      targetWeeks: 1,
-      progress: 100,
-      errorMessage: null,
-    }
-    await userEvent.click(retry)
-
-    // 막대를 100까지 채운 뒤 넘어간다
-    expect(
-      await screen.findByRole(
-        'heading',
-        { name: '김데브의 프론트엔드 로드맵' },
-        { timeout: 3000 },
-      ),
-    ).toBeInTheDocument()
-  })
-
-  it('항목을 체크하면 응답의 완료 여부·학습률로 화면을 바꾼다', async () => {
-    server.roadmaps = [completed]
-    patch.mockResolvedValue({
-      itemId: 11,
-      done: true,
-      dayAllItemsDone: true,
-      learningRate: 100,
+    del.mockReset()
+    del.mockImplementation((path: string) => {
+      const id = Number(path.split('/').at(-1))
+      server.roadmaps = server.roadmaps.filter(
+        ({ roadmapId }) => roadmapId !== id,
+      )
+      return Promise.resolve()
     })
+  })
+
+  it('로드맵이 없으면 안내와 새로 만들기만 보여준다', async () => {
+    renderPage()
+
+    expect(
+      await screen.findByText('아직 만든 로드맵이 없어요'),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: '새 로드맵 만들기' }),
+    ).toHaveAttribute('href', '/roadmap/new')
+  })
+
+  it('로드맵마다 직무·기간·날짜를 보여주고, 다 만들지 않은 것은 상태를 붙인다', async () => {
+    server.roadmaps = [
+      summary(1),
+      summary(2, { majorName: '백엔드', targetWeeks: 8, status: 'generating' }),
+      summary(3, { majorName: '데이터', status: 'failed', date: '2026-11-05' }),
+    ]
+    renderPage()
+
+    expect(
+      await screen.findByRole('heading', { name: '프론트엔드 로드맵' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('4주 · 2026.11.01')).toBeInTheDocument()
+    expect(screen.getByText('만드는 중')).toBeInTheDocument()
+    expect(screen.getByText('만들기 실패')).toBeInTheDocument()
+  })
+
+  it('카드를 누르면 그 로드맵 상세로 간다', async () => {
+    server.roadmaps = [summary(7)]
     renderPage()
 
     await userEvent.click(
-      await screen.findByRole('checkbox', { name: 'JSX 학습' }),
+      await screen.findByRole('link', { name: '프론트엔드 로드맵 열기' }),
     )
 
-    expect(patch).toHaveBeenCalledWith('/roadmap/items/11', { done: true })
-    // 마지막 날이 다 끝나 학습률 100%가 되면 Day 완료 대신 로드맵 완주가 뜬다
-    expect(
-      await screen.findByRole('button', { name: '로드맵 완주' }),
-    ).toBeInTheDocument()
+    expect(await screen.findByText('로드맵 상세')).toBeInTheDocument()
+  })
+
+  it('삭제는 한 번 확인받고, 지우면 목록에서 빠진다', async () => {
+    server.roadmaps = [summary(1), summary(2, { majorName: '백엔드' })]
+    renderPage()
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: '백엔드 로드맵 삭제' }),
+    )
+    const dialog = screen.getByRole('dialog', {
+      name: '백엔드 로드맵을 삭제할까요?',
+    })
+    await userEvent.click(within(dialog).getByRole('button', { name: '삭제' }))
+
+    expect(del).toHaveBeenCalledWith('/roadmap/2')
     await waitFor(() =>
       expect(
-        screen.getByRole('progressbar', { name: '현재 학습률' }),
-      ).toHaveAttribute('aria-valuenow', '100'),
+        screen.queryByRole('heading', { name: '백엔드 로드맵' }),
+      ).not.toBeInTheDocument(),
     )
-    expect(screen.getByRole('checkbox', { name: 'JSX 학습' })).toBeChecked()
-  })
-
-  const readyToComplete: Roadmap = {
-    ...completed,
-    days: [
-      {
-        ...completed.days[0],
-        allItemsDone: true,
-        items: [{ ...completed.days[0].items[0], done: true }],
-      },
-    ],
-  }
-
-  it('회고를 비워 두면 건너뛰고 완료하고, 마지막 날이 아니면 짧게 축하한다', async () => {
-    // 마지막 날은 '로드맵 완주'가 맡아서, 뒤에 잠긴 날을 하나 둬 오늘을 마지막 날이 아니게 한다
-    server.roadmaps = [
-      {
-        ...readyToComplete,
-        days: [
-          ...readyToComplete.days,
-          { ...completed.days[0], dayNo: 2, locked: true },
-        ],
-      },
-    ]
-    post.mockResolvedValue(undefined)
-    renderPage()
-
-    await userEvent.click(
-      await screen.findByRole('button', { name: '로드맵 완료' }),
-    )
-    const dialog = await screen.findByRole('dialog', { hidden: true })
-    const textbox = within(dialog).getByRole('textbox', {
-      name: '회고',
-      hidden: true,
-    })
-    expect(textbox).toHaveAttribute('placeholder', '오늘의 회고를 작성해주세요')
-
-    await userEvent.type(textbox, '좋았다')
     expect(
-      within(dialog).getByRole('button', { name: '작성완료', hidden: true }),
+      screen.getByRole('heading', { name: '프론트엔드 로드맵' }),
     ).toBeInTheDocument()
-    await userEvent.clear(textbox)
-    await userEvent.click(
-      within(dialog).getByRole('button', {
-        name: '건너뛰고 완료하기',
-        hidden: true,
-      }),
+  })
+
+  it('앞 삭제가 끝나도 그사이 연 다른 로드맵의 확인 창은 닫지 않는다', async () => {
+    server.roadmaps = [summary(1), summary(2, { majorName: '백엔드' })]
+    let finish = () => {}
+    // 백엔드 삭제 응답을 붙잡아 두었다가 다른 창을 연 뒤에 끝낸다
+    del.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = () => {
+            server.roadmaps = server.roadmaps.filter(
+              ({ roadmapId }) => roadmapId !== 2,
+            )
+            resolve()
+          }
+        }),
     )
-
-    expect(post).toHaveBeenCalledWith('/roadmap/days/1/complete', {
-      retrospect: '',
-    })
-    await waitFor(() => expect(celebrate).toHaveBeenCalledWith(false))
-  })
-
-  describe('로드맵 완주', () => {
-    const finishable: Roadmap = { ...readyToComplete, learningRate: 100 }
-    const finished: Roadmap = {
-      ...finishable,
-      days: [{ ...finishable.days[0], completed: true }],
-    }
-
-    it('마지막 날 완료 대신 로드맵 완주로 마지막 회고를 보내고, 확인하면 새 로드맵 만들기로 간다', async () => {
-      server.roadmaps = [finishable, finished]
-      post.mockResolvedValue(undefined)
-      renderPage()
-
-      await userEvent.click(
-        await screen.findByRole('button', { name: '로드맵 완주' }),
-      )
-      expect(
-        screen.queryByRole('button', { name: '로드맵 완료' }),
-      ).not.toBeInTheDocument()
-
-      const retrospect = await screen.findByRole('dialog', {
-        name: '“김데브의 프론트엔드 로드맵” 로드맵 완주를 축하합니다!',
-        hidden: true,
-      })
-      await userEvent.click(
-        within(retrospect).getByRole('button', {
-          name: '건너뛰고 완료하기',
-          hidden: true,
-        }),
-      )
-
-      expect(post).toHaveBeenCalledWith('/roadmap/days/1/complete', {
-        retrospect: '',
-      })
-      await waitFor(() => expect(celebrate).toHaveBeenCalledWith(true))
-      const done = await screen.findByRole('dialog', {
-        name: '이제 새로운 로드맵을 시작할 수 있어요.',
-        hidden: true,
-      })
-      await userEvent.click(
-        within(done).getByRole('button', { name: '확인', hidden: true }),
-      )
-
-      expect(await screen.findByText('생성 흐름')).toBeInTheDocument()
-    })
-
-    it('마지막 날 할 일이 남아 있어도 완주할 수 있고, 회고 없이 안내를 바로 띄운다', async () => {
-      // 서버는 할 일이 남은 날의 완료를 거절하므로 회고를 받지 않는다
-      server.roadmaps = [completed]
-      renderPage()
-
-      await userEvent.click(
-        await screen.findByRole('button', { name: '로드맵 완주' }),
-      )
-
-      expect(
-        await screen.findByRole('dialog', {
-          name: '이제 새로운 로드맵을 시작할 수 있어요.',
-          hidden: true,
-        }),
-      ).toBeInTheDocument()
-      expect(post).not.toHaveBeenCalled()
-    })
-
-    it('마지막 날까지 마쳤으면 회고 없이 새 로드맵 안내를 바로 띄운다', async () => {
-      server.roadmaps = [finished]
-      renderPage()
-
-      await userEvent.click(
-        await screen.findByRole('button', { name: '로드맵 완주' }),
-      )
-
-      expect(
-        await screen.findByRole('dialog', {
-          name: '이제 새로운 로드맵을 시작할 수 있어요.',
-          hidden: true,
-        }),
-      ).toBeInTheDocument()
-    })
-  })
-
-  it('회고까지 마친 오늘은 체크가 보라로 남되 바꿀 수 없다', async () => {
-    server.roadmaps = [
-      {
-        ...readyToComplete,
-        days: [{ ...readyToComplete.days[0], completed: true }],
-      },
-    ]
     renderPage()
 
-    const checkbox = await screen.findByRole('checkbox', { name: 'JSX 학습' })
-    expect(checkbox).toBeChecked()
-    expect(checkbox).not.toBeDisabled()
-    expect(checkbox).toHaveAttribute('aria-disabled', 'true')
-    await userEvent.click(checkbox)
-    expect(patch).not.toHaveBeenCalled()
-    expect(checkbox).toBeChecked()
+    await userEvent.click(
+      await screen.findByRole('button', { name: '백엔드 로드맵 삭제' }),
+    )
+    await userEvent.click(screen.getByRole('button', { name: '삭제' }))
+    await userEvent.click(screen.getByRole('button', { name: '취소' }))
+    await userEvent.click(
+      screen.getByRole('button', { name: '프론트엔드 로드맵 삭제' }),
+    )
+    finish()
+
+    // 앞 요청이 끝나 목록에서 빠질 때까지 기다린 뒤에도 지금 창은 그대로다
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('heading', { name: '백엔드 로드맵' }),
+      ).not.toBeInTheDocument(),
+    )
+    expect(
+      screen.getByRole('dialog', { name: '프론트엔드 로드맵을 삭제할까요?' }),
+    ).toBeInTheDocument()
+  })
+
+  it('확인 창에서 취소하면 지우지 않는다', async () => {
+    server.roadmaps = [summary(1)]
+    renderPage()
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: '프론트엔드 로드맵 삭제' }),
+    )
+    await userEvent.click(screen.getByRole('button', { name: '취소' }))
+
+    expect(del).not.toHaveBeenCalled()
   })
 })

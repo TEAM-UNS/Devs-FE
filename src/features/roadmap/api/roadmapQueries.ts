@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
 import { isGenerating } from '../utils/roadmapStatus'
-import { fetchMyRoadmap, fetchRoadmapStatus } from './requests'
+import { fetchMyRoadmaps, fetchRoadmap, fetchRoadmapStatus } from './requests'
 
 /** 만드는 동안 진행률을 다시 묻는 간격 */
 const STATUS_POLL_INTERVAL = 3000
@@ -8,10 +8,18 @@ const STATUS_POLL_INTERVAL = 3000
 export const roadmapQueries = {
   all: () => ['roadmap'] as const,
 
-  mine: () =>
+  /** 내 로드맵 목록 — 여러 개를 가질 수 있다 */
+  list: () =>
     queryOptions({
-      queryKey: [...roadmapQueries.all(), 'mine'] as const,
-      queryFn: fetchMyRoadmap,
+      queryKey: [...roadmapQueries.all(), 'list'] as const,
+      queryFn: fetchMyRoadmaps,
+    }),
+
+  /** 로드맵 하나의 학습률·Day별 항목 */
+  detail: (roadmapId: number) =>
+    queryOptions({
+      queryKey: [...roadmapQueries.all(), 'detail', roadmapId] as const,
+      queryFn: () => fetchRoadmap(roadmapId),
     }),
 
   status: (roadmapId: number) =>

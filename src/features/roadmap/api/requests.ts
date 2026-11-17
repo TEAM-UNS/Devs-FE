@@ -1,24 +1,35 @@
 import axios from 'axios'
-import { get, patch, post } from '@/shared/api'
+import { del, get, patch, post } from '@/shared/api'
 import type {
   Roadmap,
   RoadmapCreateRequest,
   RoadmapCreateResponse,
   RoadmapItemCheckResponse,
   RoadmapStatusResponse,
+  RoadmapSummary,
 } from '../types'
 
-/** 내 로드맵 조회. 아직 만들지 않았으면(404) null — 에러로 올리면 전역 QueryCache가 토스트를 띄운다 */
-export async function fetchMyRoadmap(): Promise<Roadmap | null> {
+/** 내 로드맵 목록. 하나도 없을 때 404로 와도 빈 목록으로 본다 — 에러로 올리면 전역 QueryCache가 토스트를 띄운다 */
+export async function fetchMyRoadmaps(): Promise<RoadmapSummary[]> {
   try {
-    return await get<Roadmap>('/roadmap')
+    return await get<RoadmapSummary[]>('/roadmap')
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) return null
+    if (axios.isAxiosError(error) && error.response?.status === 404) return []
     throw error
   }
 }
 
-/** 로드맵 생성 요청. 서버는 접수만 하고(202) AI 서버가 주 단위로 채운다. 기존 로드맵은 지워진다 */
+/** 로드맵 하나의 학습률·Day별 항목 */
+export async function fetchRoadmap(roadmapId: number): Promise<Roadmap> {
+  return get<Roadmap>(`/roadmap/${roadmapId}`)
+}
+
+/** 로드맵 삭제 (204) */
+export async function deleteRoadmap(roadmapId: number): Promise<void> {
+  return del<void>(`/roadmap/${roadmapId}`)
+}
+
+/** 로드맵 생성 요청. 서버는 접수만 하고(202) AI 서버가 주 단위로 채운다 */
 export async function createRoadmap(
   body: RoadmapCreateRequest,
 ): Promise<RoadmapCreateResponse> {
@@ -42,8 +53,11 @@ export async function checkRoadmapItem(
 
 /** 하루 완료 + 회고. 그날 항목을 모두 체크해야 한다 (204) */
 export async function completeRoadmapDay(
+  roadmapId: number,
   dayNo: number,
   retrospect: string,
 ): Promise<void> {
-  return post<void>(`/roadmap/days/${dayNo}/complete`, { retrospect })
+  return post<void>(`/roadmap/${roadmapId}/days/${dayNo}/complete`, {
+    retrospect,
+  })
 }

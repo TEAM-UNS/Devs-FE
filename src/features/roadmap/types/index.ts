@@ -22,7 +22,19 @@ export interface RoadmapDay {
   items: RoadmapItem[]
 }
 
-/** GET /roadmap. 만드는 중이거나 실패했으면 days는 빈 배열 */
+/** GET /roadmap 목록의 한 줄. 로드맵을 여러 개 가질 수 있다 */
+export interface RoadmapSummary {
+  roadmapId: number
+  majorId: number
+  /** 목표 직무 이름 */
+  majorName: string
+  targetWeeks: number
+  status: RoadmapStatus
+  /** 'YYYY-MM-DD' */
+  date: string
+}
+
+/** GET /roadmap/{roadmapId}. 만드는 중이거나 실패했으면 days는 빈 배열 */
 export interface Roadmap {
   roadmapId: number
   status: RoadmapStatus

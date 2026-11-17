@@ -10,6 +10,8 @@ interface MajorStepProps {
   readonly majors: readonly MajorCategoryDto[]
   readonly selectedId: number | null
   readonly onSelect: (id: number) => void
+  /** 1단계의 '이전'은 로드맵 목록으로 나간다 */
+  readonly onPrevious: () => void
   readonly onNext: () => void
 }
 
@@ -18,6 +20,7 @@ export function MajorStep({
   majors,
   selectedId,
   onSelect,
+  onPrevious,
   onNext,
 }: MajorStepProps) {
   const [keyword, setKeyword] = useState('')
@@ -35,6 +38,7 @@ export function MajorStep({
         selectedId === null ? '직무를 선택해 주세요' : '직무 선택 완료'
       }
       nextDisabled={selectedId === null}
+      onPrevious={onPrevious}
       onNext={onNext}
     >
       <SearchField

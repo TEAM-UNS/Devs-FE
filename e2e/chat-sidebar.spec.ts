@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { mockApi } from './mockApi'
 
 for (const height of [720, 480]) {
   test(`세션이 많아도 목록만 스크롤되고 새 대화 버튼은 보인다 (${height}px)`, async ({
@@ -9,6 +10,7 @@ for (const height of [720, 480]) {
       localStorage.setItem('uns-access-token', 'e2e-access-token')
       localStorage.setItem('uns-refresh-token', 'e2e-refresh-token')
     })
+    await mockApi(page)
     await page.route('**/chat/sessions', (route) =>
       route.fulfill({
         json: {
