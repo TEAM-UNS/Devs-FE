@@ -21,14 +21,15 @@ export function LegalDocument({ title, intro, children }: LegalDocumentProps) {
     window.scrollTo(0, 0)
   }, [])
 
+  /* 모바일 시안은 없다. 머리글 로고를 본문 왼쪽 선에 맞추고, 좁은 표 칸에서 단어가 끊기지 않게 어절로 줄바꿈한다 */
   return (
-    <div className="min-h-full bg-canvas text-gray-1000">
-      <header className="flex h-16 items-center border-b border-element px-12">
+    <div className="min-h-full bg-canvas break-keep text-gray-1000">
+      <header className="flex h-16 items-center border-b border-element px-6 md:px-12">
         <Link to={ROUTES.landing} aria-label="Devs 홈으로">
           <DevsLogo />
         </Link>
       </header>
-      <main className="mx-auto flex max-w-[880px] flex-col gap-12 px-6 py-16">
+      <main className="mx-auto flex max-w-[880px] flex-col gap-10 px-6 py-10 md:gap-12 md:py-16">
         <div className="flex flex-col gap-4">
           <h1 className="text-h1">{title}</h1>
           <p className="text-body-md text-gray-400">{intro}</p>
