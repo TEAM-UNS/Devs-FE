@@ -26,7 +26,7 @@ export function LandingFooter() {
       {/* 모바일은 약관·저작권 묶음이 아래 줄로 내려가 오른쪽에 붙는다 (Figma 2555:13518) */}
       <div className="flex flex-col items-end gap-3 md:flex-row md:justify-between">
         <div className="flex flex-col gap-1.5 self-start text-body-md text-white">
-          <p className="flex items-center gap-3">
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
             Contact
             {DIVIDER}
             <a href={`mailto:${CONTACT_EMAIL}`} className="text-body-lg">

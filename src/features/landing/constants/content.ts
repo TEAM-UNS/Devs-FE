@@ -108,7 +108,7 @@ export const FEATURES: readonly Feature[] = [
       '전공맞춤_대시보드',
     ],
     image: reportScreen,
-    imageBoxClass: 'aspect-[601/419] lg:aspect-auto lg:w-[660px]',
+    imageBoxClass: 'aspect-[601/419] xl:aspect-auto xl:w-[660px]',
     imageFirst: false,
   },
   {
@@ -124,7 +124,7 @@ export const FEATURES: readonly Feature[] = [
       '내_기술_매칭률',
     ],
     image: companyScreen,
-    imageBoxClass: 'aspect-[3/2] lg:aspect-auto lg:w-[690px]',
+    imageBoxClass: 'aspect-[3/2] xl:aspect-auto xl:w-[690px]',
     imageFirst: true,
   },
   {
@@ -140,7 +140,7 @@ export const FEATURES: readonly Feature[] = [
       '맞춤형_취업_질의응답',
     ],
     image: chatScreen,
-    imageBoxClass: 'aspect-[8/5] lg:aspect-auto lg:w-[736px]',
+    imageBoxClass: 'aspect-[8/5] xl:aspect-auto xl:w-[736px]',
     imageFirst: false,
   },
   {
@@ -156,7 +156,7 @@ export const FEATURES: readonly Feature[] = [
       '마이페이지_저장',
     ],
     image: roadmapScreen,
-    imageBoxClass: 'aspect-[14/9] lg:aspect-auto lg:w-[715px]',
+    imageBoxClass: 'aspect-[14/9] xl:aspect-auto xl:w-[715px]',
     imageFirst: true,
   },
 ]

@@ -8,30 +8,33 @@ import { useInView } from '../../hooks/useInView'
 // 카드마다 말풍선 모양(꼬리 위치)·자리·등장 순서가 달라 인덱스로 맞춘다
 // 등장 순서는 Figma 818:7701 주석대로 01 → 03 → 02
 // 자리: 모바일은 한 줄로 쌓고(흐름 배치), 패드는 두 열 지그재그(2555:12742), PC는 가로 지그재그
+// 가로 지그재그는 폭이 1153으로 고정이라 xl(1280)부터 한다. 1024~1279는 잘리지 않게 두 열로 둔다
 const CARD_LAYOUT = [
   {
     bubble: bubble01,
-    position: 'md:top-0 md:left-0 lg:top-[50px]',
+    position: 'md:top-0 md:left-0 xl:top-[50px]',
     delay: '',
   },
   {
     bubble: bubble02,
-    position: 'md:top-[201px] md:left-[289px] lg:top-0 lg:left-[371px]',
+    position: 'md:top-[201px] md:left-[289px] xl:top-0 xl:left-[371px]',
     delay: '[--fade-delay:600ms]',
   },
   {
     bubble: bubble03,
-    position: 'md:top-[399px] md:left-[10px] lg:top-[50px] lg:left-[753px]',
+    position: 'md:top-[399px] md:left-[10px] xl:top-[50px] xl:left-[753px]',
     delay: '[--fade-delay:300ms]',
   },
 ] as const
 
 /** 문제 제기 — 취준생이 던지는 질문 세 개를 말풍선으로 */
 export function PainPointSection() {
-  const { ref, inView } = useInView<HTMLDivElement>()
+  /* 첫 카드가 보이면 세 장을 순서대로 띄운다. 묶음 전체를 보면 모바일처럼 세로로 길 때
+     (268×3) 화면이 낮으면 30%가 한 번에 보이지 않아 영영 안 나타난다 */
+  const { ref, inView } = useInView<HTMLElement>()
 
   return (
-    <section className="mx-auto mt-[100px] flex w-full flex-col items-center gap-16 px-5 md:px-8 lg:mt-40 lg:w-[1153px] lg:px-0">
+    <section className="mx-auto mt-[100px] flex w-full flex-col items-center gap-16 px-5 md:px-8 lg:mt-40 xl:w-[1153px] xl:px-0">
       <div className="flex w-full max-w-[715px] flex-col gap-3 text-center">
         {/* 모바일만 Figma(2555:13287)처럼 두 줄로 끊는다 */}
         <h2 className="text-h2 text-white">
@@ -46,15 +49,13 @@ export function PainPointSection() {
         </p>
       </div>
 
-      <div
-        ref={ref}
-        className="flex flex-col items-center gap-4 md:relative md:h-[670px] md:w-[689px] lg:h-[321px] lg:w-full"
-      >
+      <div className="flex flex-col items-center gap-4 md:relative md:h-[670px] md:w-[689px] xl:h-[321px] xl:w-full">
         {PAIN_POINTS.map(({ number, question, answer }, index) => {
           const { bubble, position, delay } = CARD_LAYOUT[index]
           return (
             <article
               key={number}
+              ref={index === 0 ? ref : undefined}
               className={cn(
                 // 모바일은 320 폭 말풍선에 답변이 자동 줄바꿈된다
                 'relative h-[268px] w-[320px] pt-[29px] pl-[25px] md:absolute md:h-[271px] md:w-[400px] md:pt-[26px] md:pl-[59px] md:whitespace-nowrap',

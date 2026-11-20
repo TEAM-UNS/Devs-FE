@@ -71,12 +71,14 @@ export function HeroSection() {
           {HERO_DESCRIPTION[0]} <br className="md:hidden" />
           {HERO_DESCRIPTION[1]}
         </p>
-      </div>
-      {/* 로그인은 헤더에 있어 히어로는 시작하기 하나만 둔다 */}
-      <div className="absolute top-[245px] left-1/2 -translate-x-1/2 md:top-[295px]">
-        <CtaLink cta="start" location="hero">
-          무료로 시작하기
-        </CtaLink>
+        {/* 로그인은 헤더에 있어 히어로는 시작하기 하나만 둔다
+            글 바로 아래 흐름에 둬서 좁은 폭에서 제목이 더 줄바꿈돼도 버튼과 겹치지 않는다
+            간격은 Figma 버튼 위치(모바일 245 · 패드·PC 295)에서 글 묶음 끝과 묶음 간격(6)을 뺀 값 */}
+        <div className="mt-[37px] md:mt-[64px] lg:mt-[45px]">
+          <CtaLink cta="start" location="hero">
+            무료로 시작하기
+          </CtaLink>
+        </div>
       </div>
     </section>
   )
