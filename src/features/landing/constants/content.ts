@@ -25,8 +25,11 @@ export const HERO_TITLE = [
   '데이터가 보여주는 기술 트렌드',
 ] as const
 
-export const HERO_DESCRIPTION =
-  '실시간 채용공고 분석, 기업별 매칭률, AI 맞춤형 로드맵까지 한곳에서 관리하세요.'
+/** 모바일에서만 두 줄로 끊는다 (Figma 2555:13264) */
+export const HERO_DESCRIPTION = [
+  '실시간 채용공고 분석, 기업별 매칭률,',
+  'AI 맞춤형 로드맵까지 한곳에서 관리하세요.',
+] as const
 
 export interface PainPoint {
   number: string
@@ -74,9 +77,9 @@ export interface Stat {
 }
 
 export const STATS: readonly Stat[] = [
-  { label: '매일 수집·분석되는 실시간 채용공고', value: 18000 },
+  { label: '매일 실시간 수집·분석되는 채용공고', value: 18000 },
   { label: '기술 스택 실시간 비교 가능 활성화 IT기업', value: 4000 },
-  { label: '매일 수집·분석되는 실시간 채용공고', value: 5000 },
+  { label: '매일 실시간 수집·분석되는 채용공고', value: 5000 },
 ]
 
 export interface Feature {
@@ -85,8 +88,8 @@ export interface Feature {
   description: string
   tags: readonly string[]
   image: string
-  /** 캡처 박스 폭. 행마다 Figma 값이 다르다 */
-  imageWidthClass: string
+  /** 캡처 박스. PC는 높이 460에 행마다 폭이 다르고, 패드·모바일은 폭을 다 채우고 비율로 높이를 정한다 */
+  imageBoxClass: string
   /** 캡처를 텍스트 왼쪽에 둘지 */
   imageFirst: boolean
 }
@@ -105,7 +108,7 @@ export const FEATURES: readonly Feature[] = [
       '전공맞춤_대시보드',
     ],
     image: reportScreen,
-    imageWidthClass: 'w-[660px]',
+    imageBoxClass: 'aspect-[601/419] lg:aspect-auto lg:w-[660px]',
     imageFirst: false,
   },
   {
@@ -121,7 +124,7 @@ export const FEATURES: readonly Feature[] = [
       '내_기술_매칭률',
     ],
     image: companyScreen,
-    imageWidthClass: 'w-[690px]',
+    imageBoxClass: 'aspect-[3/2] lg:aspect-auto lg:w-[690px]',
     imageFirst: true,
   },
   {
@@ -137,7 +140,7 @@ export const FEATURES: readonly Feature[] = [
       '맞춤형_취업_질의응답',
     ],
     image: chatScreen,
-    imageWidthClass: 'w-[736px]',
+    imageBoxClass: 'aspect-[8/5] lg:aspect-auto lg:w-[736px]',
     imageFirst: false,
   },
   {
@@ -153,7 +156,7 @@ export const FEATURES: readonly Feature[] = [
       '마이페이지_저장',
     ],
     image: roadmapScreen,
-    imageWidthClass: 'w-[715px]',
+    imageBoxClass: 'aspect-[14/9] lg:aspect-auto lg:w-[715px]',
     imageFirst: true,
   },
 ]

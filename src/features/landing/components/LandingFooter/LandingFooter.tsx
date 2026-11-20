@@ -10,7 +10,7 @@ const DIVIDER = <span className="h-4 w-px bg-gray-200" aria-hidden="true" />
 /** 랜딩 하단 — 연락처와 팀 구성 */
 export function LandingFooter() {
   return (
-    <footer className="mt-[85px] flex flex-col gap-5 bg-black p-12">
+    <footer className="mt-36 flex flex-col gap-5 bg-black p-12 lg:mt-[85px]">
       <div className="flex items-center justify-between">
         <DevsLogo className="h-8" />
         <a
@@ -23,8 +23,9 @@ export function LandingFooter() {
         </a>
       </div>
       <hr className="border-gray-100" />
-      <div className="flex items-end justify-between">
-        <div className="flex flex-col gap-1.5 text-body-md text-white">
+      {/* 모바일은 약관·저작권 묶음이 아래 줄로 내려가 오른쪽에 붙는다 (Figma 2555:13518) */}
+      <div className="flex flex-col items-end gap-3 md:flex-row md:justify-between">
+        <div className="flex flex-col gap-1.5 self-start text-body-md text-white">
           <p className="flex items-center gap-3">
             Contact
             {DIVIDER}
@@ -32,7 +33,8 @@ export function LandingFooter() {
               {CONTACT_EMAIL}
             </a>
           </p>
-          <p className="flex items-center gap-3">
+          {/* 팀 이름이 좁은 폭에서 넘치지 않게 줄바꿈한다 */}
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
             Team UNS
             {DIVIDER}
             {TEAM_MEMBERS.map(({ role, name }) => (
