@@ -6,7 +6,8 @@ export function LandingHeader() {
   // Figma 헤더의 배경 블러는 채움 1%라 실제로는 거의 안 먹는다
   // CSS backdrop-blur는 투명도와 상관없이 그대로 흐려서 뒤의 구슬 테두리가 지워지므로 뺀다
   return (
-    <header className="absolute inset-x-0 top-0 z-raised flex h-16 items-center justify-between px-12">
+    <header className="absolute inset-x-0 top-0 z-raised flex h-16 items-center justify-between px-8 lg:px-12">
+      {/* 패드·모바일은 좌우 32, 햄버거 없이 두 버튼을 그대로 둔다 (Figma 2551:12625 · 2555:13519) */}
       <DevsLogo />
       <nav className="flex items-center">
         <CtaLink

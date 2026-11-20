@@ -41,25 +41,27 @@ function LogoRow({ direction }: LogoRowProps) {
 /** 분석 중인 기업 로고 띠 */
 export function LogoMarquee() {
   return (
-    <section className="mt-[220px] flex flex-col items-center">
-      <div className="flex w-[587px] flex-col items-center gap-8 text-center">
+    <section className="mt-[208px] flex flex-col items-center lg:mt-[220px]">
+      <div className="flex w-full max-w-[587px] flex-col items-center gap-8 px-5 text-center">
         <SectionBadge className="font-normal">
           네카라쿠배부터 유니콘 스타트업까지
         </SectionBadge>
         <div className="flex flex-col gap-2">
+          {/* 모바일만 Figma(2555:13393)처럼 두 줄로 끊는다 */}
           <h2 className="text-h1 text-white">
-            <span className="text-primary-500">120개 이상</span> IT 기업의
+            <span className="text-primary-500">120개 이상</span> IT 기업의{' '}
+            <br className="md:hidden" />
             실시간 기술 스택 분석 중
           </h2>
-          <p className="text-body-md text-gray-400">
-            내가 목표로 하는 기업의 최신 채용 스택과 내 매칭률을 지금
-            확인해보세요.
+          <p className="text-body-sm text-gray-400 md:text-body-md">
+            내가 목표로 하는 기업의 최신 채용 스택과{' '}
+            <br className="md:hidden" />내 매칭률을 지금 확인해보세요.
           </p>
         </div>
       </div>
       {/* 로고는 이름 없이 그림만 있어 읽어줄 정보가 없다. 카피가 내용을 대신한다 */}
       <div
-        className="mt-[67px] flex w-full flex-col gap-6 overflow-hidden"
+        className="mt-[39px] flex w-full flex-col gap-6 overflow-hidden md:mt-[67px]"
         aria-hidden="true"
       >
         <LogoRow direction="right" />

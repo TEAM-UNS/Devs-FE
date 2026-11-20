@@ -19,9 +19,10 @@ function FaqItem({ question, answer }: Faq) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-center justify-between text-left text-body-lg text-white"
+        className="flex w-full items-start justify-between gap-3 text-left text-body-lg text-white md:items-center"
       >
-        Q. {question}
+        {/* 모바일은 질문이 줄바꿈되어 화살표를 첫 줄에 맞춘다 */}
+        <span className="break-keep">Q. {question}</span>
         <ChevronDownIcon
           className={cn(
             'size-6 shrink-0 text-gray-300 motion-safe:transition-transform motion-safe:duration-normal motion-safe:ease-standard',
@@ -49,8 +50,10 @@ function FaqItem({ question, answer }: Faq) {
 /** 자주 묻는 질문 — 처음엔 모두 접힌 채로 시작한다 */
 export function FaqSection() {
   return (
-    <section className="mx-20 mt-52 rounded-md bg-gray-50 p-20">
-      <h2 className="text-center text-display-sm text-white">자주 묻는 질문</h2>
+    <section className="mx-5 mt-[100px] rounded-md bg-gray-50 px-5 py-12 md:mx-10 lg:mx-20 lg:mt-52 lg:p-20">
+      <h2 className="text-center text-[24px] leading-[1.2] font-semibold text-white md:text-[32px] lg:text-display-sm">
+        자주 묻는 질문
+      </h2>
       <div className="mt-12">
         {FAQS.map((faq) => (
           <FaqItem key={faq.question} {...faq} />
