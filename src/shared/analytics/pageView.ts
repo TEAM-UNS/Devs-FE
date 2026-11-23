@@ -1,4 +1,5 @@
 import { trackEvent } from './amplitude'
+import { markPageShown } from './loadWatch'
 
 declare global {
   interface Window {
@@ -21,4 +22,5 @@ export function trackPageView(title: string) {
     page_location: href,
   })
   trackEvent('Page Viewed', { page_title: title, page_path: pathname })
+  markPageShown()
 }

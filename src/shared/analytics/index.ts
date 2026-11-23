@@ -7,4 +7,5 @@ export {
   resetAnalytics,
   trackEvent,
 } from './amplitude'
+export { markAppStarted } from './loadWatch'
 export { trackPageView } from './pageView'

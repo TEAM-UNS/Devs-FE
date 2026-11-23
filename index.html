@@ -1,6 +1,62 @@
 <!doctype html>
 <html lang="ko">
   <head>
+    <!-- 첫 진입 로딩 중 이탈 — 앱 코드보다 먼저 돌아야 기본 코드를 받는 동안 나간 사람도 잡힌다
+         Amplitude도 기본 코드 안에 있어 그 전엔 쓸 수 없으므로 수집 서버로 직접 보낸다
+         앱은 기본 코드 실행(appStarted)과 Page Viewed(shown)를 src/shared/analytics/loadWatch.ts로 알린다 -->
+    <script>
+      ;(function (w, d, key, prod) {
+        // Amplitude처럼 운영 빌드에서만 켠다. 개발 중 새로고침이 지표에 섞이지 않게
+        if (prod !== 'true' || !key) return
+        var state = (w.__pageLoad = { appStarted: false, shown: false })
+        // 백그라운드 탭으로 열었다가 보지도 않고 닫은 건 기다리다 나간 게 아니라 빼려고 기억한다
+        var seen = d.visibilityState === 'visible'
+        d.addEventListener('visibilitychange', function () {
+          if (d.visibilityState === 'visible') seen = true
+        })
+        w.addEventListener('pagehide', function () {
+          if (state.shown || state.sent || !seen) return
+          state.sent = true
+          // Amplitude 기기 id는 SDK가 떠야 읽을 수 있어서, 같은 브라우저끼리만 묶이도록 따로 둔다
+          var id
+          try {
+            id = localStorage.getItem('uns-load-device')
+            if (!id) {
+              id = 'load-' + Math.random().toString(36).slice(2)
+              localStorage.setItem('uns-load-device', id)
+            }
+          } catch (e) {
+            id = 'load-' + Math.random().toString(36).slice(2)
+          }
+          var nav = performance.getEntriesByType('navigation')[0]
+          // 문자열로 보내면 사전 요청 없이 나가고, 수집 서버는 본문을 JSON으로 읽는다
+          navigator.sendBeacon(
+            'https://api2.amplitude.com/2/httpapi',
+            JSON.stringify({
+              api_key: key,
+              events: [
+                {
+                  device_id: id,
+                  event_type: 'Page Load Abandoned',
+                  platform: 'Web',
+                  event_properties: {
+                    elapsed_ms: Math.round(performance.now()),
+                    // boot: 기본 코드를 받는 중, page: 페이지 코드를 받거나 첫 화면을 그리는 중
+                    stage: state.appStarted ? 'page' : 'boot',
+                    page_path: location.pathname,
+                    navigation_type: nav ? nav.type : null,
+                    effective_type: navigator.connection
+                      ? navigator.connection.effectiveType
+                      : null,
+                  },
+                },
+              ],
+            }),
+          )
+        })
+      })(window, document, '%VITE_AMPLITUDE_API_KEY%', '%PROD%')
+    </script>
+
     <!-- Google Tag Manager — 컨테이너 ID는 빌드 때 박힌다
          개발 빌드에서는 빈 값이라 아래 분기를 타지 않는다 -->
     <script>
