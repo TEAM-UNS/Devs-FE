@@ -7,14 +7,15 @@
     <script>
       ;(function (w, d, key, prod) {
         // Amplitude처럼 운영 빌드에서만 켠다. 개발 중 새로고침이 지표에 섞이지 않게
-        if (prod !== 'true' || !key) return
+        // 키가 없는 빌드(미리보기 배포)는 Vite가 %…% 자리를 그대로 남겨서 그것도 빈 키로 본다
+        if (prod !== 'true' || !key || key.charAt(0) === '%') return
         var state = (w.__pageLoad = { appStarted: false, shown: false })
         // 백그라운드 탭으로 열었다가 보지도 않고 닫은 건 기다리다 나간 게 아니라 빼려고 기억한다
         var seen = d.visibilityState === 'visible'
         d.addEventListener('visibilitychange', function () {
           if (d.visibilityState === 'visible') seen = true
         })
-        w.addEventListener('pagehide', function () {
+        function report() {
           if (state.shown || state.sent || !seen) return
           state.sent = true
           // Amplitude 기기 id는 SDK가 떠야 읽을 수 있어서, 같은 브라우저끼리만 묶이도록 따로 둔다
@@ -53,6 +54,13 @@
               ],
             }),
           )
+        }
+        w.addEventListener('pagehide', report)
+        // 표준은 load 전에 떠나면 pagehide를 보내지 않는다(크로미움만 보냄). 그 구간은 beforeunload로 잡는다
+        // 붙여 둔 채면 파이어폭스가 뒤로 가기 캐시를 끄므로 load에서 뗀다
+        w.addEventListener('beforeunload', report)
+        w.addEventListener('load', function () {
+          w.removeEventListener('beforeunload', report)
         })
       })(window, document, '%VITE_AMPLITUDE_API_KEY%', '%PROD%')
     </script>
