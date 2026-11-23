@@ -82,7 +82,8 @@ export function Input({
     messageIcon ?? (state === 'error' ? ERROR_ICON : undefined)
 
   return (
-    <div className={cn('flex w-full flex-col gap-1', className)}>
+    // min-w-0: 버튼과 한 줄에 놓이면(flex-1) 입력창 기본 폭(약 171px) 아래로 못 줄어 좁은 화면에서 줄이 넘친다
+    <div className={cn('flex w-full min-w-0 flex-col gap-1', className)}>
       <div className="flex w-full flex-col gap-1.5">
         {label && (
           <label htmlFor={inputId} className="text-body-md text-white">
