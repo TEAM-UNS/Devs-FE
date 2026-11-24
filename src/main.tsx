@@ -8,7 +8,10 @@ import './index.css'
 import { App } from '@/app/App'
 import { initSentry, reportRenderError } from '@/app/observability/sentry'
 import { reportWebVitals } from '@/app/observability/reportWebVitals'
-import { identifyUser, initAmplitude } from '@/shared/analytics'
+import { identifyUser, initAmplitude, markAppStarted } from '@/shared/analytics'
+
+// 여기까지 왔으면 기본 코드는 다 받았다. 이후 이탈은 페이지 코드·첫 화면을 기다리다 나간 것
+markAppStarted()
 
 // 개발 환경에서만 why-did-you-render를 로드해 리렌더 원인을 콘솔에 출력.
 // 동적 import이므로 프로덕션 번들에는 포함되지 않으며, React를 패치해야 하므로
